@@ -3,6 +3,7 @@
 #include "vehicle.h"
 #include "driver.h"
 #include "user.h"
+#include "booking.h"
 #include <fstream>
 #include <cstdlib>
 
@@ -148,9 +149,10 @@ void Menu::driverMenu() {
     } while(choice != 0);
 }
 
-// ================= CUSTOMER MENU =================
 void Menu::customerMenu() {
     VehicleList v;
+    BookingList b;
+    PriorityBooking p;
 
     int choice;
 
@@ -158,19 +160,62 @@ void Menu::customerMenu() {
         system("cls");
         cout << "\n===== CUSTOMER MENU =====\n";
         cout << "1. View Vehicles\n";
-        cout << "2. Back\n";
+        cout << "2. Create Booking\n";
+        cout << "3. View Bookings\n";
+        cout << "4. Cancel Booking\n";
+        cout << "5. Search Booking\n";
+        cout << "6. Priority Booking\n";
+        cout << "7. Process Priority Booking\n";
+        cout << "8. View Priority Queue\n";
+        cout << "0. Back\n";
         cout << "Enter choice: ";
         cin >> choice;
 
         switch(choice) {
+
             case 1:
                 v.viewVehicles();
                 break;
+
             case 2:
+                b.createBooking();
                 break;
+
+            case 3:
+                b.viewBookings();
+                break;
+
+            case 4:
+                b.cancelBooking();
+                break;
+
+            case 5:
+                b.searchBooking();
+                break;
+
+            case 6: {
+                int id;
+                cout << "Enter Booking ID: ";
+                cin >> id;
+                p.addPriorityBooking(id);
+                break;
+            }
+
+            case 7:
+                p.processBooking();
+                break;
+
+            case 8:
+                p.viewQueue();
+                break;
+
+            case 0:
+                break;
+
             default:
                 cout << "Invalid choice!\n";
         }
+
         system("pause");
 
     } while(choice != 0);
