@@ -1,21 +1,23 @@
 #ifndef USER_H
 #define USER_H
-#include <string>
-using namespace std;
+
+#include<string>
 
 class User {
 public:
     int id;
-    string name;
-    string password,email;
-    long int phone;
+   std::string name;
+   std::string password,confirm,email,role,citizenshipnum,inputName, inputPass;
+   std::string phone;
 
     void registerUser(); 
     void searchUser();  
-    bool loginUser();   
-    void driverMenu();   
-    void AdminMenu();   
-    void CustomerMenu();   
+    bool loginUser();    
+  std::string getCitizenship();
+ std::string inputPassword() ;
+ std::string inputPhone();
+
 };
+
 
 #endif
