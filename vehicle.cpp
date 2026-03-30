@@ -1,10 +1,12 @@
 #include <iostream>
+#include <fstream>
 #include "vehicle.h"
 
 using namespace std;
 
 VehicleList::VehicleList() {
     head = nullptr;
+     loadVehicles(); 
 }
 
 // ================= ADD VEHICLE =================
@@ -46,11 +48,64 @@ void VehicleList::addVehicle() {
     }
 
     cout << "Vehicle added successfully!\n";
+    saveVehicles(); 
 }
+void VehicleList::saveVehicles() {
+    ofstream fout("vehicles.txt");
 
+    if (head == nullptr) return;
+
+    Vehicle* temp = head;
+
+    do {
+        fout << temp->id << " | "
+             << temp->name << "| "
+             << temp->type << " | "
+             << temp->price << " | "
+             << temp->available << endl;
+
+        temp = temp->next;
+    } while (temp != head);
+
+    fout.close();
+}
+void VehicleList::loadVehicles() {
+    ifstream fin("vehicles.txt");
+
+    if (!fin) return;
+
+    while (true) {
+        Vehicle* newVehicle = new Vehicle;
+
+        if (!(fin >> newVehicle->id >> newVehicle->name
+                  >> newVehicle->type >> newVehicle->price
+                  >> newVehicle->available)) {
+            delete newVehicle;
+            break;
+        }
+
+        // insert like addVehicle (without input)
+        if (head == nullptr) {
+            head = newVehicle;
+            newVehicle->next = newVehicle;
+            newVehicle->prev = newVehicle;
+        } else {
+            Vehicle* tail = head->prev;
+
+            tail->next = newVehicle;
+            newVehicle->prev = tail;
+
+            newVehicle->next = head;
+            head->prev = newVehicle;
+        }
+    }
+
+    fin.close();
+}
 // ================= VIEW VEHICLES =================
 void VehicleList::viewVehicles() {
     if (head == nullptr) {
+           loadVehicles(); 
         cout << "No vehicles available.\n";
         return;
     }
@@ -113,6 +168,8 @@ void VehicleList::deleteVehicle() {
             }
 
             cout << "Vehicle deleted successfully!\n";
+           
+            saveVehicles();
             return;
         }
 

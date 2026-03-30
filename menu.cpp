@@ -42,7 +42,7 @@ void Menu::mainMenu() {
                 cout << "Invalid choice!\n";
         }
         system("pause");
-    } while(choice != 0);
+    } while(choice != 3);
 }
 
 // ================= ADMIN MENU =================

@@ -23,6 +23,8 @@ public:
     VehicleList();
 
     void addVehicle();
+    void saveVehicles();
+    void loadVehicles();
     void viewVehicles();
     void deleteVehicle();
 };
