@@ -141,7 +141,7 @@ if(role == "Customer") {
     citizenshipnum = " Invalid ";
 }
     // storing user details in a text file named users.txt
- fout<<name<<" ,"<<id<<" "<<password<<" "<<phone<<" "<<email<<" " << role << " " << citizenshipnum <<endl;
+ fout<<name<<","<<id<<" "<<password<<" "<<phone<<" "<<email<<" " << role << " " << citizenshipnum <<endl;
  fout.close();
  cout<<"User have been registered successfully "<<endl;
  }
@@ -165,7 +165,7 @@ bool User::loginUser()
     while(getline(fin, line)) {
         stringstream ss(line);
    getline(ss, name, ','); 
-        ss >> name >> id >> password >> phone >> email >> role >> citizenshipnum;
+        ss>> id >> password >> phone >> email >> role >> citizenshipnum;
 
         if(name == inputName && password == inputPass) {
             cout << "\nLogin Successful!\n";
