@@ -135,13 +135,13 @@ cin.ignore();
     cout << "Enter your Role (Admin/Customer/Driver): ";
   getline(cin, role);
 
-if(role == "customer") {
+if(role == "Customer") {
     citizenshipnum = getCitizenship();  
 } else {
     citizenshipnum = " Invalid ";
 }
     // storing user details in a text file named users.txt
- fout<<name<<" "<<id<<" "<<password<<" "<<phone<<" "<<email<<" " << role << " " << citizenshipnum <<endl;
+ fout<<name<<" ,"<<id<<" "<<password<<" "<<phone<<" "<<email<<" " << role << " " << citizenshipnum <<endl;
  fout.close();
  cout<<"User have been registered successfully "<<endl;
  }
@@ -164,7 +164,7 @@ bool User::loginUser()
 
     while(getline(fin, line)) {
         stringstream ss(line);
-
+   getline(ss, name, ','); 
         ss >> name >> id >> password >> phone >> email >> role >> citizenshipnum;
 
         if(name == inputName && password == inputPass) {
@@ -172,10 +172,10 @@ bool User::loginUser()
 
             Menu m;
 
-            if(role == "admin") {
+            if(role == "Admin") {
                 m.adminMenu();
             }
-            else if(role == "driver") {
+            else if(role == "Driver") {
                 m.driverMenu();
             }
             else {
