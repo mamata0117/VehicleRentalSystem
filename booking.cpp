@@ -1,26 +1,27 @@
 #include <iostream>
 #include <fstream>
 #include <stack>
+#include <queue>
 #include "booking.h"
 
 using namespace std;
-
-// ================= CONSTRUCTOR =================
+//initilizing head to null
 BookingList::BookingList() {
     head = NULL;
 }
-
-// ================= CALCULATE =================
+//calculating total amount based on booking type and driver charge
 float BookingList::calculateTotal(float vehiclePrice, string type, int driverCharge) {
     if (type == "driver") {
         return vehiclePrice + driverCharge;
     }
+    else {
     return vehiclePrice;
+    }
 }
 
-// ================= CREATE BOOKING =================
+// Booking the vehicle and calculating total amount and advance payment
 void BookingList::createBooking() {
-    BookingNode* newNode = new BookingNode;
+    BookingNode* newNode = new BookingNode();
 
     cout << "Enter Booking ID: ";
     cin >> newNode->bookingID;
@@ -35,8 +36,21 @@ void BookingList::createBooking() {
     cout << "Enter Vehicle Price: ";
     cin >> price;
 
+    if (price < 0) {
+        cout << "Invalid price!\n";
+        delete newNode;
+        return;
+    }
+
     cout << "Booking Type (self/driver): ";
     cin >> newNode->bookingType;
+
+
+    if (newNode->bookingType != "self" && newNode->bookingType != "driver") {
+        cout << "Invalid booking type!\n";
+        delete newNode;
+        return;
+    }
 
     int driverCharge = 0;
     if (newNode->bookingType == "driver") {
@@ -44,22 +58,18 @@ void BookingList::createBooking() {
         cin >> driverCharge;
     }
 
-// ask student
-cout << "Are you a student? (1 = Yes / 0 = No): ";
-cin >> newNode->isStudent;
+    cout << "Are you a student? (1 = Yes / 0 = No): ";
+    cin >> newNode->isStudent;
 
-// calculate total
-newNode->totalAmount = calculateTotal(price, newNode->bookingType, driverCharge);
+    float total = calculateTotal(price, newNode->bookingType, driverCharge);
+    total = applyDiscount(total, newNode->isStudent);
 
-// apply discount
-newNode->totalAmount = applyDiscount(newNode->totalAmount, newNode->isStudent);
+    newNode->totalAmount = total;
+    newNode->advancePayment = total * 0.3;
 
-// 30% advance
-newNode->advancePayment = newNode->totalAmount * 0.3;
-    cout << "Total: " << newNode->totalAmount << endl;
+    cout << "Total: " << total << endl;
     cout << "Advance: " << newNode->advancePayment << endl;
 
-    // Insert at beginning (Linked List)
     newNode->next = head;
     head = newNode;
 
@@ -133,6 +143,7 @@ void BookingList::saveToFile() {
              << temp->userID << " "
              << temp->vehicleID << " "
              << temp->bookingType << " "
+             <<temp->isStudent<<" "
              << temp->totalAmount << " "
              << temp->advancePayment << endl;
 
@@ -188,7 +199,7 @@ void BookingList::searchBooking() {
     }
 
     cout << "Booking not found!\n";
-}#include <queue>
+}
 
 // ================= ADD TO QUEUE =================
 void PriorityBooking::addPriorityBooking(int bookingID) {

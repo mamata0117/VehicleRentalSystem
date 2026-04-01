@@ -10,7 +10,7 @@ string  User::inputPassword()
     string password = "";
     char ch;
 
-    while (true) 
+    while (1) 
     {
         ch = _getch();
 
@@ -39,63 +39,64 @@ string  User::inputPassword()
 string  User:: getCitizenship()
 {
    while(true) {
-        cout << "Enter Citizenship (Format: 01-01-01-12345): ";
+        cout << "Enter Citizenship (Format: 0X-0X-0X-XXXXX): ";
         cin >> citizenshipnum;
 
-        // lets Check length
+  //checking the length of citizenship number
         if(citizenshipnum.length() != 14) {
             std::cout << "Invalid length! Try again.\n";
             continue;
         }
 
-        // lets Check dash positions
+        // checking the dashes in correct positions
         if(citizenshipnum[2] != '-' || citizenshipnum[5] != '-' || citizenshipnum[8] != '-') {
-            std::cout << "Invalid format! Use 01-01-01-12345\n";
+            std::cout << "Invalid format! Use 0X-0X-0X-XXXXX\n";
             continue;
         }
 
-        // lets Check digits
+        // checking the digits in correct positions
         bool valid = true;
         for(int i = 0; i < citizenshipnum.length(); i++) {
             if(i == 2 || i == 5 || i == 8) continue;
 
-            if(!isdigit(citizenshipnum[i])) {
+
+            if(isdigit(citizenshipnum[i])==false) {
                 valid = false;
                 break;
             }
         }
 
-        if(!valid) {
+        if(valid==false) {
             cout << "Only numbers allowed!\n";
             continue;
         }
             return citizenshipnum;
     }
 }  
-#include <cctype>
 
-// ================= PHONE INPUT =================
+
+//taking user input for phone number and validating it
 string User::inputPhone() {
     string phone;
 
     while(true) {
-        cout << "Enter user phone number (10 digits): ";
+        cout << "Enter user phone number ( must be 10 digits): ";
         cin >> phone;
 
         if(phone.length() != 10) {
-            cout << "Phone must be exactly 10 digits!\n";
+            cout << "Phone  number must be exactly 10 digits!\n";
             continue;
         }
 
         bool valid = true;
-        for(char c : phone) {
-            if(!isdigit(c)) {
-                valid = false;
-                break;
-            }
-        }
+       for(int i = 0; i < phone.length(); i++) {
+    if(isdigit(phone[i]) == false) {
+        valid = false;
+        break;
+    }
+}
 
-        if(!valid) {
+        if(valid==false) {
             cout << "Only numbers allowed!\n";
             continue;
         }
@@ -103,10 +104,11 @@ string User::inputPhone() {
         return phone;
     }
 }
+//registering user by taking input and storing it in a text file named users.txt
+
 void User::registerUser() {
     ofstream fout("users.txt", ios::app);
 
-    //From now we are taking user input for registration 
   cout<<"If you are a new user ,please register yourself by providing the following details\n";
     cout<<"-------------"<<"Enter User Details"<<"-------------"<<endl;
     cout<<"Enter user name:";
@@ -115,7 +117,6 @@ getline(cin, name);
     cout<<"Enter user ID :";
     cin>>id;
  
-
 cout<<"Enter password: ";
 password = inputPassword();
 
@@ -125,20 +126,21 @@ confirm = inputPassword();
 if(password != confirm) {
     cout<<"Passwords do not match!\n";
     return; }
+
     cout<<"Enter user phone number :";
   phone = inputPhone();
     cout<<"Enter user email :";
     cin>>email;
 cin.ignore(); 
-    cout << "Enter Role (admin/customer/driver): ";
+    cout << "Enter your Role (Admin/Customer/Driver): ";
   getline(cin, role);
 
 if(role == "customer") {
-    citizenshipnum = getCitizenship();   //  clean call
+    citizenshipnum = getCitizenship();  
 } else {
     citizenshipnum = " Invalid ";
 }
-    //Now I'm storing user details in a text file named users.txt
+    // storing user details in a text file named users.txt
  fout<<name<<" "<<id<<" "<<password<<" "<<phone<<" "<<email<<" " << role << " " << citizenshipnum <<endl;
  fout.close();
  cout<<"User have been registered successfully "<<endl;
@@ -170,9 +172,15 @@ bool User::loginUser()
 
             Menu m;
 
-            if(role == "admin") m.adminMenu();
-            else if(role == "driver") m.driverMenu();
-            else m.customerMenu();
+            if(role == "admin") {
+                m.adminMenu();
+            }
+            else if(role == "driver") {
+                m.driverMenu();
+            }
+            else {
+                m.customerMenu();
+            }
 
             fin.close();
             return true;

@@ -23,7 +23,7 @@ struct BookingNode {
     std::string bookingType;
     float totalAmount;
     float advancePayment;
-    bool isStudent;   // ✅ FIXED (inside struct)
+    bool isStudent; 
 
     BookingNode* next;
 };

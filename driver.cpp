@@ -7,7 +7,7 @@ using namespace std;
 
 string Driver::getLicense() {
     while(true) {
-        cout << "Enter License (Format: 01-09-12345678): ";
+        cout << "Enter License (Format: 0X-0X-XXXXXXXX): ";
         cin >> license;
 
         // Check length
@@ -18,7 +18,7 @@ string Driver::getLicense() {
 
         // Check dash positions
         if(license[2] != '-' || license[5] != '-') {
-            cout << "Invalid format! Use 01-09-12345678\n";
+            cout << "Invalid format! Use 0X-0X-XXXXXXXX\n";
             continue;
         }
 
@@ -27,13 +27,13 @@ string Driver::getLicense() {
         for(int i = 0; i < license.length(); i++) {
             if(i == 2 || i == 5) continue;
 
-            if(!isdigit(license[i])) {
+            if(isdigit(license[i])==false) {
                 valid = false;
                 break;
             }
         }
 
-        if(!valid) {
+        if(valid==false) {
             cout << "Only numbers allowed!\n";
             continue;
         }
@@ -47,7 +47,7 @@ void Driver::addDriver() {
     cout << "Enter Driver Name: ";
     cin.ignore();
     getline(cin, name);
-
+cout<<"Enter Driver License: ";
     license = getLicense();
 
     cout << "Enter Charge per day: ";
@@ -71,9 +71,9 @@ void Driver::viewDrivers() {
     cout << "\n----- DRIVER LIST -----\n";
 
     while(fin >> name >> license >> charge) {
-        cout << "Name: " << name
-             << " | License: " << license
-             << " | Charge: " << charge << endl;
+        cout << "Name: " << name<<"\t"
+             << "  License: " << license<<"\t"
+             << "  Charge: " << charge << endl;
     }
 
     fin.close();
@@ -85,14 +85,14 @@ void Driver::deleteDriver() {
     ifstream fin("drivers.txt");
     ofstream temp("temp.txt");
 
-    string del;
+    string deleteDriver;
     bool found = false;
 
     cout << "Enter Driver Name to delete: ";
-    cin >> del;
+    cin >> deleteDriver;
 
     while(fin >> name >> license >> charge) {
-        if(name != del) {
+        if(name != deleteDriver) {
             temp << name << " " << license << " " << charge << endl;
         } else {
             found = true;

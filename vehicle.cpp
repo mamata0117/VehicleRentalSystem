@@ -9,7 +9,7 @@ VehicleList::VehicleList() {
      loadVehicles(); 
 }
 
-// ================= ADD VEHICLE =================
+//Adding a new vehicle to the circular doubly linked list
 void VehicleList::addVehicle() {
     Vehicle* newVehicle = new Vehicle;
 
@@ -38,10 +38,10 @@ void VehicleList::addVehicle() {
         newVehicle->prev = newVehicle;
     }
     else {
-        Vehicle* tail = head->prev;
+        Vehicle*end = head->prev;
 
-        tail->next = newVehicle;
-        newVehicle->prev = tail;
+        end->next = newVehicle;
+        newVehicle->prev = end;
 
         newVehicle->next = head;
         head->prev = newVehicle;
@@ -53,15 +53,16 @@ void VehicleList::addVehicle() {
 void VehicleList::saveVehicles() {
     ofstream fout("vehicles.txt");
 
-    if (head == nullptr) return;
-
+    if (head == nullptr)
+    { return;
+    }
     Vehicle* temp = head;
 
     do {
-        fout << temp->id << " | "
-             << temp->name << "| "
-             << temp->type << " | "
-             << temp->price << " | "
+        fout << temp->id << "  "
+             << temp->name << " "
+             << temp->type << "  "
+             << temp->price << "  "
              << temp->available << endl;
 
         temp = temp->next;
