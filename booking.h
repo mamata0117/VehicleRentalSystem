@@ -5,10 +5,15 @@
 #include <queue>
 #include <stack>
 
+using namespace std;
+
+// 🔥 ADD THIS LINE (VERY IMPORTANT)
+class VehicleList;
+
 // ================= REVIEW SYSTEM =================
 class ReviewSystem {
 private:
-    std::stack<std::string> reviews;
+    stack<string> reviews;
 
 public:
     void addReview();
@@ -20,10 +25,10 @@ struct BookingNode {
     int bookingID;
     int userID;
     int vehicleID;
-    std::string bookingType;
+    string bookingType;
     float totalAmount;
     float advancePayment;
-    bool isStudent; 
+    bool isStudent;
 
     BookingNode* next;
 };
@@ -36,13 +41,14 @@ private:
 public:
     BookingList();
 
-    void createBooking();
+    void createBooking(VehicleList &vList);   // ✅ correct now
+    void cancelBooking(VehicleList &vList);   // ✅ correct now
+
     void viewBookings();
-    void cancelBooking();
     void searchBooking();
 
-    float calculateTotal(float vehiclePrice, std::string type, int driverCharge);
-    float applyDiscount(float amount, bool isStudent);  // ✅ FIXED
+    float calculateTotal(float vehiclePrice, string type, int driverCharge);
+    float applyDiscount(float amount, bool isStudent);
 
     void saveToFile();
     void loadFromFile();
@@ -51,7 +57,7 @@ public:
 // ================= PRIORITY QUEUE =================
 class PriorityBooking {
 private:
-    std::queue<int> bookingQueue;
+    queue<int> bookingQueue;
 
 public:
     void addPriorityBooking(int bookingID);

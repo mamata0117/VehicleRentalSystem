@@ -16,12 +16,12 @@ struct Vehicle {
 };
 
 class VehicleList {
-private:
+
+    
+    public:
     Vehicle* head;
-
-public:
     VehicleList();
-
+float getVehiclePrice(int vehicleID);
     void addVehicle();
     void saveVehicles();
     void loadVehicles();

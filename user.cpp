@@ -109,8 +109,10 @@ string User::inputPhone() {
 void User::registerUser() {
     ofstream fout("users.txt", ios::app);
 
-  cout<<"If you are a new user ,please register yourself by providing the following details\n";
-    cout<<"-------------"<<"Enter User Details"<<"-------------"<<endl;
+  cout<<"If you are a new user ,please register yourself by providing the following details\n\n\n";
+  cout<<"-----------------------------------------\n\n";
+    cout<<"\t\t "<<"Enter User Details"<<endl;
+    cout<<"\n-----------------------------------------\n\n";
     cout<<"Enter user name:";
     cin.ignore(); 
 getline(cin, name);
@@ -127,7 +129,7 @@ if(password != confirm) {
     cout<<"Passwords do not match!\n";
     return; }
 
-    cout<<"Enter user phone number :";
+   // Enter user phone number
   phone = inputPhone();
     cout<<"Enter user email :";
     cin>>email;
@@ -197,8 +199,9 @@ void User::searchUser() {
 
     int choice, searchID;
     string searchName;
-
-    cout << "-------Select any one of the options below------\n";
+    cout<<"------------------------------------------\n\n";
+    cout<<"-------------------------------------------\n\n";
+    cout << "Select any one of the options below\n";
     cout << "1. Search by Name\n";
     cout << "2. Search by ID\n";
     cout << "Enter your choice: ";

@@ -2,29 +2,50 @@
 #include <fstream>
 #include <stack>
 #include <queue>
+#include "vehicle.h"
 #include "booking.h"
 
 using namespace std;
-//initilizing head to null
+
+// ================= CONSTRUCTOR =================
 BookingList::BookingList() {
     head = NULL;
 }
-//calculating total amount based on booking type and driver charge
+
+// ================= CALCULATE TOTAL =================
 float BookingList::calculateTotal(float vehiclePrice, string type, int driverCharge) {
     if (type == "driver") {
         return vehiclePrice + driverCharge;
     }
-    else {
     return vehiclePrice;
-    }
 }
 
-// Booking the vehicle and calculating total amount and advance payment
-void BookingList::createBooking() {
+// ================= APPLY DISCOUNT =================
+float BookingList::applyDiscount(float amount, bool isStudent) {
+    if (isStudent) {
+        cout << "Student discount applied (10%)\n";
+        return amount * 0.9;
+    }
+    return amount;
+}
+
+// ================= CREATE BOOKING =================
+void BookingList::createBooking(VehicleList &vList) {
     BookingNode* newNode = new BookingNode();
 
     cout << "Enter Booking ID: ";
     cin >> newNode->bookingID;
+
+    // 🔒 Duplicate ID check
+    BookingNode* check = head;
+    while (check != NULL) {
+        if (check->bookingID == newNode->bookingID) {
+            cout << "Booking ID already exists!\n";
+            delete newNode;
+            return;
+        }
+        check = check->next;
+    }
 
     cout << "Enter User ID: ";
     cin >> newNode->userID;
@@ -32,10 +53,49 @@ void BookingList::createBooking() {
     cout << "Enter Vehicle ID: ";
     cin >> newNode->vehicleID;
 
-    float price;
-    cout << "Enter Vehicle Price: ";
-    cin >> price;
+    // 🔥 You can later replace this with vList.getVehiclePrice()
+   float price = vList.getVehiclePrice(newNode->vehicleID);
 
+if (price == -1) {
+    delete newNode;
+    return;
+}
+// 🔥 CHECK + UPDATE VEHICLE AVAILABILITY
+Vehicle* temp = vList.head;
+
+if (temp == NULL) {
+    cout << "No vehicles available!\n";
+    delete newNode;
+    return;
+}
+
+bool found = false;
+
+do {
+    if (temp->id == newNode->vehicleID) {
+
+        if (!temp->available) {
+            cout << "Vehicle already booked!\n";
+            delete newNode;
+            return;
+        }
+
+        temp->available = false;   // ✅ MARK AS BOOKED
+        found = true;
+        break;
+    }
+    temp = temp->next;
+
+} while (temp != vList.head);
+
+if (!found) {
+    cout << "Vehicle not found!\n";
+    delete newNode;
+    return;
+}
+
+// 💾 SAVE UPDATED VEHICLE STATUS
+vList.saveVehicles();
     if (price < 0) {
         cout << "Invalid price!\n";
         delete newNode;
@@ -44,7 +104,6 @@ void BookingList::createBooking() {
 
     cout << "Booking Type (self/driver): ";
     cin >> newNode->bookingType;
-
 
     if (newNode->bookingType != "self" && newNode->bookingType != "driver") {
         cout << "Invalid booking type!\n";
@@ -101,7 +160,7 @@ void BookingList::viewBookings() {
 }
 
 // ================= CANCEL BOOKING =================
-void BookingList::cancelBooking() {
+void BookingList::cancelBooking(VehicleList & vList) {
     int id;
     cout << "Enter Booking ID to cancel: ";
     cin >> id;
@@ -117,7 +176,20 @@ void BookingList::cancelBooking() {
             } else {
                 prev->next = temp->next;
             }
+// 🔥 MAKE VEHICLE AVAILABLE AGAIN
+Vehicle* v = vList.head;
 
+if (v != NULL) {
+    do {
+        if (v->id == temp->vehicleID) {
+            v->available = true;
+            break;
+        }
+        v = v->next;
+    } while (v != vList.head);
+}
+
+vList.saveVehicles();
             delete temp;
             saveToFile();
 
@@ -132,50 +204,6 @@ void BookingList::cancelBooking() {
     cout << "Booking not found!\n";
 }
 
-// ================= SAVE TO FILE =================
-void BookingList::saveToFile() {
-    ofstream fout("bookings.txt");
-
-    BookingNode* temp = head;
-
-    while (temp != NULL) {
-        fout << temp->bookingID << " "
-             << temp->userID << " "
-             << temp->vehicleID << " "
-             << temp->bookingType << " "
-             <<temp->isStudent<<" "
-             << temp->totalAmount << " "
-             << temp->advancePayment << endl;
-
-        temp = temp->next;
-    }
-
-    fout.close();
-}
-
-// ================= LOAD FROM FILE =================
-void BookingList::loadFromFile() {
-    ifstream fin("bookings.txt");
-
-    if (!fin) return;
-
-    BookingNode* temp;
-
-    while (true) {
-        temp = new BookingNode;
-
-        if (!(fin >> temp->bookingID >> temp->userID >> temp->vehicleID
-              >> temp->bookingType >> temp->totalAmount >> temp->advancePayment)) {
-            delete temp;
-            break;
-        }
-
-        temp->next = head;
-        head = temp;
-    }
-
-    fin.close();
-}
 // ================= SEARCH BOOKING =================
 void BookingList::searchBooking() {
     int id;
@@ -201,13 +229,65 @@ void BookingList::searchBooking() {
     cout << "Booking not found!\n";
 }
 
-// ================= ADD TO QUEUE =================
+// ================= SAVE TO FILE =================
+void BookingList::saveToFile() {
+    ofstream fout("bookings.txt");
+
+    BookingNode* temp = head;
+
+    while (temp != NULL) {
+        fout << temp->bookingID << " "
+             << temp->userID << " "
+             << temp->vehicleID << " "
+             << temp->bookingType << " "
+             << temp->isStudent << " "
+             << temp->totalAmount << " "
+             << temp->advancePayment << endl;
+
+        temp = temp->next;
+    }
+
+    fout.close();
+}
+
+// ================= LOAD FROM FILE =================
+void BookingList::loadFromFile() {
+    ifstream fin("bookings.txt");
+
+    if (!fin) return;
+
+    // 🧹 Clear old data
+    while (head != NULL) {
+        BookingNode* temp = head;
+        head = head->next;
+        delete temp;
+    }
+
+    BookingNode* temp;
+
+    while (true) {
+        temp = new BookingNode;
+
+        if (!(fin >> temp->bookingID >> temp->userID >> temp->vehicleID
+              >> temp->bookingType >> temp->isStudent
+              >> temp->totalAmount >> temp->advancePayment)) {
+            delete temp;
+            break;
+        }
+
+        temp->next = head;
+        head = temp;
+    }
+
+    fin.close();
+}
+
+// ================= PRIORITY QUEUE =================
 void PriorityBooking::addPriorityBooking(int bookingID) {
     bookingQueue.push(bookingID);
     cout << "Booking added to priority queue!\n";
 }
 
-// ================= PROCESS QUEUE =================
 void PriorityBooking::processBooking() {
     if (bookingQueue.empty()) {
         cout << "No priority bookings!\n";
@@ -215,10 +295,10 @@ void PriorityBooking::processBooking() {
     }
 
     cout << "Processing Booking ID: " << bookingQueue.front() << endl;
+     cout << "Booking processed and removed from queue.\n";
     bookingQueue.pop();
 }
 
-// ================= VIEW QUEUE =================
 void PriorityBooking::viewQueue() {
     if (bookingQueue.empty()) {
         cout << "Queue is empty!\n";
@@ -234,9 +314,7 @@ void PriorityBooking::viewQueue() {
     }
 }
 
-
-
-// ================= ADD REVIEW =================
+// ================= REVIEW SYSTEM =================
 void ReviewSystem::addReview() {
     string review;
     cin.ignore();
@@ -244,11 +322,9 @@ void ReviewSystem::addReview() {
     getline(cin, review);
 
     reviews.push(review);
-
     cout << "Review added!\n";
 }
 
-// ================= VIEW REVIEWS =================
 void ReviewSystem::viewReviews() {
     if (reviews.empty()) {
         cout << "No reviews yet.\n";
@@ -258,16 +334,8 @@ void ReviewSystem::viewReviews() {
     stack<string> temp = reviews;
 
     cout << "\n--- Driver Reviews ---\n";
-
     while (!temp.empty()) {
         cout << temp.top() << endl;
         temp.pop();
     }
-}
-float BookingList::applyDiscount(float amount, bool isStudent) {
-    if (isStudent) {
-        cout << "Student discount applied (10%)\n";
-        return amount * 0.9;
-    }
-    return amount;
 }

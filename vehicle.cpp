@@ -180,3 +180,21 @@ void VehicleList::deleteVehicle() {
 
     cout << "Vehicle not found.\n";
 }
+float VehicleList::getVehiclePrice(int vehicleID) {
+    if (head == nullptr) {
+        cout << "No vehicles available!\n";
+        return -1;
+    }
+
+    Vehicle* temp = head;
+
+    do {
+        if (temp->id == vehicleID) {
+            return temp->price;
+        }
+        temp = temp->next;
+    } while (temp != head);
+
+    cout << "Vehicle not found!\n";
+    return -1;
+}

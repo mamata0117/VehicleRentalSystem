@@ -178,7 +178,7 @@ void Menu::customerMenu() {
                 break;
 
             case 2:
-                b.createBooking();
+                b.createBooking(v);
                 break;
 
             case 3:
@@ -186,7 +186,7 @@ void Menu::customerMenu() {
                 break;
 
             case 4:
-                b.cancelBooking();
+                b.cancelBooking(v);
                 break;
 
             case 5:

@@ -59,7 +59,7 @@ cout<<"Enter Driver License: ";
     cout << "Driver added successfully!\n";
 }
 
-// ================= VIEW DRIVERS =================
+// viewing the list of drivers stored in a text file named drivers.txt
 void Driver::viewDrivers() {
     ifstream fin("drivers.txt");
 
@@ -68,7 +68,9 @@ void Driver::viewDrivers() {
         return;
     }
 
-    cout << "\n----- DRIVER LIST -----\n";
+    cout << "\n-------------------------------------------------\n\n";
+    cout<<"\t\t  DRIVER DETAILS\n";
+    cout << "\n-------------------------------------------------\n\n";
 
     while(fin >> name >> license >> charge) {
         cout << "Name: " << name<<"\t"
@@ -80,7 +82,7 @@ void Driver::viewDrivers() {
 }
 
     
-
+//eliminating the driver details
 void Driver::deleteDriver() {
     ifstream fin("drivers.txt");
     ofstream temp("temp.txt");
