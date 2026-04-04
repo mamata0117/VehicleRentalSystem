@@ -147,7 +147,7 @@ for (int i = 0; i < role.length(); i++) {
    if(role == "CUSTOMER")
         citizenshipnum = getCitizenship();
     else
-      {  citizenshipnum = "Not Applicable";}
+      {  citizenshipnum = "Not/Applicable";}
 
  //Duplicate checking
     ifstream fin("users.txt");

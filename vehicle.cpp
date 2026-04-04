@@ -22,7 +22,7 @@ Vehicle* createVehicle() {
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     getline(cin, pnew->name);
 
-    cout << "Enter Type (car/bike): ";
+    cout << "Enter Type (Car/Bike): ";
     cin >> pnew->type;
 
     cout << "Enter Price per day: ";
@@ -35,33 +35,10 @@ Vehicle* createVehicle() {
 
     return pnew;
 }
-
-// ADD VEHICLE 
-void VehicleList::addVehicle() {
-    Vehicle* pnew = createVehicle();
-
-    if (head == nullptr) {
-        head = pnew;
-        pnew->next = pnew;
-        pnew->prev = pnew;
-    } 
-    else {
-        Vehicle* temp = head->prev;
-
-        temp->next = pnew;
-        pnew->prev = temp;
-
-        pnew->next = head;
-        head->prev = pnew;
-    }
-
-    cout << "Vehicle added successfully!\n";
-    saveVehicles();
-}
+void VehicleList::saveVehicles() {
 
 //SAVE VEHICLES to a text file named vehicles.txt
-void VehicleList::saveVehicles() {
-    if (head == nullptr) 
+    if ( head == nullptr) 
     {return;
     }
     ofstream fout("vehicles.txt");
@@ -75,15 +52,17 @@ void VehicleList::saveVehicles() {
              << temp->available << "\n";
 
         temp = temp->next;
-        if (temp == head) break;
+        if (temp == head)
+        { break;
+        }
     }
 }
-
-//  LOAD VEHICLES
 void VehicleList::loadVehicles() {
     ifstream fin("vehicles.txt");
 
-    if (!fin) return;
+    if (!fin)
+    { return;
+    }
 
     while (true) {
         Vehicle* pnew = new Vehicle;
@@ -111,6 +90,32 @@ void VehicleList::loadVehicles() {
         }
     }
 }
+// ADD VEHICLE 
+void VehicleList::addVehicle() {
+    Vehicle* pnew = createVehicle();
+
+    if (head == nullptr) {
+        head = pnew;
+        pnew->next = pnew;
+        pnew->prev = pnew;
+    } 
+    else {
+        Vehicle* temp = head->prev;
+
+        temp->next = pnew;
+        pnew->prev = temp;
+
+        pnew->next = head;
+        head->prev = pnew;
+    }
+
+    cout << "Vehicle added successfully!\n";
+    saveVehicles();
+}
+
+
+//  LOAD VEHICLES
+
 
 // VIEW VEHICLES 
 void VehicleList::viewVehicles() {

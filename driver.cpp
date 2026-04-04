@@ -118,12 +118,12 @@ void Driver::deleteDriver() {
     ifstream fin("drivers.txt");
     ofstream temp("temp.txt");
 
-    string deleteDriver;
+    string deleteDriverName;
     bool found = false;
 
     cout << "Enter Driver Name to delete: ";
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
-getline(cin, deleteDriver);
+    getline(cin, deleteDriverName);
 
   while(getline(fin, line)) {
       istringstream ss(line);
@@ -132,7 +132,7 @@ getline(cin, deleteDriver);
       
 
         ss >> existingName >> license >> charge;
-        if(existingName != deleteDriver) {
+        if(existingName != deleteDriverName) {
             temp << existingName << " " << license << " " << charge << endl;
         } else {
             found = true;

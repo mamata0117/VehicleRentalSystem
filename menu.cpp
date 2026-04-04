@@ -9,6 +9,8 @@
 
 using namespace std;
 
+static ReviewSystem reviewSystem;
+
 void clearScreen() {
     system("cls");
 }
@@ -55,15 +57,15 @@ void Menu::mainMenu() {
                 break;
 
            case 2: {
-    clearScreen();
-    bool loginSuccess = u.loginUser();
+           clearScreen();
+           bool loginSuccess = u.loginUser();
 
     if (!loginSuccess) {
         cout << "Login failed!\n";
     }
 
-    break;
-}
+              break;
+                 }
 
             case 3:
                 cout << "Exiting system...\n";
@@ -90,14 +92,15 @@ void Menu::adminMenu() {
         cout << "1. Manage Vehicles\n";
         cout << "2. Manage Drivers\n";
         cout << "3. Search Users\n";
-        cout << "4. Back\n";
+        cout << "4. View Reviews\n";
+        cout << "5. Back\n";
 
         choice = getValidInput();
 
         switch(choice) {
 
             case 1: {
-                int vchoice;
+                int choices;
                 do {
                     clearScreen();
                     cout << "\n--- Vehicle Menu ---\n";
@@ -106,9 +109,9 @@ void Menu::adminMenu() {
                     cout << "3. Delete Vehicle\n";
                     cout << "4. Back\n";
 
-                    vchoice = getValidInput();
+                    choices = getValidInput();
 
-                    switch(vchoice) {
+                    switch(choices) {
                         case 1: v.addVehicle(); break;
                         case 2: v.viewVehicles(); break;
                         case 3: v.deleteVehicle(); break;
@@ -117,7 +120,7 @@ void Menu::adminMenu() {
 
                     pauseScreen();
 
-                } while(vchoice != 0);
+                } while(choices != 4);
                 break;
             }
 
@@ -152,13 +155,18 @@ void Menu::adminMenu() {
                 break;
 
             case 4:
+                reviewSystem.viewReviews();
+                pauseScreen();
+                break;
+
+            case 5:
                 break;
 
             default:
                 cout << "Invalid choice!\n";
         }
 
-    } while(choice != 4);
+    } while(choice != 5);
 }
 
 void Menu::driverMenu() {
@@ -169,7 +177,8 @@ void Menu::driverMenu() {
         clearScreen();
         cout << "\n===== DRIVER MENU =====\n";
         cout << "1. View Drivers\n";
-        cout << "2. Back\n";
+        cout << "2. View Reviews\n";
+        cout << "3. Back\n";
 
         choice = getValidInput();
 
@@ -177,15 +186,22 @@ void Menu::driverMenu() {
             case 1:
                 d.viewDrivers();
                 break;
+
             case 2:
+                reviewSystem.viewReviews();
+                pauseScreen();
                 break;
+
+            case 3:
+                break;
+
             default:
                 cout << "Invalid choice!\n";
         }
 
       
 
-    } while(choice != 2);
+    } while(choice != 3);
 }
 
 void Menu::customerMenu() {
@@ -208,7 +224,8 @@ void Menu::customerMenu() {
         cout << "6. Priority Booking\n";
         cout << "7. Process Priority Booking\n";
         cout << "8. View Priority Queue\n";
-        cout << "9. Back\n";
+        cout << "9. Add Review\n";
+        cout << "10. Back\n";
 
         choice = getValidInput();
 
@@ -249,8 +266,12 @@ void Menu::customerMenu() {
             case 8:
                 p.viewQueue();
                 break;
-
             case 9:
+                reviewSystem.addReview();
+                pauseScreen();
+                break;
+
+            case 10:
                 break;
 
             default:
@@ -259,5 +280,5 @@ void Menu::customerMenu() {
 
       
 
-    } while(choice != 9);
+    } while(choice != 10);
 }
