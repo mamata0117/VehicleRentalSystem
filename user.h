@@ -6,9 +6,12 @@
 class User {
 public:
     int id;
+  int existingId,drivercharge;
    std::string name;
    std::string password,confirm,email,role,citizenshipnum,inputName, inputPass;
-   std::string phone;
+   std::string phone,existingdriverName,driverlic;
+  std::string line, existingName, existingPassword, existingPhone, existingEmail, existingRole, existingCitizenship;
+  std::string driverLine, existingLicense;
 
     void registerUser(); 
     void searchUser();  

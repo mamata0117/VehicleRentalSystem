@@ -7,26 +7,26 @@ struct Vehicle {
     int id;
     std::string name;
     std::string type;
-   float price;
+    float price;
     bool available;
 
     Vehicle* next;  
     Vehicle* prev;  
-
 };
 
 class VehicleList {
-
-    
-    public:
+public:
     Vehicle* head;
+
+public:
     VehicleList();
-float getVehiclePrice(int vehicleID);
+
     void addVehicle();
     void saveVehicles();
     void loadVehicles();
     void viewVehicles();
     void deleteVehicle();
+    float getVehiclePrice(int vehicleID);
 };
 
 #endif

@@ -1,112 +1,120 @@
 #include <iostream>
 #include <fstream>
+#include <limits>
 #include "vehicle.h"
 
 using namespace std;
 
+// Constructor
 VehicleList::VehicleList() {
     head = nullptr;
-     loadVehicles(); 
+    loadVehicles();
 }
 
-//Adding a new vehicle to the circular doubly linked list
-void VehicleList::addVehicle() {
-    Vehicle* newVehicle = new Vehicle;
-
-    newVehicle->next = nullptr;
-    newVehicle->prev = nullptr;
+//creating a new vehicle by taking input from user
+Vehicle* createVehicle() {
+    Vehicle* pnew = new Vehicle;
 
     cout << "Enter Vehicle ID: ";
-    cin >> newVehicle->id;
+    cin >> pnew->id;
 
     cout << "Enter Vehicle Name: ";
-    cin.ignore();
-    getline(cin, newVehicle->name);
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    getline(cin, pnew->name);
 
     cout << "Enter Type (car/bike): ";
-    cin >> newVehicle->type;
+    cin >> pnew->type;
 
     cout << "Enter Price per day: ";
-    cin >> newVehicle->price;
+    cin >> pnew->price;
 
-    newVehicle->available = true;
+    pnew->available = true;
 
-    // First node
+    pnew->next = nullptr;
+    pnew->prev = nullptr;
+
+    return pnew;
+}
+
+// ADD VEHICLE 
+void VehicleList::addVehicle() {
+    Vehicle* pnew = createVehicle();
+
     if (head == nullptr) {
-        head = newVehicle;
-        newVehicle->next = newVehicle;
-        newVehicle->prev = newVehicle;
-    }
+        head = pnew;
+        pnew->next = pnew;
+        pnew->prev = pnew;
+    } 
     else {
-        Vehicle*end = head->prev;
+        Vehicle* temp = head->prev;
 
-        end->next = newVehicle;
-        newVehicle->prev = end;
+        temp->next = pnew;
+        pnew->prev = temp;
 
-        newVehicle->next = head;
-        head->prev = newVehicle;
+        pnew->next = head;
+        head->prev = pnew;
     }
 
     cout << "Vehicle added successfully!\n";
-    saveVehicles(); 
+    saveVehicles();
 }
-void VehicleList::saveVehicles() {
-    ofstream fout("vehicles.txt");
 
-    if (head == nullptr)
-    { return;
+//SAVE VEHICLES to a text file named vehicles.txt
+void VehicleList::saveVehicles() {
+    if (head == nullptr) 
+    {return;
     }
+    ofstream fout("vehicles.txt");
     Vehicle* temp = head;
 
-    do {
-        fout << temp->id << "  "
+    while (true) {
+        fout << temp->id << " "
              << temp->name << " "
-             << temp->type << "  "
-             << temp->price << "  "
-             << temp->available << endl;
+             << temp->type << " "
+             << temp->price << " "
+             << temp->available << "\n";
 
         temp = temp->next;
-    } while (temp != head);
-
-    fout.close();
+        if (temp == head) break;
+    }
 }
+
+//  LOAD VEHICLES
 void VehicleList::loadVehicles() {
     ifstream fin("vehicles.txt");
 
     if (!fin) return;
 
     while (true) {
-        Vehicle* newVehicle = new Vehicle;
+        Vehicle* pnew = new Vehicle;
 
-        if (!(fin >> newVehicle->id >> newVehicle->name
-                  >> newVehicle->type >> newVehicle->price
-                  >> newVehicle->available)) {
-            delete newVehicle;
+        if (!(fin >> pnew->id >> pnew->name
+                  >> pnew->type >> pnew->price
+                  >> pnew->available)) {
+            delete pnew;
             break;
         }
 
-        // insert like addVehicle (without input)
         if (head == nullptr) {
-            head = newVehicle;
-            newVehicle->next = newVehicle;
-            newVehicle->prev = newVehicle;
-        } else {
-            Vehicle* tail = head->prev;
+            head = pnew;
+            pnew->next = pnew;
+            pnew->prev = pnew;
+        } 
+        else {
+            Vehicle* temp = head->prev;
 
-            tail->next = newVehicle;
-            newVehicle->prev = tail;
+            temp->next = pnew;
+            pnew->prev = temp;
 
-            newVehicle->next = head;
-            head->prev = newVehicle;
+            pnew->next = head;
+            head->prev = pnew;
         }
     }
-
-    fin.close();
 }
-// ================= VIEW VEHICLES =================
+
+// VIEW VEHICLES 
 void VehicleList::viewVehicles() {
     if (head == nullptr) {
-           loadVehicles(); 
         cout << "No vehicles available.\n";
         return;
     }
@@ -121,46 +129,46 @@ void VehicleList::viewVehicles() {
         cout << "Type: " << temp->type << endl;
         cout << "Price: " << temp->price << endl;
         cout << "Status: " << (temp->available ? "Available" : "Booked") << endl;
-        cout << "---------------------\n\n";
+        cout << "---------------------\n";
 
         temp = temp->next;
     } while (temp != head);
 }
 
-// ================= DELETE VEHICLE =================
+//  DELETE VEHICLE 
 void VehicleList::deleteVehicle() {
+    
+    int delID;
+    cout << "Enter Vehicle ID to delete: ";
+    cin >> delID;
     if (head == nullptr) {
         cout << "List is empty.\n";
         return;
     }
-
-    int delID;
-    cout << "Enter Vehicle ID to delete: ";
-    cin >> delID;
 
     Vehicle* temp = head;
 
     do {
         if (temp->id == delID) {
 
-            // Only one node
+            // only one node case
             if (temp->next == head && temp->prev == head) {
                 delete temp;
                 head = nullptr;
             }
 
-            // Deleting head
+            // deleting head
             else if (temp == head) {
-                Vehicle* tail = head->prev;
+                Vehicle* plast = head->prev;
 
                 head = head->next;
-                head->prev = tail;
-                tail->next = head;
+                head->prev = plast;
+                plast->next = head;
 
                 delete temp;
             }
 
-            // Deleting middle or last node
+            // deleting middle or last
             else {
                 temp->prev->next = temp->next;
                 temp->next->prev = temp->prev;
@@ -169,7 +177,6 @@ void VehicleList::deleteVehicle() {
             }
 
             cout << "Vehicle deleted successfully!\n";
-           
             saveVehicles();
             return;
         }
@@ -180,9 +187,11 @@ void VehicleList::deleteVehicle() {
 
     cout << "Vehicle not found.\n";
 }
+
+//  GET PRICE 
 float VehicleList::getVehiclePrice(int vehicleID) {
-    if (head == nullptr) {
-        cout << "No vehicles available!\n";
+    if (head == nullptr)
+    { cout << "No vehicles available!\n";
         return -1;
     }
 
@@ -194,7 +203,6 @@ float VehicleList::getVehiclePrice(int vehicleID) {
         }
         temp = temp->next;
     } while (temp != head);
-
-    cout << "Vehicle not found!\n";
+cout << "Vehicle not found!\n";
     return -1;
 }

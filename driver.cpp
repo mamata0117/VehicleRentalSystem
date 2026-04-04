@@ -1,13 +1,16 @@
 #include <iostream>
 #include <fstream>
 #include <cctype>
+#include <sstream>
+#include <vector>
+#include <limits>
 #include "driver.h"
 
 using namespace std;
 
 string Driver::getLicense() {
     while(true) {
-        cout << "Enter License (Format: 0X-0X-XXXXXXXX): ";
+        cout << "Enter License in the format 0X-0X-XXXXXXXX: ";
         cin >> license;
 
         // Check length
@@ -45,13 +48,43 @@ void Driver::addDriver() {
     ofstream fout("drivers.txt", ios::app);
 
     cout << "Enter Driver Name: ";
-    cin.ignore();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     getline(cin, name);
-cout<<"Enter Driver License: ";
+
     license = getLicense();
 
+    ifstream fin("drivers.txt");
+    string existingLine;
+    while(getline(fin, existingLine)) {
+        if(existingLine.empty()) {
+            continue;
+        }
+
+        istringstream ss(existingLine);
+      
+
+string existingName, existingLicense;
+int existingCharge;
+
+getline(ss, existingName, ',');
+getline(ss, existingLicense, ',');
+ss >> existingCharge;
+       
+
+        if(existingLicense == license) {
+            cout << "Driver license already exists!\n";
+            fout.close();
+            return;
+        }
+
+        if(existingName == name) {
+            cout << "Driver name already exists!\n";
+            fout.close();
+            return;
+        }
+    }
+
     cout << "Enter Charge per day: ";
-    cin.ignore();
     cin >> charge;
 
     fout << name << " " << license << " " << charge << endl;
@@ -89,12 +122,18 @@ void Driver::deleteDriver() {
     bool found = false;
 
     cout << "Enter Driver Name to delete: ";
-   cin.ignore();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 getline(cin, deleteDriver);
 
   while(getline(fin, line)) {
-        if(name != deleteDriver) {
-            temp << name << " " << license << " " << charge << endl;
+      istringstream ss(line);
+
+        string existingName, license;
+      
+
+        ss >> existingName >> license >> charge;
+        if(existingName != deleteDriver) {
+            temp << existingName << " " << license << " " << charge << endl;
         } else {
             found = true;
         }

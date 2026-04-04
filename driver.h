@@ -6,8 +6,8 @@
 class Driver {
 public:
     std::string name,line;
-    std::string license;
-    int charge;
+    std::string license ;
+ int charge;
 
     void addDriver();
     void viewDrivers();

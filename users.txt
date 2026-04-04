@@ -1,8 +1,8 @@
-a,1 a 9811111111 a@gmail.com Admin  Invalid 
-Ram,11 ram 9811222222 ram@gmail.com Customer 01-02-03-88888
-
-sita thapa,12 sita 9822222222 sita@gmail.com Customer 01-03-04-77777
-hari,13 hari 9877777777 hari@gmail.com Customer 09-01-08-77777
-sodhi,111 sodi 9866666666 sodi@gmail.com Customer 09-08-07-44444
-jetha,19 jetha 9877777565 jetha@gmail.com Driver  Invalid 
-Meh,20 meh 9877777775 meh@gmail.com Driver  Invalid 
+Ram Thapa,1 ram 9800000000 ram@gmail.com ADMIN Not Applicable
+Rita Shah,2 rita 9877777777 rita@gmail.com CUSTOMER 01-02-03-55555
+Rama Thapa,3 rama 9855555666 rama@gmail.com CUSTOMER 01-02-09-99999
+mina sharma,4 mina 9877755543 mina@gmail.com CUSTOMER 09-07-06-22222
+mahesh thapa,7 mahesh 9800011123 mahesh@gmail.com DRIVER Not Applicable
+manu bist,8 manu 9876545654 manu@gmail.com DRIVER Not Applicable
+mahira shah,10 mahira 9866554433 mahira@gmail.com DRIVER Not Applicable
+usha,67 ush 9866776677 usha@gmail.com ADMIN Not Applicable

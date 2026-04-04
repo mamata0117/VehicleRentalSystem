@@ -4,6 +4,7 @@
 #include<cctype>
 #include<sstream>
 #include<limits>
+#include<vector>
 #include "menu.h"
 #include "driver.h"
 #include "user.h"
@@ -48,20 +49,21 @@ string  User:: getCitizenship()
 
   //checking the length of citizenship number
         if(citizenshipnum.length() != 14) {
-            std::cout << "Invalid length! Try again.\n";
+         cout << "Invalid length! Try again.\n";
             continue;
         }
 
         // checking the dashes in correct positions
         if(citizenshipnum[2] != '-' || citizenshipnum[5] != '-' || citizenshipnum[8] != '-') {
-            std::cout << "Invalid format! Use 0X-0X-0X-XXXXX\n";
+            cout << "Invalid format! Use 0X-0X-0X-XXXXX\n";
             continue;
         }
 
         // checking the digits in correct positions
         bool valid = true;
         for(int i = 0; i < citizenshipnum.length(); i++) {
-            if(i == 2 || i == 5 || i == 8) continue;
+            if(i == 2 || i == 5 || i == 8)
+             continue;
 
 
             if(isdigit(citizenshipnum[i])==false) {
@@ -81,10 +83,9 @@ string  User:: getCitizenship()
 
 //taking user input for phone number and validating it
 string User::inputPhone() {
-    string phone;
 
     while(true) {
-        cout << "Enter user phone number in the format  98-XXXXXXXX: ";
+        cout << "Enter user phone number in the format  98XXXXXXXX: ";
         cin >> phone;
 
         if(phone.length() != 10) {
@@ -111,69 +112,103 @@ string User::inputPhone() {
 //registering user by taking input and storing it in a text file named users.txt
 
 void User::registerUser() {
-    ofstream fout("users.txt", ios::app);
 
-  cout<<"If you are a new user ,please register yourself by providing the following details\n\n\n";
-  cout<<"-----------------------------------------\n\n";
-    cout<<"\t\t "<<"Enter User Details"<<endl;
-    cout<<"\n-----------------------------------------\n\n";
-    cout<<"Enter user name:";
-    cin.ignore(); 
-getline(cin, name);
-    cout<<"Enter user ID :";
-    cin>>id;
- 
-cout<<"Enter password: ";
-password = inputPassword();
+    cout << "\n--- Enter User Details ---\n";
 
-cout<<"Confirm password: ";
-confirm = inputPassword();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cout << "Enter name: ";
+    getline(cin, name);
 
-if(password != confirm) {
-    cout<<"Passwords do not match!\n";
-    return; }
+    cout << "Enter ID: ";
+    cin >> id;
 
-  
-  phone = inputPhone();
-    cout<<"Enter user email :";
-    cin>>email;
-cin.ignore(); 
-    cout << "Enter your Role Admin/Customer/Driver: ";
-     getline(cin, role);
+    cout << "Enter password: ";
+    password = inputPassword();
 
+    cout << "Confirm password: ";
+    confirm = inputPassword();
+
+    if(password != confirm) {
+        cout << "Passwords do not match!\n";
+        return;
+    }
+
+    phone = inputPhone();
+
+    cout << "Enter email: ";
+    cin >> email;
+
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cout << "Enter role (Admin/Customer/Driver): ";
+    getline(cin, role);
 for (int i = 0; i < role.length(); i++) {
     role[i] = toupper(role[i]);
 }
+   if(role == "CUSTOMER")
+        citizenshipnum = getCitizenship();
+    else
+      {  citizenshipnum = "Not Applicable";}
 
-if(role == "CUSTOMER") {
-    citizenshipnum = getCitizenship();  
-} else {
-    citizenshipnum = " Invalid ";
-}
+ //Duplicate checking
+    ifstream fin("users.txt");
+    while(getline(fin, line)) {
 
-    if(role == "DRIVER") {
-        Driver d;
-        int chargePerDay;
+        if(line.empty())
+         continue;
+        
+        stringstream ss(line);
+        getline(ss, existingName, ',');
 
-        d.name = name;
-        cout << "Enter Driver License: ";
-        d.license = d.getLicense();
+        ss >> existingId >> existingPassword
+           >> existingPhone >> existingEmail
+           >> existingRole >> existingCitizenship;
 
-        cout << "Enter Charge per day: ";
-        cin >> chargePerDay;
+        if(existingId == id || existingName == name ||
+           existingEmail == email || existingPhone == phone ||
+           (role == "CUSTOMER" && existingCitizenship == citizenshipnum)) {
 
-        ofstream driverOut("drivers.txt", ios::app);
-        if(driverOut) {
-            driverOut << d.name << " " << d.license << " " << chargePerDay << endl;
+            cout << "User already exists with same details!\n";
+            return;
         }
     }
+//driver registration with license validation and duplicate checking
+    if(role == "DRIVER") {
+        Driver d;
+   int charge;
 
-    // storing user details in a text file named users.txt
- fout<<name<<","<<id<<" "<<password<<" "<<phone<<" "<<email<<" " << role << " " << citizenshipnum <<endl;
- fout.close();
- 
- cout<<"User have been registered successfully "<<endl;
- }
+        d.name = name;
+        d.license = d.getLicense();
+
+       ifstream din("drivers.txt");
+while(getline(din, line)) {
+    istringstream ds(line);
+
+getline(ds, existingdriverName, ',');
+getline(ds, driverlic, ',');
+ds >> drivercharge;
+
+    if(existingdriverName == d.name || driverlic == d.license) {
+        cout << "Driver already exists!\n";
+        return;
+    }
+}
+
+
+cout << "Enter charge per day: ";
+cin >> charge;
+
+ofstream dout("drivers.txt", ios::app);
+dout << d.name << " " << d.license << " " << charge << endl;
+    }
+
+  
+    ofstream fout("users.txt", ios::app);
+    fout << name << "," << id << " " << password << " "
+         << phone << " " << email << " "
+         << role << " " << citizenshipnum << endl;
+
+    cout << "User registered successfully!\n";
+}
 
 
 bool User::loginUser()
@@ -186,8 +221,6 @@ bool User::loginUser()
 
     cout << "Enter Password: ";
     inputPass = inputPassword();
-
-    string line;
 
     while(getline(fin, line)) {
         stringstream ss(line);
@@ -230,71 +263,59 @@ void User::searchUser() {
 
     int choice, searchID;
     string searchName;
-    cout<<"------------------------------------------\n\n";
-    cout<<"-------------------------------------------\n\n";
-    cout << "Select any one of the options below\n";
-    cout << "1. Search by Name\n";
-    cout << "2. Search by ID\n";
-    cout << "Enter your choice: ";
+cout << "\n--- Search User ---\n\n";
+cout<<"Enter your choice :\n";
+    cout <<"1. Search by Name\n";
+     cout<<"2. Search by ID\n";
+     cout<<"3. Back\n";
     cin >> choice;
 
     ifstream fin("users.txt");
-
     if(!fin) {
         cout << "Error opening file!\n";
         return;
     }
 
-    bool foundinfo = false;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
     if(choice == 1) {
-        cout << "Enter the name to be searched: ";
-        cin >> searchName;
-
-        while(fin >> name >> id >> password >> phone >> email >> role >> citizenshipnum) {
-            if(name == searchName) {
-                cout << "\nUser Found:\n";
-                cout << "Name: " << name << endl;
-                cout << "ID: " << id << endl;
-                cout << "Email: " << email << endl;
-                cout << "Phone: " << phone << endl;
-                cout << "Role: " << role << endl;
-                cout << "Citizenship: " << citizenshipnum << endl;
-
-                foundinfo = true;
-            }
-        }
-    }
-
+        cout << "Enter name: ";
+        getline(cin, searchName);
+    } 
     else if(choice == 2) {
-        cout << "Enter the ID to be searched: ";
+        cout << "Enter ID: ";
         cin >> searchID;
-
-        while(fin >> name >> id >> password >> phone >> email >> role >> citizenshipnum) {
-            if(id == searchID) {
-                cout << "\nUser Found:\n";
-                cout << "Name: " << name << endl;
-                cout << "ID: " << id << endl;
-                cout << "Email: " << email << endl;
-                cout << "Phone: " << phone << endl;
-                cout << "Role: " << role << endl;
-                cout << "Citizenship: " << citizenshipnum << endl;
-
-                foundinfo = true;
-            }
-        }
+    } 
+    else if(choice == 3) {
+        return;
     }
-
     else {
         cout << "Invalid choice!\n";
+        return;
     }
 
-    if(!foundinfo) {
+    bool found = false;
+
+    while(getline(fin, line)) {
+        stringstream ss(line);
+
+        getline(ss, name, ',');
+        ss >> id >> password >> phone >> email >> role >> citizenshipnum;
+
+        if((choice == 1 && name == searchName) ||
+           (choice == 2 && id == searchID)) {
+
+            cout << "\nUser Found:\n";
+            cout << "Name: " << name << "\nID: " << id
+                 << "\nEmail: " << email << "\nPhone: " << phone
+                 << "\nRole: " << role << "\nCitizenship: " << citizenshipnum << endl;
+
+            found = true;
+        }
+    }
+
+    if(!found)
         cout << "User not found!\n";
-    }
-
-    fin.close();
-   
 }
  
   

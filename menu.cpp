@@ -1,17 +1,16 @@
 #include <iostream>
+#include <limits>
+#include <cctype>
 #include "menu.h"
 #include "vehicle.h"
 #include "driver.h"
 #include "user.h"
 #include "booking.h"
-#include <limits>
-#include <cctype>
 
 using namespace std;
 
-// ================= UTILITY FUNCTIONS =================
 void clearScreen() {
-    system("cls"); // (You can replace for cross-platform later)
+    system("cls");
 }
 
 void pauseScreen() {
@@ -28,7 +27,7 @@ int getValidInput() {
 
         if (cin.fail()) {
             cin.clear();
-            cin.ignore(1000, '\n');
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cout << "Invalid input! Try again.\n";
         } else {
             return choice;
@@ -36,7 +35,6 @@ int getValidInput() {
     }
 }
 
-// ================= MAIN MENU =================
 void Menu::mainMenu() {
     User u;
     int choice;
@@ -56,32 +54,16 @@ void Menu::mainMenu() {
                 u.registerUser();
                 break;
 
-            case 2: {
-                clearScreen();
-                bool loginSuccess = u.loginUser();
+           case 2: {
+    clearScreen();
+    bool loginSuccess = u.loginUser();
 
-                if (loginSuccess) {
-                    string role;
-                    cout << "Enter role (admin/customer/driver): ";
-                    cin >> role;
-                    for(char& ch : role) {
-                        ch = static_cast<char>(toupper(static_cast<unsigned char>(ch)));
-                    }
+    if (!loginSuccess) {
+        cout << "Login failed!\n";
+    }
 
-                    if (role == "ADMIN")
-                        adminMenu();
-                    else if (role == "CUSTOMER")
-                        customerMenu();
-                    else if (role == "DRIVER")
-                        driverMenu();
-                    else
-                        cout << "Invalid role!\n";
-                } else {
-                    cout << "Login failed!\n";
-                }
-
-                break;
-            }
+    break;
+}
 
             case 3:
                 cout << "Exiting system...\n";
@@ -96,10 +78,10 @@ void Menu::mainMenu() {
     } while(choice != 3);
 }
 
-// ================= ADMIN MENU =================
 void Menu::adminMenu() {
-    VehicleList v;
-    Driver d;
+    static VehicleList v;
+    static Driver d;
+    User u;
     int choice;
 
     do {
@@ -107,7 +89,8 @@ void Menu::adminMenu() {
         cout << "\n===== ADMIN MENU =====\n";
         cout << "1. Manage Vehicles\n";
         cout << "2. Manage Drivers\n";
-        cout << "3. Back\n";
+        cout << "3. Search Users\n";
+        cout << "4. Back\n";
 
         choice = getValidInput();
 
@@ -121,7 +104,7 @@ void Menu::adminMenu() {
                     cout << "1. Add Vehicle\n";
                     cout << "2. View Vehicles\n";
                     cout << "3. Delete Vehicle\n";
-                    cout << "0. Back\n";
+                    cout << "4. Back\n";
 
                     vchoice = getValidInput();
 
@@ -129,6 +112,7 @@ void Menu::adminMenu() {
                         case 1: v.addVehicle(); break;
                         case 2: v.viewVehicles(); break;
                         case 3: v.deleteVehicle(); break;
+                        case 4: break;
                     }
 
                     pauseScreen();
@@ -145,7 +129,7 @@ void Menu::adminMenu() {
                     cout << "1. Add Driver\n";
                     cout << "2. View Drivers\n";
                     cout << "3. Delete Driver\n";
-                    cout << "0. Back\n";
+                    cout << "4. Back\n";
 
                     dchoice = getValidInput();
 
@@ -153,25 +137,30 @@ void Menu::adminMenu() {
                         case 1: d.addDriver(); break;
                         case 2: d.viewDrivers(); break;
                         case 3: d.deleteDriver(); break;
+                        case 4: break;
                     }
 
                     pauseScreen();
 
-                } while(dchoice != 0);
+                } while(dchoice != 4);
                 break;
             }
 
             case 3:
+                u.searchUser();
+                pauseScreen();
+                break;
+
+            case 4:
                 break;
 
             default:
                 cout << "Invalid choice!\n";
         }
 
-    } while(choice != 3);
+    } while(choice != 4);
 }
 
-// ================= DRIVER MENU =================
 void Menu::driverMenu() {
     Driver d;
     int choice;
@@ -194,16 +183,18 @@ void Menu::driverMenu() {
                 cout << "Invalid choice!\n";
         }
 
-        pauseScreen();
+      
 
     } while(choice != 2);
 }
 
-// ================= CUSTOMER MENU =================
 void Menu::customerMenu() {
-    VehicleList v;
-    BookingList b;
-    PriorityBooking p;
+    static VehicleList v;
+    static BookingList b;
+    static PriorityBooking p;
+
+    b.loadFromFile();
+
     int choice;
 
     do {
@@ -217,7 +208,7 @@ void Menu::customerMenu() {
         cout << "6. Priority Booking\n";
         cout << "7. Process Priority Booking\n";
         cout << "8. View Priority Queue\n";
-        cout << "0. Back\n";
+        cout << "9. Back\n";
 
         choice = getValidInput();
 
@@ -259,14 +250,14 @@ void Menu::customerMenu() {
                 p.viewQueue();
                 break;
 
-            case 0:
+            case 9:
                 break;
 
             default:
                 cout << "Invalid choice!\n";
         }
 
-        pauseScreen();
+      
 
-    } while(choice != 0);
+    } while(choice != 9);
 }

@@ -2,17 +2,16 @@
 #include <fstream>
 #include <stack>
 #include <queue>
+#include <limits>
 #include "vehicle.h"
 #include "booking.h"
 
 using namespace std;
 
-// ================= CONSTRUCTOR =================
 BookingList::BookingList() {
-    head = NULL;
+    head = nullptr;
 }
 
-// ================= CALCULATE TOTAL =================
 float BookingList::calculateTotal(float vehiclePrice, string type, int driverCharge) {
     if (type == "driver") {
         return vehiclePrice + driverCharge;
@@ -20,7 +19,6 @@ float BookingList::calculateTotal(float vehiclePrice, string type, int driverCha
     return vehiclePrice;
 }
 
-// ================= APPLY DISCOUNT =================
 float BookingList::applyDiscount(float amount, bool isStudent) {
     if (isStudent) {
         cout << "Student discount applied (10%)\n";
@@ -29,16 +27,14 @@ float BookingList::applyDiscount(float amount, bool isStudent) {
     return amount;
 }
 
-// ================= CREATE BOOKING =================
 void BookingList::createBooking(VehicleList &vList) {
     BookingNode* newNode = new BookingNode();
 
     cout << "Enter Booking ID: ";
     cin >> newNode->bookingID;
 
-    // 🔒 Duplicate ID check
     BookingNode* check = head;
-    while (check != NULL) {
+    while (check != nullptr) {
         if (check->bookingID == newNode->bookingID) {
             cout << "Booking ID already exists!\n";
             delete newNode;
@@ -53,54 +49,45 @@ void BookingList::createBooking(VehicleList &vList) {
     cout << "Enter Vehicle ID: ";
     cin >> newNode->vehicleID;
 
-    // 🔥 You can later replace this with vList.getVehiclePrice()
-   float price = vList.getVehiclePrice(newNode->vehicleID);
+    float price = vList.getVehiclePrice(newNode->vehicleID);
 
-if (price == -1) {
-    delete newNode;
-    return;
-}
-// 🔥 CHECK + UPDATE VEHICLE AVAILABILITY
-Vehicle* temp = vList.head;
-
-if (temp == NULL) {
-    cout << "No vehicles available!\n";
-    delete newNode;
-    return;
-}
-
-bool found = false;
-
-do {
-    if (temp->id == newNode->vehicleID) {
-
-        if (!temp->available) {
-            cout << "Vehicle already booked!\n";
-            delete newNode;
-            return;
-        }
-
-        temp->available = false;   // ✅ MARK AS BOOKED
-        found = true;
-        break;
-    }
-    temp = temp->next;
-
-} while (temp != vList.head);
-
-if (!found) {
-    cout << "Vehicle not found!\n";
-    delete newNode;
-    return;
-}
-
-// 💾 SAVE UPDATED VEHICLE STATUS
-vList.saveVehicles();
-    if (price < 0) {
-        cout << "Invalid price!\n";
+    if (price == -1) {
         delete newNode;
         return;
     }
+
+    Vehicle* temp = vList.head;
+
+    if (temp == nullptr) {
+        cout << "No vehicles available!\n";
+        delete newNode;
+        return;
+    }
+
+    bool found = false;
+
+    do {
+        if (temp->id == newNode->vehicleID) {
+            if (!temp->available) {
+                cout << "Vehicle already booked!\n";
+                delete newNode;
+                return;
+            }
+
+            temp->available = false;
+            found = true;
+            break;
+        }
+        temp = temp->next;
+    } while (temp != vList.head);
+
+    if (!found) {
+        cout << "Vehicle not found!\n";
+        delete newNode;
+        return;
+    }
+
+    vList.saveVehicles();
 
     cout << "Booking Type (self/driver): ";
     cin >> newNode->bookingType;
@@ -137,16 +124,15 @@ vList.saveVehicles();
     cout << "Booking Added Successfully!\n";
 }
 
-// ================= VIEW BOOKINGS =================
 void BookingList::viewBookings() {
     BookingNode* temp = head;
 
-    if (temp == NULL) {
+    if (temp == nullptr) {
         cout << "No bookings available.\n";
         return;
     }
 
-    while (temp != NULL) {
+    while (temp != nullptr) {
         cout << "\nBooking ID: " << temp->bookingID << endl;
         cout << "User ID: " << temp->userID << endl;
         cout << "Vehicle ID: " << temp->vehicleID << endl;
@@ -159,37 +145,37 @@ void BookingList::viewBookings() {
     }
 }
 
-// ================= CANCEL BOOKING =================
-void BookingList::cancelBooking(VehicleList & vList) {
+void BookingList::cancelBooking(VehicleList &vList) {
     int id;
     cout << "Enter Booking ID to cancel: ";
     cin >> id;
 
     BookingNode* temp = head;
-    BookingNode* prev = NULL;
+    BookingNode* prev = nullptr;
 
-    while (temp != NULL) {
+    while (temp != nullptr) {
         if (temp->bookingID == id) {
 
-            if (prev == NULL) {
+            if (prev == nullptr) {
                 head = temp->next;
             } else {
                 prev->next = temp->next;
             }
-// 🔥 MAKE VEHICLE AVAILABLE AGAIN
-Vehicle* v = vList.head;
 
-if (v != NULL) {
-    do {
-        if (v->id == temp->vehicleID) {
-            v->available = true;
-            break;
-        }
-        v = v->next;
-    } while (v != vList.head);
-}
+            Vehicle* v = vList.head;
 
-vList.saveVehicles();
+            if (v != nullptr) {
+                do {
+                    if (v->id == temp->vehicleID) {
+                        v->available = true;
+                        break;
+                    }
+                    v = v->next;
+                } while (v != vList.head);
+            }
+
+            vList.saveVehicles();
+
             delete temp;
             saveToFile();
 
@@ -204,7 +190,6 @@ vList.saveVehicles();
     cout << "Booking not found!\n";
 }
 
-// ================= SEARCH BOOKING =================
 void BookingList::searchBooking() {
     int id;
     cout << "Enter Booking ID to search: ";
@@ -212,7 +197,7 @@ void BookingList::searchBooking() {
 
     BookingNode* temp = head;
 
-    while (temp != NULL) {
+    while (temp != nullptr) {
         if (temp->bookingID == id) {
             cout << "\nBooking Found!\n";
             cout << "Booking ID: " << temp->bookingID << endl;
@@ -229,13 +214,12 @@ void BookingList::searchBooking() {
     cout << "Booking not found!\n";
 }
 
-// ================= SAVE TO FILE =================
 void BookingList::saveToFile() {
     ofstream fout("bookings.txt");
 
     BookingNode* temp = head;
 
-    while (temp != NULL) {
+    while (temp != nullptr) {
         fout << temp->bookingID << " "
              << temp->userID << " "
              << temp->vehicleID << " "
@@ -250,14 +234,12 @@ void BookingList::saveToFile() {
     fout.close();
 }
 
-// ================= LOAD FROM FILE =================
 void BookingList::loadFromFile() {
     ifstream fin("bookings.txt");
 
     if (!fin) return;
 
-    // 🧹 Clear old data
-    while (head != NULL) {
+    while (head != nullptr) {
         BookingNode* temp = head;
         head = head->next;
         delete temp;
@@ -282,7 +264,6 @@ void BookingList::loadFromFile() {
     fin.close();
 }
 
-// ================= PRIORITY QUEUE =================
 void PriorityBooking::addPriorityBooking(int bookingID) {
     bookingQueue.push(bookingID);
     cout << "Booking added to priority queue!\n";
@@ -295,7 +276,7 @@ void PriorityBooking::processBooking() {
     }
 
     cout << "Processing Booking ID: " << bookingQueue.front() << endl;
-     cout << "Booking processed and removed from queue.\n";
+    cout << "Booking processed and removed from queue.\n";
     bookingQueue.pop();
 }
 
@@ -314,10 +295,9 @@ void PriorityBooking::viewQueue() {
     }
 }
 
-// ================= REVIEW SYSTEM =================
 void ReviewSystem::addReview() {
     string review;
-    cin.ignore();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cout << "Enter your review: ";
     getline(cin, review);
 
