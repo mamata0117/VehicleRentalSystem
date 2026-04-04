@@ -1,0 +1,8 @@
+a,1 a 9811111111 a@gmail.com Admin  Invalid 
+Ram,11 ram 9811222222 ram@gmail.com Customer 01-02-03-88888
+
+sita thapa,12 sita 9822222222 sita@gmail.com Customer 01-03-04-77777
+hari,13 hari 9877777777 hari@gmail.com Customer 09-01-08-77777
+sodhi,111 sodi 9866666666 sodi@gmail.com Customer 09-08-07-44444
+jetha,19 jetha 9877777565 jetha@gmail.com Driver  Invalid 
+Meh,20 meh 9877777775 meh@gmail.com Driver  Invalid 

@@ -2,9 +2,13 @@
 #include<conio.h>
 #include<fstream>
 #include<cctype>
+#include<sstream>
+#include<limits>
 #include "menu.h"
+#include "driver.h"
 #include "user.h"
 using namespace std;
+
 string  User::inputPassword() 
 {
     string password = "";
@@ -39,7 +43,7 @@ string  User::inputPassword()
 string  User:: getCitizenship()
 {
    while(true) {
-        cout << "Enter Citizenship (Format: 0X-0X-0X-XXXXX): ";
+        cout << "Enter Citizenship in the format 0X-0X-0X-XXXXX: ";
         cin >> citizenshipnum;
 
   //checking the length of citizenship number
@@ -80,7 +84,7 @@ string User::inputPhone() {
     string phone;
 
     while(true) {
-        cout << "Enter user phone number ( must be 10 digits): ";
+        cout << "Enter user phone number in the format  98-XXXXXXXX: ";
         cin >> phone;
 
         if(phone.length() != 10) {
@@ -129,27 +133,48 @@ if(password != confirm) {
     cout<<"Passwords do not match!\n";
     return; }
 
-   // Enter user phone number
+  
   phone = inputPhone();
     cout<<"Enter user email :";
     cin>>email;
 cin.ignore(); 
-    cout << "Enter your Role (Admin/Customer/Driver): ";
-  getline(cin, role);
+    cout << "Enter your Role Admin/Customer/Driver: ";
+     getline(cin, role);
 
-if(role == "Customer") {
+for (int i = 0; i < role.length(); i++) {
+    role[i] = toupper(role[i]);
+}
+
+if(role == "CUSTOMER") {
     citizenshipnum = getCitizenship();  
 } else {
     citizenshipnum = " Invalid ";
 }
+
+    if(role == "DRIVER") {
+        Driver d;
+        int chargePerDay;
+
+        d.name = name;
+        cout << "Enter Driver License: ";
+        d.license = d.getLicense();
+
+        cout << "Enter Charge per day: ";
+        cin >> chargePerDay;
+
+        ofstream driverOut("drivers.txt", ios::app);
+        if(driverOut) {
+            driverOut << d.name << " " << d.license << " " << chargePerDay << endl;
+        }
+    }
+
     // storing user details in a text file named users.txt
  fout<<name<<","<<id<<" "<<password<<" "<<phone<<" "<<email<<" " << role << " " << citizenshipnum <<endl;
  fout.close();
+ 
  cout<<"User have been registered successfully "<<endl;
  }
 
-#include <sstream>
-#include <limits>
 
 bool User::loginUser()
 {
@@ -174,10 +199,16 @@ bool User::loginUser()
 
             Menu m;
 
-            if(role == "Admin") {
+            string UpperRole = role;
+
+for (int i = 0; i < UpperRole.length(); i++) {
+    UpperRole[i] = toupper(UpperRole[i]);
+}
+
+            if(UpperRole == "ADMIN") {
                 m.adminMenu();
             }
-            else if(role == "Driver") {
+            else if(UpperRole == "DRIVER") {
                 m.driverMenu();
             }
             else {

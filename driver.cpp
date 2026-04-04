@@ -51,6 +51,7 @@ cout<<"Enter Driver License: ";
     license = getLicense();
 
     cout << "Enter Charge per day: ";
+    cin.ignore();
     cin >> charge;
 
     fout << name << " " << license << " " << charge << endl;
@@ -71,11 +72,8 @@ void Driver::viewDrivers() {
     cout << "\n-------------------------------------------------\n\n";
     cout<<"\t\t  DRIVER DETAILS\n";
     cout << "\n-------------------------------------------------\n\n";
-
-    while(fin >> name >> license >> charge) {
-        cout << "Name: " << name<<"\t"
-             << "  License: " << license<<"\t"
-             << "  Charge: " << charge << endl;
+while(getline(fin, line)) {
+        cout<<line<<endl;
     }
 
     fin.close();
@@ -91,9 +89,10 @@ void Driver::deleteDriver() {
     bool found = false;
 
     cout << "Enter Driver Name to delete: ";
-    cin >> deleteDriver;
+   cin.ignore();
+getline(cin, deleteDriver);
 
-    while(fin >> name >> license >> charge) {
+  while(getline(fin, line)) {
         if(name != deleteDriver) {
             temp << name << " " << license << " " << charge << endl;
         } else {

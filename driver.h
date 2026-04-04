@@ -5,7 +5,7 @@
 
 class Driver {
 public:
-    std::string name;
+    std::string name,line;
     std::string license;
     int charge;
 

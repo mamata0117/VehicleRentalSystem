@@ -1,0 +1,3 @@
+10  toyota car  70  0
+15  honda car  100  0
+20  civic bike  56  0
