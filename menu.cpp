@@ -170,13 +170,13 @@ void Menu::adminMenu() {
 }
 
 void Menu::driverMenu() {
-    Driver d;
+    static VehicleList v;
     int choice;
 
     do {
         clearScreen();
         cout << "\n===== DRIVER MENU =====\n";
-        cout << "1. View Drivers\n";
+        cout << "1. View Vehicles\n";
         cout << "2. View Reviews\n";
         cout << "3. Back\n";
 
@@ -184,12 +184,11 @@ void Menu::driverMenu() {
 
         switch(choice) {
             case 1:
-                d.viewDrivers();
+                v.viewVehicles();
                 break;
 
             case 2:
                 reviewSystem.viewReviews();
-                pauseScreen();
                 break;
 
             case 3:
@@ -197,6 +196,10 @@ void Menu::driverMenu() {
 
             default:
                 cout << "Invalid choice!\n";
+        }
+
+        if (choice >= 1 && choice <= 2) {
+            pauseScreen();
         }
 
       
@@ -268,7 +271,6 @@ void Menu::customerMenu() {
                 break;
             case 9:
                 reviewSystem.addReview();
-                pauseScreen();
                 break;
 
             case 10:
@@ -276,6 +278,10 @@ void Menu::customerMenu() {
 
             default:
                 cout << "Invalid choice!\n";
+        }
+
+        if (choice >= 1 && choice <= 9) {
+            pauseScreen();
         }
 
       

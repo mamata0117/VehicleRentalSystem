@@ -1,8 +1,6 @@
-Ram Thapa,1 ram 9800000000 ram@gmail.com ADMIN Not Applicable
-Rita Shah,2 rita 9877777777 rita@gmail.com CUSTOMER 01-02-03-55555
-Rama Thapa,3 rama 9855555666 rama@gmail.com CUSTOMER 01-02-09-99999
-mina sharma,4 mina 9877755543 mina@gmail.com CUSTOMER 09-07-06-22222
-mahesh thapa,7 mahesh 9800011123 mahesh@gmail.com DRIVER Not Applicable
-manu bist,8 manu 9876545654 manu@gmail.com DRIVER Not Applicable
-mahira shah,10 mahira 9866554433 mahira@gmail.com DRIVER Not Applicable
-usha,67 ush 9866776677 usha@gmail.com ADMIN Not Applicable
+Ram Thapa,1 ram 9811111111 ram@gmail.com ADMIN Not/Applicable
+Hari Sharma,2 hari 9877777777 hari@gmail.com CUSTOMER 09-08-03-12345
+sam sharma,3 sam 9855554455 sam@gmail.com CUSTOMER 09-09-07-12345
+Sita Thapa,4 sita 9844333343 sita@gmail.com CUSTOMER 09-01-03-12345
+Gita Thapa,5 gita 9800006666 gita@gmail.com CUSTOMER 09-07-05-44444
+Sid Thapa,11 sid 9845453245 sid@gmail.com DRIVER Not/Applicable

@@ -1,4 +1,3 @@
-11 toyota car 70 0
-12 honda car 90 0
-14 civic bike 70 1
-13 pulser bike 55 1
+100 toyota car 70 0
+99 honda bike 40 1
+98 mercedes car 90 1
