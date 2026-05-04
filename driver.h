@@ -5,15 +5,14 @@
 
 class Driver {
 public:
-    std::string name,line;
+  
     std::string license ;
- int charge;
-
-    void addDriver();
-    void viewDrivers();
-    void deleteDriver();
-
-    std::string getLicense();   
+    int charge;
+    void driverMenu();
+void viewCustomers();     // booking requests
+void acceptCustomer();
+void rejectCustomer();
+    
 };
 
 #endif

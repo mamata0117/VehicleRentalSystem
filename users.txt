@@ -4,3 +4,5 @@ sam sharma,3 sam 9855554455 sam@gmail.com CUSTOMER 09-09-07-12345
 Sita Thapa,4 sita 9844333343 sita@gmail.com CUSTOMER 09-01-03-12345
 Gita Thapa,5 gita 9800006666 gita@gmail.com CUSTOMER 09-07-05-44444
 Sid Thapa,11 sid 9845453245 sid@gmail.com DRIVER Not/Applicable
+Rama Thapa,9 rama 9877766676 rama@gmail.com CUSTOMER 09-08-08-12345
+Bishnu Nepal,111 bishnu 9876667766 bishnu@gmail.com CUSTOMER 09-02-03-12345

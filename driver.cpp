@@ -1,50 +1,50 @@
 #include <iostream>
-#include <fstream>
-#include <cctype>
-#include <sstream>
-#include <vector>
-#include <limits>
 #include "driver.h"
 
 using namespace std;
 
-string Driver::getLicense() {
-    while(true) {
-        cout << "Enter License in the format 0X-0X-XXXXXXXX: ";
-        cin >> license;
+void Driver::driverMenu() {
+    int choice;
 
-        // Check length
-        if(license.length() != 14) {
-            cout << "Invalid length! Try again.\n";
-            continue;
-        }
+    while (true) {
+        cout << "\n--- Driver Menu ---\n";
+        cout << "1. View Customer Requests\n";
+        cout << "2. Accept Customer\n";
+        cout << "3. Reject Customer\n";
+        cout << "4. Logout\n";
+        cout << "Enter choice: ";
+        cin >> choice;
 
-        // Check dash positions
-        if(license[2] != '-' || license[5] != '-') {
-            cout << "Invalid format! Use 0X-0X-XXXXXXXX\n";
-            continue;
-        }
-
-        // Check digits
-        bool valid = true;
-        for(int i = 0; i < license.length(); i++) {
-            if(i == 2 || i == 5) continue;
-
-            if(isdigit(license[i])==false) {
-                valid = false;
+        switch (choice) {
+            case 1:
+                viewCustomers();
                 break;
-            }
+            case 2:
+                acceptCustomer();
+                break;
+            case 3:
+                rejectCustomer();
+                break;
+            case 4:
+                return;
+            default:
+                cout << "Invalid choice!\n";
         }
-
-        if(valid==false) {
-            cout << "Only numbers allowed!\n";
-            continue;
-        }
-
-        return license;
     }
 }
-void Driver::addDriver() {
+
+void Driver::viewCustomers() {
+    cout << "Showing customer requests...\n";
+}
+
+void Driver::acceptCustomer() {
+    cout << "Customer accepted.\n";
+}
+
+void Driver::rejectCustomer() {
+    cout << "Customer rejected.\n";
+}
+/*void Driver::addDriver() {
     ofstream fout("drivers.txt", ios::app);
 
     cout << "Enter Driver Name: ";
@@ -149,4 +149,4 @@ void Driver::deleteDriver() {
         cout << "Driver deleted successfully!\n";
     else
         cout << "Driver not found!\n";
-}
+}*/

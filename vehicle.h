@@ -1,32 +1,34 @@
-#ifndef VEHICLE_H
-#define VEHICLE_H
-
-#include <string>
-
 struct Vehicle {
     int id;
-    std::string name;
-    std::string type;
+
+    std::string type;        // BIKE / CAR / VAN / TRUCK / SCOOTER
+    std::string category;    // REGULAR / COMFORT
+    std::string fuelType;    // PETROL / DIESEL
+
+    std::string licensePlate;
+    std::string maintenanceDate;
+
     float price;
     bool available;
 
-    Vehicle* next;  
-    Vehicle* prev;  
+    Vehicle* next;
+    Vehicle* prev;
 };
 
 class VehicleList {
-public:
-    Vehicle* head;
+private:
+    Vehicle* head=nullptr;
 
 public:
     VehicleList();
 
     void addVehicle();
-    void saveVehicles();
-    void loadVehicles();
     void viewVehicles();
     void deleteVehicle();
-    float getVehiclePrice(int vehicleID);
-};
 
-#endif
+    void saveVehicles();
+    void loadVehicles();
+    float getVehiclePrice(int vehicleID);
+    void viewAvailableVehicles();   // 
+    Vehicle* findVehicle(int id);   // 
+};
