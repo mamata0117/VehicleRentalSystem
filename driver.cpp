@@ -1,152 +1,79 @@
 #include <iostream>
+#include <fstream>
 #include "driver.h"
 
 using namespace std;
+void Driver::setupDriver() {
+    cout << "\n--- Driver Setup ---\n";
 
-void Driver::driverMenu() {
-    int choice;
+    // Reuse from User
+    citizenship = inputCitizenship();
+    license = inputLicense();
 
-    while (true) {
-        cout << "\n--- Driver Menu ---\n";
-        cout << "1. View Customer Requests\n";
-        cout << "2. Accept Customer\n";
-        cout << "3. Reject Customer\n";
-        cout << "4. Logout\n";
-        cout << "Enter choice: ";
-        cin >> choice;
+    cout << "Enter experience (years): ";
+    cin >> experience;
 
-        switch (choice) {
-            case 1:
-                viewCustomers();
-                break;
-            case 2:
-                acceptCustomer();
-                break;
-            case 3:
-                rejectCustomer();
-                break;
-            case 4:
-                return;
-            default:
-                cout << "Invalid choice!\n";
-        }
-    }
-}
-
-void Driver::viewCustomers() {
-    cout << "Showing customer requests...\n";
-}
-
-void Driver::acceptCustomer() {
-    cout << "Customer accepted.\n";
-}
-
-void Driver::rejectCustomer() {
-    cout << "Customer rejected.\n";
-}
-/*void Driver::addDriver() {
     ofstream fout("drivers.txt", ios::app);
 
-    cout << "Enter Driver Name: ";
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    getline(cin, name);
+    fout << userID << " "
+         << citizenship << " "
+         << license << " "
+         << experience << endl;
 
-    license = getLicense();
-
-    ifstream fin("drivers.txt");
-    string existingLine;
-    while(getline(fin, existingLine)) {
-        if(existingLine.empty()) {
-            continue;
-        }
-
-        istringstream ss(existingLine);
-      
-
-string existingName, existingLicense;
-int existingCharge;
-
-getline(ss, existingName, ',');
-getline(ss, existingLicense, ',');
-ss >> existingCharge;
-       
-
-        if(existingLicense == license) {
-            cout << "Driver license already exists!\n";
-            fout.close();
-            return;
-        }
-
-        if(existingName == name) {
-            cout << "Driver name already exists!\n";
-            fout.close();
-            return;
-        }
-    }
-
-    cout << "Enter Charge per day: ";
-    cin >> charge;
-
-    fout << name << " " << license << " " << charge << endl;
     fout.close();
 
-    cout << "Driver added successfully!\n";
+    cout << "Driver setup complete!\n";
 }
+void Driver::viewCustomers() {
+    ifstream fin("bookings.txt");
 
-// viewing the list of drivers stored in a text file named drivers.txt
-void Driver::viewDrivers() {
-    ifstream fin("drivers.txt");
+    string driverID, customerID, vehicleID, status;
 
-    if(!fin) {
-        cout << "No drivers available.\n";
-        return;
-    }
+    cout << "\n--- Customer Requests ---\n";
 
-    cout << "\n-------------------------------------------------\n\n";
-    cout<<"\t\t  DRIVER DETAILS\n";
-    cout << "\n-------------------------------------------------\n\n";
-while(getline(fin, line)) {
-        cout<<line<<endl;
-    }
-
-    fin.close();
-}
-
-    
-//eliminating the driver details
-void Driver::deleteDriver() {
-    ifstream fin("drivers.txt");
-    ofstream temp("temp.txt");
-
-    string deleteDriverName;
-    bool found = false;
-
-    cout << "Enter Driver Name to delete: ";
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    getline(cin, deleteDriverName);
-
-  while(getline(fin, line)) {
-      istringstream ss(line);
-
-        string existingName, license;
-      
-
-        ss >> existingName >> license >> charge;
-        if(existingName != deleteDriverName) {
-            temp << existingName << " " << license << " " << charge << endl;
-        } else {
-            found = true;
+    while (fin >> driverID >> customerID >> vehicleID >> status) {
+        if (status == "PENDING") {
+            cout << "Customer ID: " << customerID
+                 << " | Vehicle: " << vehicleID << endl;
         }
     }
 
     fin.close();
-    temp.close();
+}void Driver::acceptCustomer() {
+    string id;
+    cout << "Enter Customer ID to accept: ";
+    cin >> id;
 
-    remove("drivers.txt");
-    rename("temp.txt", "drivers.txt");
+    cout << "Customer " << id << " accepted.\n";
+}void Driver::rejectCustomer() {
+    string id;
+    cout << "Enter Customer ID to reject: ";
+    cin >> id;
 
-    if(found)
-        cout << "Driver deleted successfully!\n";
-    else
-        cout << "Driver not found!\n";
-}*/
+    cout << "Customer " << id << " rejected.\n";
+}void Driver::rateCustomer() {
+    string id;
+    int rating;
+
+    cout << "Enter Customer ID: ";
+    cin >> id;
+
+    cout << "Enter rating (1-5): ";
+    cin >> rating;
+
+    ofstream fout("customer_ratings.txt", ios::app);
+    fout << id << " " << rating << endl;
+    fout.close();
+
+    cout << "Rating submitted.\n";
+}string Driver::getLicense() {
+    return license;
+}
+
+string Driver::getCitizenship() {
+    return citizenship;
+}
+
+int Driver::getExperience() {
+    return experience;
+}

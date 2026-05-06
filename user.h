@@ -4,38 +4,27 @@
 #include <string>
 
 class User {
-private:
-    std::string userID, name;
-    int age = 0;
-    std::string email, password;
-    std::string phone; 
-    std::string citizenship;
-    std::string license; 
-    std::string role;   // CUSTOMER / DRIVER / ADMIN
-
-    // Customer
-    bool isStudent = false;
-    std::string studentID;
-    std::string collegeName;
-
-    // Driver
-    int experience = 0;
+protected:
+    std::string userID;
+    std::string name;
+    int age;
+    std::string phone;
+    std::string email;
+    std::string password;
+    std::string role;
 
 public:
     void registerUser();
-    bool loginUser();
+    bool loginUser(),isDuplicate(std::string phone, std::string email);
 
-    std::string inputPassword(),inputPhone();
-    std::string getCitizenship(),getLicense();
-    std::string generateUserID(std::string role);
     std::string getUserID();
+    std::string getName();
     std::string getRole();
-
-    void setupCustomer();
-      void setupDriver();
-    void setupAdmin();
-
-    bool isDuplicate(std::string phone, std::string email);
+    std::string getPhone();
+    std::string inputPhone(),inputPassword();
+std::string inputCitizenship();
+std::string inputLicense();
+    std::string generateUserID(std::string role);
 };
 
 #endif

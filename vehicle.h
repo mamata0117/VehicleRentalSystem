@@ -1,34 +1,43 @@
-struct Vehicle {
-    int id;
+#ifndef VEHICLE_H
+#define VEHICLE_H
 
-    std::string type;        // BIKE / CAR / VAN / TRUCK / SCOOTER
-    std::string category;    // REGULAR / COMFORT
-    std::string fuelType;    // PETROL / DIESEL
+#include <string>
 
-    std::string licensePlate;
-    std::string maintenanceDate;
-
-    float price;
+class Vehicle {
+private:
+    std::string vehicleID;
+    std::string type;        // car, bike, etc.
+    std::string fuelType;    // petrol / diesel
+    std::string category;    // regular / comfort
+    int pricePerDay;
     bool available;
 
-    Vehicle* next;
-    Vehicle* prev;
-};
-
-class VehicleList {
-private:
-    Vehicle* head=nullptr;
-
 public:
-    VehicleList();
-
+    // setup
     void addVehicle();
-    void viewVehicles();
-    void deleteVehicle();
 
-    void saveVehicles();
-    void loadVehicles();
-    float getVehiclePrice(int vehicleID);
-    void viewAvailableVehicles();   // 
-    Vehicle* findVehicle(int id);   // 
+    // display
+    void displayVehicle();
+
+    // availability
+    bool isAvailable();
+    void setAvailability(bool status);
+
+    // getters
+    std::string getVehicleID();
+    std::string getType();
+    std::string getCategory();
+    int getPrice();
 };
+
+
+// 🔗 Linked List Node
+struct VehicleNode {
+    Vehicle data;
+    VehicleNode* next;
+};
+void insertVehicle(Vehicle v);
+void displayAllVehicles();
+void displayAvailableVehicles();
+
+#endif

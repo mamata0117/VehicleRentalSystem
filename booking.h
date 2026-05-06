@@ -2,60 +2,38 @@
 #define BOOKING_H
 
 #include <string>
-#include <queue>
-#include <stack>
 
-class VehicleList;
-
-class ReviewSystem {
-private:
-    std::stack<std::string> reviews;
-
+// Booking structure
+class Booking {
 public:
-    void addReview();
-    void viewReviews();
+    std::string bookingID;
+    std::string customerID;
+    std::string vehicleID;
+    std::string driverID;
+    std::string status;   // PENDING / ACCEPTED / REJECTED
 };
 
+// Queue Node
 struct BookingNode {
-    int bookingID;
-    int userID;
-    int vehicleID;
-    std::string bookingType;
-    float totalAmount;
-    float advancePayment;
-    bool isStudent;
-
+    Booking data;
     BookingNode* next;
 };
 
-class BookingList {
+// Queue class
+class BookingQueue {
 private:
-    BookingNode* head;
+    BookingNode* front;
+    BookingNode* rear;
 
 public:
-    BookingList();
+    BookingQueue();
 
-    void createBooking(VehicleList &vList);
-    void cancelBooking(VehicleList &vList);
+    void enqueue(Booking b);     // add booking
+    void dequeue();              // remove booking
+    void display();              // show bookings
 
-    void viewBookings();
-    void searchBooking();
-
-    float calculateTotal(float vehiclePrice, std::string type, int driverCharge);
-    float applyDiscount(float amount, bool isStudent);
-
-    void saveToFile();
-    void loadFromFile();
-};
-
-class PriorityBooking {
-private:
-    std::queue<int> bookingQueue;
-
-public:
-    void addPriorityBooking(int bookingID);
-    void processBooking();
-    void viewQueue();
+    Booking getFront();          // get first booking
+    bool isEmpty();
 };
 
 #endif
