@@ -25,6 +25,8 @@ public:
 std::string inputCitizenship();
 std::string inputLicense();
     std::string generateUserID(std::string role);
+    void setUserID(std::string id);
+    void setRole(std::string r);
 };
 
 #endif

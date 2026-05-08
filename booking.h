@@ -3,37 +3,63 @@
 
 #include <string>
 
-// Booking structure
-class Booking {
-public:
-    std::string bookingID;
-    std::string customerID;
-    std::string vehicleID;
-    std::string driverID;
-    std::string status;   // PENDING / ACCEPTED / REJECTED
+using namespace std;
+
+struct Booking
+{
+    string bookingID;
+
+    string customerID;
+
+    string vehicleID;
+
+    string pickupDate;
+
+    string returnDate;
+
+    string drivingMode;
+
+    string customerLicense;
+
+    string assignedDriver;
+
+    float totalCost;
+
+    float advancePayment;
+
+    string status;
 };
 
-// Queue Node
-struct BookingNode {
+struct BookingNode
+{
     Booking data;
+
     BookingNode* next;
 };
 
-// Queue class
-class BookingQueue {
+class BookingQueue
+{
 private:
+
     BookingNode* front;
+
     BookingNode* rear;
 
 public:
+
     BookingQueue();
 
-    void enqueue(Booking b);     // add booking
-    void dequeue();              // remove booking
-    void display();              // show bookings
+    void enqueue(Booking b);
 
-    Booking getFront();          // get first booking
+    void dequeue();
+
+    void display();
+
+    Booking getFront();
+
     bool isEmpty();
+
+    void updateVehicleStatus(string vehicleID);
 };
 
 #endif

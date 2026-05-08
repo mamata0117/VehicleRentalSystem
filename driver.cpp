@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include<sstream>
 #include "driver.h"
 
 using namespace std;
@@ -24,22 +25,131 @@ void Driver::setupDriver() {
 
     cout << "Driver setup complete!\n";
 }
-void Driver::viewCustomers() {
+void Driver::viewTotalRidesToday()
+{
     ifstream fin("bookings.txt");
 
-    string driverID, customerID, vehicleID, status;
+    if(!fin)
+    {
+        cout << "No booking records found.\n";
+        return;
+    }
 
-    cout << "\n--- Customer Requests ---\n";
+    string todayDate;
 
-    while (fin >> driverID >> customerID >> vehicleID >> status) {
-        if (status == "PENDING") {
-            cout << "Customer ID: " << customerID
-                 << " | Vehicle: " << vehicleID << endl;
+    cout << "Enter Today's Date (DD/MM/YYYY): ";
+    cin >> todayDate;
+
+    string line;
+
+    int totalRides = 0;
+
+    while(getline(fin, line))
+    {
+        stringstream ss(line);
+
+        string bookingID;
+        string customerID;
+        string vehicleID;
+        string pickupDate;
+        string returnDate;
+        string drivingMode;
+        string customerLicense;
+        string assignedDriver;
+        string totalCost;
+        string advancePayment;
+        string status;
+
+        getline(ss, bookingID, '|');
+        getline(ss, customerID, '|');
+        getline(ss, vehicleID, '|');
+        getline(ss, pickupDate, '|');
+        getline(ss, returnDate, '|');
+        getline(ss, drivingMode, '|');
+        getline(ss, customerLicense, '|');
+        getline(ss, assignedDriver, '|');
+        getline(ss, totalCost, '|');
+        getline(ss, advancePayment, '|');
+        getline(ss, status);
+
+        // Match current driver
+        if(assignedDriver == getUserID())
+        {
+            // Match today's ride
+            if(pickupDate == todayDate)
+            {
+                totalRides++;
+            }
         }
     }
 
     fin.close();
-}void Driver::acceptCustomer() {
+
+    cout << "\nTotal rides completed today: "
+         << totalRides
+         << endl;
+}
+   
+void Driver::viewReviews()
+{
+    ifstream fin("reviews.txt");
+
+    if(!fin)
+    {
+        cout << "No reviews found.\n";
+        return;
+    }
+
+    string line;
+
+    bool found = false;
+
+    cout << "\n----------- My Reviews -----------\n";
+
+    while(getline(fin, line))
+    {
+        stringstream ss(line);
+
+        string driverID;
+        string customerID;
+        string bookingID;
+        string rating;
+        string review;
+
+        getline(ss, driverID, '|');
+        getline(ss, customerID, '|');
+        getline(ss, bookingID, '|');
+        getline(ss, rating, '|');
+        getline(ss, review);
+
+        // ONLY SHOW THIS DRIVER'S REVIEWS
+        if(driverID == getUserID())
+        {
+            found = true;
+
+            cout << "\nBooking ID: "
+                 << bookingID << endl;
+
+            cout << "Customer ID: "
+                 << customerID << endl;
+
+            cout << "Rating: "
+                 << rating << "/5" << endl;
+
+            cout << "Review: "
+                 << review << endl;
+        }
+    }
+
+    if(!found)
+    {
+        cout << "No reviews yet.\n";
+    }
+
+    fin.close();
+}
+    
+void Driver::acceptCustomer() {
     string id;
     cout << "Enter Customer ID to accept: ";
     cin >> id;

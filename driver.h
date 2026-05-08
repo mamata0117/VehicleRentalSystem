@@ -16,11 +16,11 @@ public:
     void setupDriver();
 
     // Driver actions
-    void viewCustomers();
+  void viewReviews();
     void acceptCustomer();
     void rejectCustomer();
     void rateCustomer();
-
+void viewTotalRidesToday();
     // Getters (useful later)
     std::string getLicense();
     std::string getCitizenship();

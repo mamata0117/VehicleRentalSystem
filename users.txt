@@ -1,1 +1,7 @@
-C-1 Ram Thapa 17 9867876766 ram@gmail.com ram CUSTOMER
+A-1
+ramita
+21
+9739212323
+stha@gmail.com
+stha
+ADMIN

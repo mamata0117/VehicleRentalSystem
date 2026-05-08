@@ -3,41 +3,62 @@
 
 #include <string>
 
-class Vehicle {
+using namespace std;
+
+class Vehicle
+{
 private:
-    std::string vehicleID;
-    std::string type;        // car, bike, etc.
-    std::string fuelType;    // petrol / diesel
-    std::string category;    // regular / comfort
-    int pricePerDay;
+
+    string vehicleID;
+    string type;
+    string fuelType;
+    string category;
+
+    string licensePlate;
+    string maintenanceRecord;
+
+    float selfDrivePrice;
+    float driverPrice;
+
     bool available;
 
 public:
-    // setup
+
     void addVehicle();
 
-    // display
     void displayVehicle();
 
-    // availability
     bool isAvailable();
+
     void setAvailability(bool status);
 
-    // getters
-    std::string getVehicleID();
-    std::string getType();
-    std::string getCategory();
-    int getPrice();
+    string getVehicleID();
+
+    string getType();
+
+    string getCategory();
+
+    float getSelfDrivePrice();
+
+    float getDriverPrice();
+
+    string getLicensePlate();
 };
 
-
-// 🔗 Linked List Node
-struct VehicleNode {
+struct VehicleNode
+{
     Vehicle data;
     VehicleNode* next;
 };
+
+extern VehicleNode* head;
+
 void insertVehicle(Vehicle v);
+
 void displayAllVehicles();
+
 void displayAvailableVehicles();
+
+Vehicle* findVehicleByID(string id);
 
 #endif

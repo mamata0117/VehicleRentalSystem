@@ -8,12 +8,13 @@
 
 class Customer : public User {
 private:
-    std::string citizenship;
+    std::string citizenship,institutionName,studentIDCard;
     bool isStudent;
 
 public:
     void setupCustomer();
-
+    void customerMenu(BookingQueue& queue);
+void reviewDriver();
     // actions
     void viewVehicles();
     void bookVehicle(BookingQueue& queue);
