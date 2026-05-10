@@ -12,7 +12,73 @@ BookingQueue::BookingQueue()
     front = rear = NULL;
 }
 
-// Update vehicle status in file
+// ==========================================
+// DATE VALIDATION
+// ==========================================
+
+bool validDateFormat(string date)
+{
+    if(date.length() != 10)
+        return false;
+
+    if(date[2] != '/' || date[5] != '/')
+        return false;
+
+    return true;
+}
+
+// ==========================================
+// SIMPLE DATE TO DAYS CONVERTER
+// ==========================================
+
+int convertToDays(string date)
+{
+    int day = stoi(date.substr(0,2));
+    int month = stoi(date.substr(3,2));
+    int year = stoi(date.substr(6,4));
+
+    return year * 365 + month * 30 + day;
+}
+
+// ==========================================
+// DRIVER SELECTION
+// ==========================================
+
+int selectDriver(string &driverName)
+{
+    int choice;
+
+    cout << "\n--- Available Drivers ---\n";
+    cout << "1. Ram  (Rs.2000/day)\n";
+    cout << "2. Hari (Rs.2500/day)\n";
+    cout << "3. Shyam(Rs.3000/day)\n";
+
+    cout << "Select Driver: ";
+    cin >> choice;
+
+    switch(choice)
+    {
+        case 1:
+            driverName = "Ram";
+            return 2000;
+
+        case 2:
+            driverName = "Hari";
+            return 2500;
+
+        case 3:
+            driverName = "Shyam";
+            return 3000;
+
+        default:
+            return 0;
+    }
+}
+
+// ==========================================
+// UPDATE VEHICLE STATUS
+// ==========================================
+
 void BookingQueue::updateVehicleStatus(string vehicleID)
 {
     ifstream fin("vehicles.txt");
@@ -26,20 +92,17 @@ void BookingQueue::updateVehicleStatus(string vehicleID)
 
     string id, brand, model, status;
 
-    // Reading vehicle records
     while (getline(fin, id))
     {
         getline(fin, brand);
         getline(fin, model);
         getline(fin, status);
 
-        // Change status if vehicle matches
         if (id == vehicleID)
         {
             status = "Booked";
         }
 
-        // Write updated data
         fout << id << endl;
         fout << brand << endl;
         fout << model << endl;
@@ -53,7 +116,125 @@ void BookingQueue::updateVehicleStatus(string vehicleID)
     rename("temp.txt", "vehicles.txt");
 }
 
-// Enqueue booking
+// ==========================================
+// CREATE BOOKING
+// ==========================================
+
+void BookingQueue::createBooking()
+{
+    Booking b;
+
+    string plate, t;
+    float r;
+
+    cout << "\nEnter Vehicle ID: ";
+    cin >> plate;
+
+    b.vehicleID = plate;
+
+    cout << "Enter Customer ID: ";
+    cin >> b.customerID;
+
+    cout << "Enter Vehicle Type: ";
+    cin >> t;
+
+    cout << "Enter Rent Per Day: ";
+    cin >> r;
+
+    // ==========================================
+    // DATE INPUT
+    // ==========================================
+
+    string startDate,endDate;
+
+    cout<<"Start Date: ";
+    cin>>startDate;
+
+    cout<<"End Date: ";
+    cin>>endDate;
+
+    if (!validDateFormat(startDate) || !validDateFormat(endDate))
+    {
+        cout << "Invalid date format! Use DD/MM/YYYY\n";
+        return;
+    }
+
+    int days=convertToDays(endDate)-convertToDays(startDate);
+
+    if (days <= 0)
+    {
+        cout << "End date must be after start date!\n";
+        return;
+    }
+
+    // ==========================================
+    // TOTAL CALCULATION
+    // ==========================================
+
+    float total = days * r;
+
+    cout<<"Days: "<<days<<" | Total: Rs."<<total<<endl;
+
+    // ==========================================
+    // DRIVER OPTION
+    // ==========================================
+
+    char choice;
+
+    cout<<"Need Driver? (y/n): ";
+    cin>>choice;
+
+    string driverName="";
+    int driverCharge=0;
+
+    if(choice=='y' || choice=='Y')
+    {
+        driverCharge = selectDriver(driverName);
+
+        if(driverCharge==0)
+        {
+            cout<<"Driver selection failed!\n";
+            return;
+        }
+
+        total += driverCharge * days;
+    }
+
+    // ==========================================
+    // SAVE RENTAL
+    // ==========================================
+
+    ofstream fout("rentals.txt",ios::app);
+
+    fout<<plate<<" | "
+        <<t<<" | "
+        <<startDate<<" | "
+        <<endDate<<" | Driver: "
+        <<driverName<<" | Rs. "
+        <<total<<endl;
+
+    fout.close();
+
+    // ==========================================
+    // BOOKING DETAILS
+    // ==========================================
+
+    b.bookingID = "B001";
+    b.status = "Booked";
+
+    // ==========================================
+    // ADD TO QUEUE
+    // ==========================================
+
+    enqueue(b);
+
+    cout<<"Booked Successfully!\n";
+}
+
+// ==========================================
+// ENQUEUE BOOKING
+// ==========================================
+
 void BookingQueue::enqueue(Booking b)
 {
     BookingNode* newNode = new BookingNode;
@@ -71,13 +252,15 @@ void BookingQueue::enqueue(Booking b)
         rear = newNode;
     }
 
-    // Update vehicle status
     updateVehicleStatus(b.vehicleID);
 
     cout << "Booking added successfully!\n";
 }
 
-// Dequeue booking
+// ==========================================
+// DEQUEUE BOOKING
+// ==========================================
+
 void BookingQueue::dequeue()
 {
     if (front == NULL)
@@ -100,7 +283,10 @@ void BookingQueue::dequeue()
     cout << "Booking removed.\n";
 }
 
-// Display bookings
+// ==========================================
+// DISPLAY BOOKINGS
+// ==========================================
+
 void BookingQueue::display()
 {
     if (front == NULL)
@@ -125,7 +311,10 @@ void BookingQueue::display()
     }
 }
 
-// Get front booking
+// ==========================================
+// GET FRONT BOOKING
+// ==========================================
+
 Booking BookingQueue::getFront()
 {
     if (front == NULL)
@@ -137,7 +326,10 @@ Booking BookingQueue::getFront()
     return front->data;
 }
 
-// Check if queue is empty
+// ==========================================
+// CHECK EMPTY
+// ==========================================
+
 bool BookingQueue::isEmpty()
 {
     return front == NULL;

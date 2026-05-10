@@ -54,7 +54,7 @@ public:
     void dequeue();
 
     void display();
-
+     void createBooking();
     Booking getFront();
 
     bool isEmpty();
