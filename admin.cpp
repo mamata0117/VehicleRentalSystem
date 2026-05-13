@@ -2,6 +2,7 @@
 
 #include "admin.h"
 #include "vehicle.h"
+#include "ui.h"
 
 using namespace std;
 
@@ -11,15 +12,21 @@ void Admin::adminMenu(BookingQueue& queue)
 
     do
     {
-        cout << "\n----------- Admin Menu -----------\n";
+        system("cls");
 
-        cout << "1. Add Vehicle\n";
-        cout << "2. View All Vehicles\n";
-        cout << "3. View Available Vehicles\n";
-        cout << "4. View Bookings\n";
-        cout << "5. Exit\n";
+        cout << "┌─────────────────────────────────────────┐\n";
+        cout << "│                ADMIN MENU               │\n";
+        cout << "├─────────────────────────────────────────┤\n";
+        cout << "│ 1. Add Vehicle                          │\n";
+        cout << "│ 2. View All Vehicles                    │\n";
+        cout << "│ 3. View Available Vehicles              │\n";
+        cout << "│ 4. View Bookings                        │\n";
+        cout << "│ 5. Exit                                 │\n";
+        cout << "└─────────────────────────────────────────┘\n";
 
-        cout << "Enter choice: ";
+
+
+        cout << "\nEnter choice: ";
 
         cin >> choice;
 
@@ -37,23 +44,50 @@ void Admin::adminMenu(BookingQueue& queue)
             }
 
             case 2:
+
+                system("cls");
+
                 displayAllVehicles();
+
+                system("pause");
+
                 break;
 
             case 3:
+
+                system("cls");
+
                 displayAvailableVehicles();
+
+                system("pause");
+
                 break;
 
             case 4:
+
+                system("cls");
+
                 queue.display();
+
+                system("pause");
+
                 break;
 
             case 5:
-                cout << "Exiting...\n";
+
+                cout << "\n┌──────────────────────────────────────────┐\n";
+                cout << "│ Exiting Admin Menu...                   │\n";
+                cout << "└──────────────────────────────────────────┘\n";
+
                 break;
 
             default:
-                cout << "Invalid choice!\n";
+
+                cout << "\n┌──────────────────────────────────────────┐\n";
+                cout << "│ Invalid choice!                         │\n";
+                cout << "└──────────────────────────────────────────┘\n";
+
+                system("pause");
         }
 
     } while(choice != 5);

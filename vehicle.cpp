@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cctype>
 #include "vehicle.h"
+#include "ui.h"
 
 using namespace std;
 
@@ -10,7 +11,7 @@ VehicleNode* head = NULL;
 // Add vehicle
 void Vehicle::addVehicle()
 {
-    cout << "\n----------- Add Vehicle -----------\n";
+    cout << "\n--------------------------- Add Vehicle --------------------------\n";
 
     cout << "Enter Vehicle ID: ";
     cin >> vehicleID;

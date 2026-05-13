@@ -6,6 +6,7 @@
 #include <cctype>
 #include <conio.h>
 #include "user.h"
+#include "ui.h"
 
 using namespace std;
 
@@ -33,7 +34,7 @@ string User::inputPassword() {
 
 string User::inputPhone() {
     while (true) {
-        cout<<"Enter your phone number in format  98-XXXXXXXX: ";
+    
         cin >> phone;
 
         if (phone.length() != 10) {
@@ -160,49 +161,109 @@ bool User::isDuplicate(string phone, string email) {
 
 void User::registerUser()
 {
-    cout << "\n------------- Register User ------------------\n\n";
+    system("cls");
+
+    printHeader("USER REGISTRATION");
 
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-    cout << "Enter your details to register:\n\n";
+    // NAME
+    cout << "│ "
+         << left << setw(22)
+         << "Enter Name : ";
 
-    cout << "Enter name: ";
     getline(cin, name);
 
-    cout << "Enter age: ";
+    // Convert Name to Proper Case
+    bool newWord = true;
+
+    for(char &c : name)
+    {
+        if(c == ' ')
+        {
+            newWord = true;
+        }
+
+        else
+        {
+            if(newWord)
+            {
+                c = toupper(c);
+                newWord = false;
+            }
+
+            else
+            {
+                c = tolower(c);
+            }
+        }
+    }
+
+    // AGE
+    cout << "│ "
+         << left << setw(22)
+         << "Enter Age : ";
+
     cin >> age;
+
+    // PHONE
+    cout << "│ "
+         << left << setw(22)
+         << "Enter Phone : ";
 
     phone = inputPhone();
 
-    cout << "Enter password: ";
+    // PASSWORD
+    cout << "│ "
+         << left << setw(22)
+         << "Enter Password : ";
+
     password = inputPassword();
 
-    cout << "Confirm password: ";
+    // CONFIRM PASSWORD
+    cout << "│ "
+         << left << setw(22)
+         << "Confirm Password : ";
+
     string confirm = inputPassword();
 
-    if (password != confirm)
+    if(password != confirm)
     {
-        cout << "Passwords do not match.\n";
+        printLine();
+
+        printMessage("Passwords do not match. Try again.");
+
+        cout << "└──────────────────────────────────────────────────────────────┘\n";
+
         return;
     }
 
-    cout << "Enter email: ";
+    // EMAIL
+    cout << "│ "
+         << left << setw(22)
+         << "Enter Email : ";
+
     cin >> email;
 
-    while (isDuplicate(phone, email))
+    while(isDuplicate(phone, email))
     {
-        cout << "Phone or Email already exists!\n";
+        printLine();
 
-        phone = inputPhone();
+        printMessage("Phone or Email already exists.");
 
-        cout << "Enter email: ";
-        cin >> email;
+        cout << "└──────────────────────────────────────────────────────────────┘\n";
+
+        return;
     }
 
-    cout << "Enter role (CUSTOMER / DRIVER / ADMIN): ";
+    // ROLE
+    cout << "│ "
+         << left << setw(22)
+         << "Enter Role : ";
+
     cin >> role;
 
-    // convert to uppercase
+    // Convert role to uppercase
     for(char &c : role)
     {
         c = toupper(c);
@@ -210,7 +271,6 @@ void User::registerUser()
 
     userID = generateUserID(role);
 
-    // FILE SELECTION
     ofstream fout;
 
     if(role == "ADMIN")
@@ -230,7 +290,12 @@ void User::registerUser()
 
     else
     {
-        cout << "Invalid role!\n";
+        printLine();
+
+        printMessage("Invalid role. Try again.");
+
+        cout << "└──────────────────────────────────────────────────────────────┘\n";
+
         return;
     }
 
@@ -245,10 +310,13 @@ void User::registerUser()
 
     fout.close();
 
-    cout << "\nYour User ID: "
-         << userID << endl;
+    
 
-    cout << "Registration successful!\n";
+    printMessage("Registration Successfully Done.");
+
+    printMessage("User ID : " + userID);
+
+    cout << "└──────────────────────────────────────────────────────────────┘\n";
 }
 
 

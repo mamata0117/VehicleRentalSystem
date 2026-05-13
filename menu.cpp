@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "menu.h"
+#include "ui.h"
 
 using namespace std;
 
@@ -56,7 +57,7 @@ void driverMenu(Driver& d)
 
     while (true)
     {
-        cout << "\n--- Driver Menu ---\n";
+        cout << "\n--------------------------- Driver Menu -----------------------o---\n";
 
         cout << "1. Accept Customer\n";
         cout << "2. Reject Customer\n";

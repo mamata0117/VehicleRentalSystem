@@ -1,5 +1,8 @@
 #include <iostream>
+#include <iomanip>
+#include <windows.h>
 
+#include "UI.h"
 #include "user.h"
 #include "customer.h"
 #include "driver.h"
@@ -11,37 +14,57 @@ using namespace std;
 
 int main()
 {
+    SetConsoleOutputCP(CP_UTF8);
+
+    system("chcp 65001");
+
     User user;
 
     BookingQueue queue;
 
     int choice;
 
-    while (true)
+    while(true)
     {
-        cout << "\n--- Vehicle Rental System ---\n";
+        system("cls");
 
-        cout << "1. Register\n";
-        cout << "2. Login\n";
-        cout << "3. Exit\n";
+        // MAIN MENU BOX
+        cout << "┌──────────────────────────────────────────────────────────────┐\n";
 
-        cout << "Enter choice: ";
+        cout << "│ "
+             << left << setw(60)
+             << "VEHICLE RENTAL SYSTEM"
+             << "│\n";
+
+        cout << "├──────────────────────────────────────────────────────────────┤\n";
+
+        cout << "│ 1. Register                                                 │\n";
+
+        cout << "│ 2. Login                                                    │\n";
+
+        cout << "│ 3. Exit                                                     │\n";
+
+        cout << "└──────────────────────────────────────────────────────────────┘\n";
+
+        cout << "\nEnter choice : ";
 
         cin >> choice;
 
         // REGISTER
-        if (choice == 1)
+        if(choice == 1)
         {
             user.registerUser();
+
+            system("pause");
         }
 
         // LOGIN
-        else if (choice == 2)
+        else if(choice == 2)
         {
-            if (user.loginUser())
+            if(user.loginUser())
             {
                 // CUSTOMER
-                if (user.getRole() == "CUSTOMER")
+                if(user.getRole() == "CUSTOMER")
                 {
                     Customer c;
 
@@ -55,7 +78,7 @@ int main()
                 }
 
                 // DRIVER
-                else if (user.getRole() == "DRIVER")
+                else if(user.getRole() == "DRIVER")
                 {
                     Driver d;
 
@@ -69,7 +92,7 @@ int main()
                 }
 
                 // ADMIN
-                else if (user.getRole() == "ADMIN")
+                else if(user.getRole() == "ADMIN")
                 {
                     Admin a;
 
@@ -80,19 +103,40 @@ int main()
                     adminMenu(a, queue);
                 }
             }
+
+            system("pause");
         }
 
         // EXIT
-        else if (choice == 3)
+        else if(choice == 3)
         {
-            cout << "Exiting...\n";
+            system("cls");
+
+            cout << "┌──────────────────────────────────────────────────────────────┐\n";
+
+            cout << "│ "
+                 << left << setw(60)
+                 << "THANK YOU FOR USING VEHICLE RENTAL SYSTEM"
+                 << "│\n";
+
+            cout << "└──────────────────────────────────────────────────────────────┘\n";
 
             break;
         }
 
+        // INVALID CHOICE
         else
         {
-            cout << "Invalid choice!\n";
+            cout << "\n┌──────────────────────────────────────────────────────────────┐\n";
+
+            cout << "│ "
+                 << left << setw(60)
+                 << "Invalid Choice"
+                 << "│\n";
+
+            cout << "└──────────────────────────────────────────────────────────────┘\n";
+
+            system("pause");
         }
     }
 

@@ -4,30 +4,39 @@
 #include "customer.h"
 #include "vehicle.h"
 #include "booking.h"
+#include "ui.h"
 
 using namespace std;
 
 // Customer setup
 void Customer::setupCustomer()
 {
-    cout << "\n\n----------- Customer Setup ----------------------\n\n";
+    system("cls");
 
+    cout << "┌──────────────────────────────────────────────────┐\n";
+    cout << "│                 CUSTOMER SETUP                  │\n";
+    cout << "├──────────────────────────────────────────────────┤\n";
+
+    cout << "│ Enter Citizenship : ";
     citizenship = inputCitizenship();
 
-    cout << "Are you a student? Enter 1 for yes and 0 for no: ";
+    cout << "│ Are you a student? (1 = Yes, 0 = No): ";
     cin >> isStudent;
+
     cin.ignore();
 
-    if (isStudent == 1)
+    if(isStudent == 1)
     {
-        cout << "Enter Institution Name: ";
+        cout << "│ Enter Institution Name : ";
         getline(cin, institutionName);
 
-        cout << "Enter Student ID Card Number: ";
+        cout << "│ Enter Student ID Card Number : ";
         getline(cin, studentIDCard);
     }
 
-    cout << "Customer setup completed.\n";
+    cout << "├──────────────────────────────────────────────────┤\n";
+    cout << "│ Customer setup completed successfully.          │\n";
+    cout << "└──────────────────────────────────────────────────┘\n";
 }
 void Customer::reviewDriver()
 {
@@ -36,20 +45,24 @@ void Customer::reviewDriver()
     int rating;
     string review;
 
-    cout << "\n----------- Driver Review -----------\n";
+    system("cls");
 
-    cout << "Enter Booking ID: ";
+    cout << "┌──────────────────────────────────────────┐\n";
+    cout << "│              DRIVER REVIEW              │\n";
+    cout << "├──────────────────────────────────────────┤\n";
+
+    cout << "│ Enter Booking ID : ";
     cin >> bookingID;
 
-    cout << "Enter Driver ID: ";
+    cout << "│ Enter Driver ID  : ";
     cin >> driverID;
 
-    cout << "Rate Driver (1-5): ";
+    cout << "│ Rate Driver(1-5): ";
     cin >> rating;
 
     cin.ignore();
 
-    cout << "Write Review: ";
+    cout << "│ Write Review     : ";
     getline(cin, review);
 
     ofstream fout("reviews.txt", ios::app);
@@ -62,7 +75,9 @@ void Customer::reviewDriver()
 
     fout.close();
 
-    cout << "Review submitted successfully!\n";
+    cout << "├──────────────────────────────────────────┤\n";
+    cout << "│ Review submitted successfully!          │\n";
+    cout << "└──────────────────────────────────────────┘\n";
 }
 // Customer menu
 void Customer::customerMenu(BookingQueue& queue)
@@ -70,39 +85,44 @@ void Customer::customerMenu(BookingQueue& queue)
     int choice;
 
     do
+{
+    system("cls");
+
+    cout << "┌──────────────────────────────────────────┐\n";
+    cout << "│              CUSTOMER MENU               │\n";
+    cout << "├──────────────────────────────────────────┤\n";
+    cout << "│ 1. View Available Vehicles               │\n";
+    cout << "│ 2. Book Vehicle                          │\n";
+    cout << "│ 3. Cancel Booking                        │\n";
+    cout << "│ 4. Exit                                  │\n";
+    cout << "└──────────────────────────────────────────┘\n";
+
+    cout << "\nEnter choice: ";
+    cin >> choice;
+
+    switch(choice)
     {
-        cout << "\n\n----------- Customer Menu ----------------------\n";
-        cout << "1. View Available Vehicles\n";
-        cout << "2. Book Vehicle\n";
-        cout << "3. Cancel Booking\n";
-        cout << "4. Exit\n";
+        case 1:
+            viewVehicles();
+            break;
 
-        cout << "Enter choice: ";
-        cin >> choice;
+        case 2:
+            bookVehicle(queue);
+            break;
 
-        switch(choice)
-        {
-            case 1:
-                viewVehicles();
-                break;
+        case 3:
+            cancelBooking();
+            break;
 
-            case 2:
-                bookVehicle(queue);
-                break;
+        case 4:
+            exit(0);
+            break;
 
-            case 3:
-                cancelBooking();
-                break;
+        default:
+            cout << "Invalid choice.\n";
+    }
 
-            case 4:
-              exit(0);
-                break;
-
-            default:
-                cout << "Invalid choice!\n";
-        }
-
-    } while(choice != 4);
+} while(choice != 4);
 }
 
 // View vehicles
