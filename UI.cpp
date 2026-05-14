@@ -1,40 +1,57 @@
+// ui.cpp
+
 #include "ui.h"
 
-void printHeader(string title)
+
+void printMenuHeader(string title)
 {
-    cout << "┌──────────────────────────────────────┐\n";
+    cout << "\n ______________________________________\n";
 
-    cout << "│ "
-         << left << setw(36)
+    cout << "|"
+         << setw(22 + title.length()/2)
          << title
-         << "│\n";
+         << setw(18 - title.length()/2)
+         << "|\n";
 
-    cout << "└──────────────────────────────────────┘\n";
+    cout << "|______________________________________|\n";
 }
 
-void printField(string label, string value)
+void printMenuItem(string text)
 {
-    cout << "│ "
-         << left << setw(18)
-         << label
-         << setw(19)
-         << value
-         << "│\n";
+    cout << "| "
+         << left << setw(36)
+         << text
+         << "|\n";
+}
+
+void printMenuFooter()
+{
+    cout << "|______________________________________|\n";
+}
+
+// ================= INPUT UI =================
+
+void printInputHeader(string title)
+{
+    cout << "\n______________________________________\n\n";
+
+    cout << title << endl;
+
+    cout << "______________________________________\n";
 }
 
 void printMessage(string msg)
 {
-    cout << "├──────────────────────────────────────┤\n";
+    cout << "\n______________________________________\n";
 
-    cout << "│ "
-         << left << setw(36)
-         << msg
-         << "│\n";
+    cout << " " << msg << endl;
 
-    cout << "└──────────────────────────────────────┘\n";
+    cout << "______________________________________\n";
 }
+
+
 
 void printLine()
 {
-    cout << "├──────────────────────────────────────┤\n";
+    cout << "______________________________________\n";
 }

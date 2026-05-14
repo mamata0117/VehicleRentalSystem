@@ -11,25 +11,27 @@ VehicleNode* head = NULL;
 // Add vehicle
 void Vehicle::addVehicle()
 {
-    cout << "\n--------------------------- Add Vehicle --------------------------\n";
+    system("cls");
 
-    cout << "Enter Vehicle ID: ";
+    printInputHeader("ADD VEHICLE");
+
+    cout << "Enter Vehicle ID : ";
     cin >> vehicleID;
 
     // VEHICLE CATEGORY
     int option;
 
-    cout << "\nSelect Vehicle Category:\n";
+    cout << "\nSelect Vehicle Category\n";
     cout << "1. Car\n";
     cout << "2. Bike\n";
     cout << "3. Truck\n";
     cout << "4. Van\n";
     cout << "5. Scooter\n";
 
-    cout << "Enter choice: ";
+    cout << "\nEnter Choice      : ";
     cin >> option;
 
-    switch( option)
+    switch(option)
     {
         case 1:
             category = "Car";
@@ -52,109 +54,111 @@ void Vehicle::addVehicle()
             break;
 
         default:
-            cout << "Invalid choice.\n";
+            printMessage("Invalid Choice.");
             return;
-            break;
     }
 
-  
-
-    cout << "Enter Fuel Type (Petrol/Diesel/Electric): ";
+    cout << "Enter Fuel Type  : ";
     cin >> fuelType;
 
-   
     // LICENSE PLATE VALIDATION
-bool validPlate = false;
+    bool validPlate = false;
 
-while (!validPlate)
-{
-    cout << "\nEnter License Plate\n";
-    cout << "Nepal Format Example: BA-PA-1234\n";
-    cout << "Format: [Province]-[VehicleType]-[4Digits]\n";
-
-    cin >>licensePlate;
-    string UpperlisensePlate = licensePlate;
-    for(char &ch : UpperlisensePlate) {
-        ch = toupper(ch);
-    }
-    int dashCount = 0;
-
-    for(char ch : UpperlisensePlate)
+    while (!validPlate)
     {
-        if(ch == '-')
+        cout << "\nEnter License Plate\n";
+        cout << "Example : BA-PA-1234\n";
+        cout << "Format  : [Province]-[Type]-[4Digits]\n";
+
+        cout << "\nEnter Plate       : ";
+
+        cin >> licensePlate;
+
+        string UpperlisensePlate = licensePlate;
+
+        for(char &ch : UpperlisensePlate)
         {
-            dashCount++;
+            ch = toupper(ch);
         }
-    }
 
-    // Must contain 2 dashes
-    if(dashCount != 2)
-    {
-        cout << "Invalid format.\n";
-        continue;
-    }
+        int dashCount = 0;
 
-    // Split manually
-    size_t firstDash =
-       UpperlisensePlate.find('-');
+        for(char ch : UpperlisensePlate)
+        {
+            if(ch == '-')
+            {
+                dashCount++;
+            }
+        }
 
-    size_t secondDash =
-        UpperlisensePlate.find('-',
-        firstDash + 1);
+        // Must contain 2 dashes
+        if(dashCount != 2)
+        {
+            printMessage("Invalid Format.");
+            continue;
+        }
 
-    string province =
-        UpperlisensePlate.substr(0, firstDash);
+        // Split manually
+        size_t firstDash =
+            UpperlisensePlate.find('-');
 
-    string vehiclePart =
-        UpperlisensePlate.substr(
-            firstDash + 1,
-            secondDash - firstDash - 1
+        size_t secondDash =
+            UpperlisensePlate.find('-',
+            firstDash + 1);
+
+        string province =
+            UpperlisensePlate.substr(0, firstDash);
+
+        string vehiclePart =
+            UpperlisensePlate.substr(
+                firstDash + 1,
+                secondDash - firstDash - 1
+            );
+
+        string digits =
+            UpperlisensePlate.substr(secondDash + 1);
+
+        // Province validation
+        bool validProvince =
+        (
+            province == "BA" ||
+            province == "GA" ||
+            province == "LU" ||
+            province == "KO" ||
+            province == "MA" ||
+            province == "NA" ||
+            province == "SU"
         );
 
-    string digits =
-        UpperlisensePlate.substr(secondDash + 1);
+        // 4 digit validation
+        bool validDigits = true;
 
-    // Province validation
-    bool validProvince =
-    (
-        province == "BA" ||
-        province == "GA" ||
-        province == "LU" ||
-        province == "KO" ||
-        province == "MA" ||
-        province == "NA" ||
-        province == "SU"
-    );
-
-    // 4 digit validation
-    bool validDigits = true;
-
-    if(digits.length() != 4)
-    {
-        validDigits = false;
-    }
-
-    for(char ch : digits)
-    {
-        if(!isdigit(ch))
+        if(digits.length() != 4)
         {
             validDigits = false;
         }
-    }
 
-    // Final validation
-    if(validProvince &&
-       vehiclePart.length() >= 2 &&
-       validDigits)
-    {
-        validPlate = true;
+        for(char ch : digits)
+        {
+            if(!isdigit(ch))
+            {
+                validDigits = false;
+            }
+        }
+
+        // Final validation
+        if(validProvince &&
+           vehiclePart.length() >= 2 &&
+           validDigits)
+        {
+            validPlate = true;
+        }
+
+        else
+        {
+            printMessage("Invalid License Plate Format.");
+        }
     }
-    else
-    {
-        cout << "Invalid License Plate Format.Try again.\n";
-      
-    }
-}
 
     cin.ignore();
 
@@ -162,12 +166,16 @@ while (!validPlate)
     string repairedDate;
     string nextDueDate;
 
-    cout << "\nEnter Last Maintenance/Repaired Date\n";
-    cout << "Format: DD/MM/YYYY\n";
+    cout << "\nEnter Last Maintenance Date\n";
+    cout << "Format : DD/MM/YYYY\n";
+
+    cout << "Date              : ";
     getline(cin, repairedDate);
 
-    cout << "Enter Next Maintenance Due Date\n";
-    cout << "Format: DD/MM/YYYY\n";
+    cout << "\nEnter Next Due Date\n";
+    cout << "Format : DD/MM/YYYY\n";
+
+    cout << "Date              : ";
     getline(cin, nextDueDate);
 
     maintenanceRecord =
@@ -175,15 +183,15 @@ while (!validPlate)
         " | Next Due: " + nextDueDate;
 
     // PRICING
-    cout << "\nEnter Self Drive Price Per Day: ";
+    cout << "\nEnter Self Drive Price : ";
     cin >> selfDrivePrice;
 
-    cout << "Enter With Driver Price Per Day: ";
+    cout << "Enter Driver Price     : ";
     cin >> driverPrice;
 
     available = true;
 
-    cout << "\nVehicle added successfully!\n";
+    printMessage("Vehicle Added Successfully.");
 }
 
 // Insert vehicle into linked list
@@ -217,36 +225,36 @@ void insertVehicle(Vehicle v)
 // Display single vehicle
 void Vehicle::displayVehicle()
 {
-    cout << "\n\n---------------Vehicle Details------------------\n\n";
+    printMenuHeader("VEHICLE DETAILS");
 
-    cout << "Vehicle ID: "
-         << vehicleID << endl;
+    printMenuItem("Vehicle ID      : " + vehicleID);
 
-  
+    printMenuItem("Fuel Type       : " + fuelType);
 
-    cout << "Fuel Type: "
-         << fuelType << endl;
+    printMenuItem("Category        : " + category);
 
-    cout << "Category: "
-         << category << endl;
+    printMenuItem("License Plate   : " + licensePlate);
 
-    cout << "License Plate: "
-         << licensePlate << endl;
+    printMenuItem("Maintenance     : " + maintenanceRecord);
 
-    cout << "Maintenance Record: "
-         << maintenanceRecord << endl;
+    printMenuItem(
+        "Self Drive Rs.  : " +
+        to_string((int)selfDrivePrice) +
+        " per day"
+    );
 
-    cout << "Self Drive Price: Rs."
-         << selfDrivePrice
-         << " per day\n";
+    printMenuItem(
+        "Driver Price Rs.: " +
+        to_string((int)driverPrice) +
+        " per day"
+    );
 
-    cout << "With Driver Price: Rs."
-         << driverPrice
-         << " per day\n";
+    printMenuItem(
+        "Status          : " +
+        string(available ? "Available" : "Booked")
+    );
 
-    cout << "Status: "
-         << (available ? "Available" : "Booked")
-         << endl;
+    printMenuFooter();
 }
 
 // Display all vehicles
@@ -254,13 +262,13 @@ void displayAllVehicles()
 {
     if (head == NULL)
     {
-        cout << "No vehicles available.\n";
+        printMessage("No Vehicles Available.");
         return;
     }
 
-    VehicleNode* temp = head;
+    printMenuHeader("ALL VEHICLES");
 
-    cout << "\n----------- All Vehicles -----------\n";
+    VehicleNode* temp = head;
 
     while (temp != NULL)
     {
@@ -275,13 +283,13 @@ void displayAvailableVehicles()
 {
     if (head == NULL)
     {
-        cout << "No vehicles available.\n";
+        printMessage("No Vehicles Available.");
         return;
     }
 
-    VehicleNode* temp = head;
+    printMenuHeader("AVAILABLE VEHICLES");
 
-    cout << "\n----------- Available Vehicles -----------\n";
+    VehicleNode* temp = head;
 
     while (temp != NULL)
     {

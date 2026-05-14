@@ -73,20 +73,15 @@ void Admin::adminMenu(BookingQueue& queue)
 
                 break;
 
-            case 5:
+      case 5:
 
-                cout << "\n┌──────────────────────────────────────────┐\n";
-                cout << "│ Exiting Admin Menu...                   │\n";
-                cout << "└──────────────────────────────────────────┘\n";
+     printMessage("Exiting Admin Menu...");
 
-                break;
+    break;
 
-            default:
+    default:
 
-                cout << "\n┌──────────────────────────────────────────┐\n";
-                cout << "│ Invalid choice!                         │\n";
-                cout << "└──────────────────────────────────────────┘\n";
-
+    printMessage("Invalid Choice.");
                 system("pause");
         }
 

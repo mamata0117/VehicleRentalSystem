@@ -163,15 +163,12 @@ void User::registerUser()
 {
     system("cls");
 
-    printHeader("USER REGISTRATION");
+    printInputHeader("USER REGISTRATION");
 
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
     // NAME
-    cout << "│ "
-         << left << setw(22)
-         << "Enter Name : ";
-
+    cout << "Enter Name     : ";
     getline(cin, name);
 
     // Convert Name to Proper Case
@@ -200,67 +197,39 @@ void User::registerUser()
     }
 
     // AGE
-    cout << "│ "
-         << left << setw(22)
-         << "Enter Age : ";
-
+    cout << "Enter Age      : ";
     cin >> age;
 
     // PHONE
-    cout << "│ "
-         << left << setw(22)
-         << "Enter Phone : ";
-
+    cout << "Enter Phone    : ";
     phone = inputPhone();
 
     // PASSWORD
-    cout << "│ "
-         << left << setw(22)
-         << "Enter Password : ";
-
+    cout << "Enter Password : ";
     password = inputPassword();
 
     // CONFIRM PASSWORD
-    cout << "│ "
-         << left << setw(22)
-         << "Confirm Password : ";
-
+    cout << "Confirm Pass   : ";
     string confirm = inputPassword();
 
     if(password != confirm)
     {
-        printLine();
-
         printMessage("Passwords do not match. Try again.");
-
-        cout << "└──────────────────────────────────────────────────────────────┘\n";
-
         return;
     }
 
     // EMAIL
-    cout << "│ "
-         << left << setw(22)
-         << "Enter Email : ";
-
+    cout << "Enter Email    : ";
     cin >> email;
 
     while(isDuplicate(phone, email))
     {
-        printLine();
-
         printMessage("Phone or Email already exists.");
-
-        cout << "└──────────────────────────────────────────────────────────────┘\n";
-
         return;
     }
 
     // ROLE
-    cout << "│ "
-         << left << setw(22)
-         << "Enter Role : ";
-
+    cout << "Enter Role     : ";
     cin >> role;
 
     // Convert role to uppercase
@@ -290,12 +259,7 @@ void User::registerUser()
 
     else
     {
-        printLine();
-
         printMessage("Invalid role. Try again.");
-
-        cout << "└──────────────────────────────────────────────────────────────┘\n";
-
         return;
     }
 
@@ -310,13 +274,8 @@ void User::registerUser()
 
     fout.close();
 
-    
-
     printMessage("Registration Successfully Done.");
-
     printMessage("User ID : " + userID);
-
-    cout << "└──────────────────────────────────────────────────────────────┘\n";
 }
 
 
@@ -335,7 +294,9 @@ bool User::loginUser()
     string filePassword;
     string fileRole;
 
-    cout << "Enter User ID: ";
+    printInputHeader("USER LOGIN");
+
+    cout << "Enter User ID  : ";
     cin >> inputID;
 
     // OPEN FILE BASED ON USER ID
@@ -356,18 +317,18 @@ bool User::loginUser()
 
     else
     {
-        cout << "Invalid User ID format.\n";
+        printMessage("Invalid User ID format.");
         return false;
     }
 
     // FILE CHECK
     if (!fin)
     {
-        cout << "Error opening file!\n";
+        printMessage("Error opening file.");
         return false;
     }
 
-    cout << "Enter Password: ";
+    cout << "Enter Password : ";
     inputPass = inputPassword();
 
     // READ RECORDS
@@ -383,10 +344,9 @@ bool User::loginUser()
         // LOGIN MATCH
         if (fileID == inputID && filePassword == inputPass)
         {
-            cout << "\nLogin successfully done.\n";
+            printMessage("Login Successfully Done.");
 
             userID = fileID;
-
             role = fileRole;
 
             fin.close();
@@ -395,7 +355,7 @@ bool User::loginUser()
         }
     }
 
-    cout << "\nInvalid ID or Password. Please try again.\n";
+    printMessage("Invalid ID or Password.");
 
     fin.close();
 

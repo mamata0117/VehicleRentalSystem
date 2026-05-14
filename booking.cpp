@@ -54,9 +54,9 @@ int selectDriver(string &driverName)
     cout << "┌──────────────────────────────────────────┐\n";
     cout << "│            AVAILABLE DRIVERS             │\n";
     cout << "├──────────────────────────────────────────┤\n";
-    cout << "│ 1. Ram    (Rs.2000/day)                 │\n";
-    cout << "│ 2. Hari   (Rs.2500/day)                 │\n";
-    cout << "│ 3. Shyam  (Rs.3000/day)                 │\n";
+    cout << "│ 1. Ram    (Rs.2000/day)                  │\n";
+    cout << "│ 2. Hari   (Rs.2500/day)                  │\n";
+    cout << "│ 3. Shyam  (Rs.3000/day)                  │\n";
     cout << "└──────────────────────────────────────────┘\n";
 
 
@@ -94,9 +94,7 @@ int selectDriver(string &driverName)
     }
 }
 
-// ==========================================
-// UPDATE VEHICLE STATUS
-// ==========================================
+
 
 void BookingQueue::updateVehicleStatus(string vehicleID)
 {
@@ -104,10 +102,10 @@ void BookingQueue::updateVehicleStatus(string vehicleID)
     ofstream fout("temp.txt");
 
     if (!fin || !fout)
-    {
-        cout << "Error opening vehicle file.\n";
-        return;
-    }
+{
+    printMessage("Error Opening Vehicle File.");
+    return;
+}
 
     string id, brand, model, status;
 
@@ -135,9 +133,7 @@ void BookingQueue::updateVehicleStatus(string vehicleID)
     rename("temp.txt", "vehicles.txt");
 }
 
-// ==========================================
-// CREATE BOOKING
-// ==========================================
+
 
 void BookingQueue::createBooking()
 {
@@ -148,51 +144,45 @@ void BookingQueue::createBooking()
     string plate, t;
     float r;
 
-    cout << "┌──────────────────────────────────────────────────┐\n";
-    cout << "│                 CREATE BOOKING                  │\n";
-    cout << "├──────────────────────────────────────────────────┤\n";
+    printInputHeader("CREATE BOOKING");
 
-    cout << "│ Enter Vehicle ID   : ";
+    cout << "Enter Vehicle ID   : ";
     cin >> plate;
 
     b.vehicleID = plate;
 
-    cout << "│ Enter Customer ID  : ";
+    cout << "Enter Customer ID  : ";
     cin >> b.customerID;
 
-    cout << "│ Enter Vehicle Type : ";
+    cout << "Enter Vehicle Type : ";
     cin >> t;
 
-    cout << "│ Enter Rent Per Day : ";
+    cout << "Enter Rent Per Day : ";
     cin >> r;
 
     // DATE INPUT
 
     string startDate, endDate;
 
-    cout << "│ Start Date (DD/MM/YYYY): ";
+    cout << "Start Date (DD/MM/YYYY) : ";
     cin >> startDate;
 
-    cout << "│ End Date   (DD/MM/YYYY): ";
+    cout << "End Date   (DD/MM/YYYY) : ";
     cin >> endDate;
 
     if(!validDateFormat(startDate) || !validDateFormat(endDate))
     {
-        cout << "├──────────────────────────────────────────────────┤\n";
-        cout << "│ Invalid date format! Use DD/MM/YYYY             │\n";
-        cout << "└──────────────────────────────────────────────────┘\n";
-
+        printMessage("Invalid Date Format. Use DD/MM/YYYY");
         return;
     }
 
-    int days = convertToDays(endDate) - convertToDays(startDate);
+    int days =
+        convertToDays(endDate) -
+        convertToDays(startDate);
 
     if(days <= 0)
     {
-        cout << "├──────────────────────────────────────────────────┤\n";
-        cout << "│ End date must be after start date!              │\n";
-        cout << "└──────────────────────────────────────────────────┘\n";
-
+        printMessage("End Date Must Be After Start Date.");
         return;
     }
 
@@ -200,15 +190,25 @@ void BookingQueue::createBooking()
 
     float total = days * r;
 
-    cout << "│ Total Days : " << days << endl;
+    printMenuHeader("BOOKING SUMMARY");
 
-    cout << "│ Total Cost : Rs. " << total << endl;
+    printMenuItem(
+        "Total Days : " +
+        to_string(days)
+    );
+
+    printMenuItem(
+        "Total Cost : Rs. " +
+        to_string((int)total)
+    );
+
+    printMenuFooter();
 
     // DRIVER OPTION
 
     char choice;
 
-    cout << "│ Need Driver? (y/n): ";
+    cout << "\nNeed Driver? (y/n) : ";
     cin >> choice;
 
     string driverName = "";
@@ -220,10 +220,7 @@ void BookingQueue::createBooking()
 
         if(driverCharge == 0)
         {
-            cout << "├──────────────────────────────────────────────────┤\n";
-            cout << "│ Driver selection failed!                         │\n";
-            cout << "└──────────────────────────────────────────────────┘\n";
-
+            printMessage("Driver Selection Failed.");
             return;
         }
 
@@ -252,14 +249,9 @@ void BookingQueue::createBooking()
 
     enqueue(b);
 
-    cout << "├──────────────────────────────────────────────────┤\n";
-    cout << "│ Booking Created Successfully!                    │\n";
-    cout << "└──────────────────────────────────────────────────┘\n";
+    printMessage("Booking Created Successfully.");
 }
 
-// ==========================================
-// ENQUEUE BOOKING
-// ==========================================
 
 void BookingQueue::enqueue(Booking b)
 {
@@ -272,6 +264,7 @@ void BookingQueue::enqueue(Booking b)
     {
         front = rear = newNode;
     }
+
     else
     {
         rear->next = newNode;
@@ -280,18 +273,16 @@ void BookingQueue::enqueue(Booking b)
 
     updateVehicleStatus(b.vehicleID);
 
-    cout << "Booking added successfully!\n";
+    printMessage("Booking Added Successfully.");
 }
 
-// ==========================================
-// DEQUEUE BOOKING
-// ==========================================
+
 
 void BookingQueue::dequeue()
 {
     if (front == NULL)
     {
-        cout << "No bookings to remove.\n";
+        printMessage("No Bookings To Remove.");
         return;
     }
 
@@ -306,71 +297,67 @@ void BookingQueue::dequeue()
 
     delete temp;
 
-    cout << "Booking removed.\n";
+    printMessage("Booking Removed.");
 }
 
-// ==========================================
-// DISPLAY BOOKINGS
-// ==========================================
+
 
 void BookingQueue::display()
 {
     if (front == NULL)
     {
-        cout << "No bookings available.\n";
+        printMessage("No Bookings Available.");
         return;
     }
 
     BookingNode* temp = front;
 
-cout <<  " ┌───────────────────────────────────────────────────────────┐\n";
-  cout << "│                     BOOKING QUEUE                         │\n";
-  cout << "├───────────────────────────────────────────────────────────┤\n";
+    printMenuHeader("BOOKING QUEUE");
 
-while(temp != NULL)
-{
-    cout << "│ Booking ID : "
-         << temp->data.bookingID
-         << endl;
+    while(temp != NULL)
+    {
+        printMenuItem(
+            "Booking ID : " +
+            temp->data.bookingID
+        );
 
-    cout << "│ Customer   : "
-         << temp->data.customerID
-         << endl;
+        printMenuItem(
+            "Customer   : " +
+            temp->data.customerID
+        );
 
-    cout << "│ Vehicle    : "
-         << temp->data.vehicleID
-         << endl;
+        printMenuItem(
+            "Vehicle    : " +
+            temp->data.vehicleID
+        );
 
-    cout << "│ Status     : "
-         << temp->data.status
-         << endl;
+        printMenuItem(
+            "Status     : " +
+            temp->data.status
+        );
 
-    cout << "├──────────────────────────────────────────────────────────────┤\n";
+        printLine();
 
-    temp = temp->next;
+        temp = temp->next;
+    }
+
+    printMenuFooter();
 }
 
-cout << "└──────────────────────────────────────────────────────────────┘\n";
-}
 
-// ==========================================
-// GET FRONT BOOKING
-// ==========================================
 
 Booking BookingQueue::getFront()
 {
     if (front == NULL)
     {
-        cout << "Queue is empty!\n";
+        printMessage("Queue Is Empty.");
         return Booking();
     }
 
     return front->data;
 }
 
-// ==========================================
-// CHECK EMPTY
-// ==========================================
+
 
 bool BookingQueue::isEmpty()
 {

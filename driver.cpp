@@ -9,17 +9,15 @@ void Driver::setupDriver()
 {
     system("cls");
 
-    cout << "┌──────────────────────────────────────────┐\n";
-    cout << "│               DRIVER SETUP              │\n";
-    cout << "├──────────────────────────────────────────┤\n";
+    printInputHeader("DRIVER SETUP");
 
-    cout << "│ Enter Citizenship : ";
+    cout << "Enter Citizenship : ";
     citizenship = inputCitizenship();
 
-    cout << "│ Enter License No : ";
+    cout << "Enter License     : ";
     license = inputLicense();
 
-    cout << "│ Enter Experience (Years) : ";
+    cout << "Enter Experience  : ";
     cin >> experience;
 
     ofstream fout("drivers.txt", ios::app);
@@ -31,10 +29,9 @@ void Driver::setupDriver()
 
     fout.close();
 
-    cout << "├──────────────────────────────────────────┤\n";
-    cout << "│ Driver setup completed successfully.    │\n";
-    cout << "└──────────────────────────────────────────┘\n";
+    printMessage("Driver Setup Completed Successfully.");
 }
+
 void Driver::viewTotalRidesToday()
 {
     system("cls");
@@ -43,17 +40,15 @@ void Driver::viewTotalRidesToday()
 
     if(!fin)
     {
-        cout << "No booking records found.\n";
+        printMessage("No Booking Records Found.");
         return;
     }
 
     string todayDate;
 
-    cout << "┌──────────────────────────────────────────┐\n";
-    cout << "│            TOTAL RIDES TODAY            │\n";
-    cout << "├──────────────────────────────────────────┤\n";
+    printInputHeader("TOTAL RIDES TODAY");
 
-    cout << "│ Enter Today's Date (DD/MM/YYYY): ";
+    cout << "Enter Today's Date : ";
     cin >> todayDate;
 
     string line;
@@ -99,12 +94,10 @@ void Driver::viewTotalRidesToday()
 
     fin.close();
 
-    cout << "├──────────────────────────────────────────┤\n";
-
-    cout << "│ Total rides completed today : "
-         << totalRides;
-
-    cout << "\n└──────────────────────────────────────────┘\n";
+    printMessage(
+        "Total Rides Today : " +
+        to_string(totalRides)
+    );
 }
    
 void Driver::viewReviews()
@@ -115,7 +108,7 @@ void Driver::viewReviews()
 
     if(!fin)
     {
-        cout << "No reviews found.\n";
+        printMessage("No Reviews Found.");
         return;
     }
 
@@ -123,9 +116,7 @@ void Driver::viewReviews()
 
     bool found = false;
 
-    cout << "┌──────────────────────────────────────────┐\n";
-    cout << "│               MY REVIEWS                │\n";
-    cout << "├──────────────────────────────────────────┤\n";
+    printMenuHeader("MY REVIEWS");
 
     while(getline(fin, line))
     {
@@ -147,52 +138,51 @@ void Driver::viewReviews()
         {
             found = true;
 
-            cout << "│ Booking ID : "
-                 << bookingID << endl;
+            printMenuItem(
+                "Booking ID  : " + bookingID
+            );
 
-            cout << "│ Customer ID: "
-                 << customerID << endl;
+            printMenuItem(
+                "Customer ID : " + customerID
+            );
 
-            cout << "│ Rating     : "
-                 << rating << "/5" << endl;
+            printMenuItem(
+                "Rating      : " + rating + "/5"
+            );
 
-            cout << "│ Review     : "
-                 << review << endl;
+            printMenuItem(
+                "Review      : " + review
+            );
 
-            cout << "├──────────────────────────────────────────┤\n";
+            printLine();
         }
     }
 
     if(!found)
     {
-        cout << "│ No reviews yet.                         │\n";
+        printMenuItem("No Reviews Yet.");
     }
 
-    cout << "└──────────────────────────────────────────┘\n";
+    printMenuFooter();
 
     fin.close();
 }
-    
+
 void Driver::acceptCustomer()
 {
     system("cls");
 
     string id;
 
-    cout << "┌──────────────────────────────────────────┐\n";
-    cout << "│             ACCEPT CUSTOMER             │\n";
-    cout << "├──────────────────────────────────────────┤\n";
+    printInputHeader("ACCEPT CUSTOMER");
 
-    cout << "│ Enter Customer ID : ";
+    cout << "Enter Customer ID : ";
     cin >> id;
 
-    cout << "├──────────────────────────────────────────┤\n";
-
-    cout << "│ Customer "
-         << id
-         << " accepted successfully.\n";
-
-    cout << "└──────────────────────────────────────────┘\n";
+    printMessage(
+        "Customer " + id +
+        " Accepted Successfully."
+    );
 }
 
  void Driver::rejectCustomer()
@@ -201,20 +191,15 @@ void Driver::acceptCustomer()
 
     string id;
 
-    cout << "┌──────────────────────────────────────────┐\n";
-    cout << "│             REJECT CUSTOMER             │\n";
-    cout << "├──────────────────────────────────────────┤\n";
+    printInputHeader("REJECT CUSTOMER");
 
-    cout << "│ Enter Customer ID : ";
+    cout << "Enter Customer ID : ";
     cin >> id;
 
-    cout << "├──────────────────────────────────────────┤\n";
-
-    cout << "│ Customer "
-         << id
-         << " rejected.\n";
-
-    cout << "└──────────────────────────────────────────┘\n";
+    printMessage(
+        "Customer " + id +
+        " Rejected."
+    );
 }
 
 void Driver::rateCustomer()
@@ -224,14 +209,12 @@ void Driver::rateCustomer()
     string id;
     int rating;
 
-    cout << "┌──────────────────────────────────────────┐\n";
-    cout << "│              RATE CUSTOMER              │\n";
-    cout << "├──────────────────────────────────────────┤\n";
+    printInputHeader("RATE CUSTOMER");
 
-    cout << "│ Enter Customer ID : ";
+    cout << "Enter Customer ID : ";
     cin >> id;
 
-    cout << "│ Enter Rating (1-5): ";
+    cout << "Enter Rating (1-5): ";
     cin >> rating;
 
     ofstream fout("customer_ratings.txt", ios::app);
@@ -241,9 +224,7 @@ void Driver::rateCustomer()
 
     fout.close();
 
-    cout << "├──────────────────────────────────────────┤\n";
-    cout << "│ Rating submitted successfully.          │\n";
-    cout << "└──────────────────────────────────────────┘\n";
+    printMessage("Rating Submitted Successfully.");
 }
 
 string Driver::getCitizenship() {

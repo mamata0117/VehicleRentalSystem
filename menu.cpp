@@ -12,14 +12,18 @@ void customerMenu(Customer& c, BookingQueue& queue)
 
     while (true)
     {
-        cout << "\n--- Customer Menu ---\n";
+        system("cls");
 
-        cout << "1. View Vehicles\n";
-        cout << "2. Book Vehicle\n";
-        cout << "3. Cancel Booking\n";
-        cout << "4. Exit\n";
+        printMenuHeader("CUSTOMER MENU");
 
-        cout << "Enter choice: ";
+        printMenuItem("1. View Vehicles");
+        printMenuItem("2. Book Vehicle");
+        printMenuItem("3. Cancel Booking");
+        printMenuItem("4. Exit");
+
+        printMenuFooter();
+
+        cout << "\nEnter Choice : ";
         cin >> ch;
 
         if (ch == 1)
@@ -39,13 +43,13 @@ void customerMenu(Customer& c, BookingQueue& queue)
 
         else if (ch == 4)
         {
-            cout << "Exiting...\n";
+            printMessage("Exiting...");
             break;
         }
 
         else
         {
-            cout << "Invalid choice!\n";
+            printMessage("Invalid Choice.");
         }
     }
 }
@@ -57,15 +61,19 @@ void driverMenu(Driver& d)
 
     while (true)
     {
-        cout << "\n--------------------------- Driver Menu -----------------------o---\n";
+        system("cls");
 
-        cout << "1. Accept Customer\n";
-        cout << "2. Reject Customer\n";
-        cout << "3. View Own Reviews\n";
-        cout << "4. View Total Rides Today\n";
-        cout << "5. Exit\n";
+        printMenuHeader("DRIVER MENU");
 
-        cout << "Enter choice: ";
+        printMenuItem("1. Accept Customer");
+        printMenuItem("2. Reject Customer");
+        printMenuItem("3. View Own Reviews");
+        printMenuItem("4. View Total Rides Today");
+        printMenuItem("5. Exit");
+
+        printMenuFooter();
+
+        cout << "\nEnter Choice : ";
         cin >> ch;
 
         if (ch == 1)
@@ -92,13 +100,13 @@ void driverMenu(Driver& d)
 
         else if (ch == 5)
         {
-            cout << "Exiting...\n";
+            printMessage("Exiting...");
             break;
         }
 
         else
         {
-            cout << "Invalid choice!\n";
+            printMessage("Invalid Choice.");
         }
     }
 }

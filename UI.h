@@ -1,17 +1,23 @@
-#ifndef UI_H
-#define UI_H
+// ui.h
+
+#pragma once
 
 #include <iostream>
 #include <iomanip>
+#include <string>
 
 using namespace std;
 
-void printHeader(string title);
+// MENU / DISPLAY UI
+void printMenuHeader(string title);
+void printMenuItem(string text);
+void printMenuFooter();
 
-void printField(string label, string value);
+// INPUT UI
+void printInputHeader(string title);
 
+// MESSAGE UI
 void printMessage(string msg);
 
+// LINE
 void printLine();
-
-#endif

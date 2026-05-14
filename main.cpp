@@ -28,25 +28,15 @@ int main()
     {
         system("cls");
 
-        // MAIN MENU BOX
-        cout << "┌──────────────────────────────────────────────────────────────┐\n";
+        printMenuHeader("VEHICLE RENTAL SYSTEM");
 
-        cout << "│ "
-             << left << setw(60)
-             << "VEHICLE RENTAL SYSTEM"
-             << "│\n";
+        printMenuItem("1. Register");
+        printMenuItem("2. Login");
+        printMenuItem("3. Exit");
 
-        cout << "├──────────────────────────────────────────────────────────────┤\n";
+        printMenuFooter();
 
-        cout << "│ 1. Register                                                 │\n";
-
-        cout << "│ 2. Login                                                    │\n";
-
-        cout << "│ 3. Exit                                                     │\n";
-
-        cout << "└──────────────────────────────────────────────────────────────┘\n";
-
-        cout << "\nEnter choice : ";
+        cout << "\nEnter Choice : ";
 
         cin >> choice;
 
@@ -112,14 +102,7 @@ int main()
         {
             system("cls");
 
-            cout << "┌──────────────────────────────────────────────────────────────┐\n";
-
-            cout << "│ "
-                 << left << setw(60)
-                 << "THANK YOU FOR USING VEHICLE RENTAL SYSTEM"
-                 << "│\n";
-
-            cout << "└──────────────────────────────────────────────────────────────┘\n";
+            printMessage("THANK YOU FOR USING VEHICLE RENTAL SYSTEM");
 
             break;
         }
@@ -127,14 +110,7 @@ int main()
         // INVALID CHOICE
         else
         {
-            cout << "\n┌──────────────────────────────────────────────────────────────┐\n";
-
-            cout << "│ "
-                 << left << setw(60)
-                 << "Invalid Choice"
-                 << "│\n";
-
-            cout << "└──────────────────────────────────────────────────────────────┘\n";
+            printMessage("Invalid Choice.");
 
             system("pause");
         }

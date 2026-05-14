@@ -14,13 +14,13 @@ void Customer::setupCustomer()
     system("cls");
 
     cout << "┌──────────────────────────────────────────────────┐\n";
-    cout << "│                 CUSTOMER SETUP                  │\n";
+    cout << "│                 CUSTOMER SETUP                   │\n";
     cout << "├──────────────────────────────────────────────────┤\n";
 
-    cout << "│ Enter Citizenship : ";
+    cout << "│";
     citizenship = inputCitizenship();
 
-    cout << "│ Are you a student? (1 = Yes, 0 = No): ";
+    cout << "│ Are you a student? 1 for Yes, 0 for No: ";
     cin >> isStudent;
 
     cin.ignore();
@@ -35,7 +35,7 @@ void Customer::setupCustomer()
     }
 
     cout << "├──────────────────────────────────────────────────┤\n";
-    cout << "│ Customer setup completed successfully.          │\n";
+    cout << "│ Customer setup completed successfully.           │\n";
     cout << "└──────────────────────────────────────────────────┘\n";
 }
 void Customer::reviewDriver()
@@ -48,7 +48,7 @@ void Customer::reviewDriver()
     system("cls");
 
     cout << "┌──────────────────────────────────────────┐\n";
-    cout << "│              DRIVER REVIEW              │\n";
+    cout << "│              DRIVER REVIEW               │\n";
     cout << "├──────────────────────────────────────────┤\n";
 
     cout << "│ Enter Booking ID : ";
@@ -76,7 +76,7 @@ void Customer::reviewDriver()
     fout.close();
 
     cout << "├──────────────────────────────────────────┤\n";
-    cout << "│ Review submitted successfully!          │\n";
+    cout << "│ Review submitted successfully!           │\n";
     cout << "└──────────────────────────────────────────┘\n";
 }
 // Customer menu
@@ -134,15 +134,19 @@ void Customer::viewVehicles()
 // Book vehicle
 void Customer::bookVehicle(BookingQueue& queue)
 {
+    system("cls");
+
     Booking b;
 
-    cout << "Enter Booking ID: ";
+    printInputHeader("BOOK VEHICLE");
+
+    cout << "Enter Booking ID : ";
     cin >> b.bookingID;
 
     // Logged in customer ID
     b.customerID = getUserID();
 
-    cout << "Enter Vehicle ID: ";
+    cout << "Enter Vehicle ID : ";
     cin >> b.vehicleID;
 
     // FIND VEHICLE
@@ -151,14 +155,14 @@ void Customer::bookVehicle(BookingQueue& queue)
     // Vehicle does not exist
     if (v == NULL)
     {
-        cout << "Vehicle does not exist.\n";
+        printMessage("Vehicle Does Not Exist.");
         return;
     }
 
     // Vehicle already booked
     if (!v->isAvailable())
     {
-        cout << "Vehicle is already booked.\n";
+        printMessage("Vehicle Already Booked.");
         return;
     }
 
@@ -170,13 +174,19 @@ void Customer::bookVehicle(BookingQueue& queue)
 
     queue.enqueue(b);
 
-    cout << "Booking request sent successfully!\n";
+    printMessage("Booking Request Sent Successfully.");
 }
+
+
 
 // Cancel booking
 void Customer::cancelBooking()
 {
-    cout << "Cancel feature will be added later using stack.\n";
+    system("cls");
+
+    printMessage(
+        "Cancel Feature Will Be Added Later Using Stack."
+    );
 }
 
 // Getter
