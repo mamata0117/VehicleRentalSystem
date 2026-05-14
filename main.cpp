@@ -39,18 +39,29 @@ int main()
         cout << "\nEnter Choice : ";
 
         cin >> choice;
+        if(cin.fail())
+{
+    cin.clear();
 
+    cin.ignore(1000, '\n');
+
+    printMessage("Invalid Choice.");
+
+    system("pause");
+
+    continue;
+}
         // REGISTER
         if(choice == 1)
-        {
+        { system("cls");
             user.registerUser();
 
-            system("pause");
+            
         }
 
         // LOGIN
         else if(choice == 2)
-        {
+        {    system("cls");
             if(user.loginUser())
             {
                 // CUSTOMER
@@ -63,7 +74,7 @@ int main()
                     c.setRole(user.getRole());
 
                     c.setupCustomer();
-
+                 system("cls");
                     customerMenu(c, queue);
                 }
 
@@ -77,7 +88,7 @@ int main()
                     d.setRole(user.getRole());
 
                     d.setupDriver();
-
+                    system("cls");
                     driverMenu(d);
                 }
 
@@ -89,7 +100,7 @@ int main()
                     a.setUserID(user.getUserID());
 
                     a.setRole(user.getRole());
-
+                    system("cls");
                     adminMenu(a, queue);
                 }
             }

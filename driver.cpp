@@ -11,10 +11,9 @@ void Driver::setupDriver()
 
     printInputHeader("DRIVER SETUP");
 
-    cout << "Enter Citizenship : ";
     citizenship = inputCitizenship();
 
-    cout << "Enter License     : ";
+  
     license = inputLicense();
 
     cout << "Enter Experience  : ";
@@ -34,7 +33,7 @@ void Driver::setupDriver()
 
 void Driver::viewTotalRidesToday()
 {
-    system("cls");
+   
 
     ifstream fin("bookings.txt");
 
@@ -172,34 +171,168 @@ void Driver::acceptCustomer()
 {
     system("cls");
 
-    string id;
+    ifstream fin("bookings.txt");
 
-    printInputHeader("ACCEPT CUSTOMER");
+    if(!fin)
+    {
+        printMessage("No Booking Records Found.");
+        return;
+    }
 
-    cout << "Enter Customer ID : ";
-    cin >> id;
+    string line;
+    bool found = false;
 
-    printMessage(
-        "Customer " + id +
-        " Accepted Successfully."
-    );
+    printMenuHeader("PENDING BOOKINGS");
+
+    // Show pending bookings
+    while(getline(fin, line))
+    {
+        if(line.find("PENDING") != string::npos)
+        {
+            printMenuItem(line);
+            found = true;
+        }
+    }
+
+    fin.close();
+
+    if(!found)
+    {
+        printMessage("No Pending Bookings.");
+        return;
+    }
+
+    printLine();
+
+    string bookingID;
+
+    cout << "Enter Booking ID To Accept : ";
+    cin >> bookingID;
+
+    fin.open("bookings.txt");
+    ofstream fout("temp.txt");
+
+    bool accepted = false;
+
+    while(getline(fin, line))
+    {
+        if(
+            line.find(bookingID) != string::npos &&
+            line.find("PENDING") != string::npos
+        )
+        {
+            size_t pos = line.find("PENDING");
+
+            if(pos != string::npos)
+            {
+                line.replace(pos, 7, "ACCEPTED");
+                accepted = true;
+            }
+        }
+
+        fout << line << endl;
+    }
+
+    fin.close();
+    fout.close();
+
+    remove("bookings.txt");
+    rename("temp.txt", "bookings.txt");
+
+    if(accepted)
+    {
+        printMessage(
+            "Booking " + bookingID +
+            " Accepted Successfully."
+        );
+    }
+    else
+    {
+        printMessage("Invalid Booking ID.");
+    }
 }
-
- void Driver::rejectCustomer()
+void Driver::rejectCustomer()
 {
     system("cls");
 
-    string id;
+    ifstream fin("bookings.txt");
 
-    printInputHeader("REJECT CUSTOMER");
+    if(!fin)
+    {
+        printMessage("No Booking Records Found.");
+        return;
+    }
 
-    cout << "Enter Customer ID : ";
-    cin >> id;
+    string line;
+    bool found = false;
 
-    printMessage(
-        "Customer " + id +
-        " Rejected."
-    );
+    printMenuHeader("PENDING BOOKINGS");
+
+    while(getline(fin, line))
+    {
+        if(line.find("PENDING") != string::npos)
+        {
+            printMenuItem(line);
+            found = true;
+        }
+    }
+
+    fin.close();
+
+    if(!found)
+    {
+        printMessage("No Pending Bookings.");
+        return;
+    }
+
+    printLine();
+
+    string bookingID;
+
+    cout << "Enter Booking ID To Reject : ";
+    cin >> bookingID;
+
+    fin.open("bookings.txt");
+    ofstream fout("temp.txt");
+
+    bool rejected = false;
+
+    while(getline(fin, line))
+    {
+        if(
+            line.find(bookingID) != string::npos &&
+            line.find("PENDING") != string::npos
+        )
+        {
+            size_t pos = line.find("PENDING");
+
+            if(pos != string::npos)
+            {
+                line.replace(pos, 7, "REJECTED");
+                rejected = true;
+            }
+        }
+
+        fout << line << endl;
+    }
+
+    fin.close();
+    fout.close();
+
+    remove("bookings.txt");
+    rename("temp.txt", "bookings.txt");
+
+    if(rejected)
+    {
+        printMessage(
+            "Booking " + bookingID +
+            " Rejected Successfully."
+        );
+    }
+    else
+    {
+        printMessage("Invalid Booking ID.");
+    }
 }
 
 void Driver::rateCustomer()

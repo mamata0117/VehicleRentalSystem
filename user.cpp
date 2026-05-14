@@ -129,18 +129,63 @@ string User::inputLicense() {
     }
 }
 
-string User::generateUserID(string role) {
-    static int c = 1, d = 1, a = 1;
+string User::generateUserID(string role)
+{
+    ifstream fin;
 
-    if (role == "CUSTOMER") {
-        return "C-" + to_string(c++);
+    string line;
+
+    int count = 0;
+
+    // ADMIN
+    if(role == "ADMIN")
+    {
+        fin.open("admins.txt");
     }
-    else if (role == "DRIVER") {
-        return "D-" + to_string(d++);
+
+    // CUSTOMER
+    else if(role == "CUSTOMER")
+    {
+        fin.open("customers.txt");
     }
-    else {
-        return "A-" + to_string(a++);
+
+    // DRIVER
+    else if(role == "DRIVER")
+    {
+        fin.open("drivers.txt");
     }
+
+    // Count records
+    while(getline(fin, line))
+    {
+        if(line != "")
+        {
+            count++;
+        }
+    }
+
+    fin.close();
+
+    // Each user has 7 lines
+    count = count / 7;
+
+    // Generate ID
+    if(role == "ADMIN")
+    {
+        return "A-" + to_string(count + 1);
+    }
+
+    else if(role == "CUSTOMER")
+    {
+        return "C-" + to_string(count + 1);
+    }
+
+    else if(role == "DRIVER")
+    {
+        return "D-" + to_string(count + 1);
+    }
+
+    return "";
 }
 
 
@@ -165,22 +210,22 @@ void User::registerUser()
 
     printInputHeader("USER REGISTRATION");
 
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
+    
     // NAME
     cout << "Enter Name     : ";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     getline(cin, name);
 
     // Convert Name to Proper Case
     bool newWord = true;
-
+    
     for(char &c : name)
     {
         if(c == ' ')
         {
             newWord = true;
         }
-
+        
         else
         {
             if(newWord)
@@ -195,11 +240,11 @@ void User::registerUser()
             }
         }
     }
-
+    
     // AGE
     cout << "Enter Age      : ";
     cin >> age;
-
+    
     // PHONE
     cout << "Enter Phone    : ";
     phone = inputPhone();
@@ -209,7 +254,7 @@ void User::registerUser()
     password = inputPassword();
 
     // CONFIRM PASSWORD
-    cout << "Confirm Pass   : ";
+    cout << "Confirm Password   : ";
     string confirm = inputPassword();
 
     if(password != confirm)
@@ -222,14 +267,14 @@ void User::registerUser()
     cout << "Enter Email    : ";
     cin >> email;
 
-    while(isDuplicate(phone, email))
+  if(isDuplicate(phone, email))
     {
         printMessage("Phone or Email already exists.");
         return;
     }
 
     // ROLE
-    cout << "Enter Role     : ";
+    cout << "Enter Role(Customer/Driver/Admin)    : ";
     cin >> role;
 
     // Convert role to uppercase
@@ -293,6 +338,8 @@ bool User::loginUser()
     string fileEmail;
     string filePassword;
     string fileRole;
+
+    showAvailableUsers();
 
     printInputHeader("USER LOGIN");
 

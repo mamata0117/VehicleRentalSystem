@@ -19,7 +19,7 @@ void reviewDriver();
     void viewVehicles();
     void bookVehicle(BookingQueue& queue);
     void cancelBooking(); // we’ll wire stack later
-
+void completeRide();
     // optional getters
     std::string getCitizenship();
 };

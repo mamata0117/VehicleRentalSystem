@@ -11,32 +11,26 @@ using namespace std;
 // Customer setup
 void Customer::setupCustomer()
 {
-    system("cls");
+   
 
-    cout << "┌──────────────────────────────────────────────────┐\n";
-    cout << "│                 CUSTOMER SETUP                   │\n";
-    cout << "├──────────────────────────────────────────────────┤\n";
-
-    cout << "│";
+    printInputHeader("CUSTOMER SETUP");
     citizenship = inputCitizenship();
 
-    cout << "│ Are you a student? 1 for Yes, 0 for No: ";
+    cout << "Are you a student? 1 for Yes, 0 for No: ";
     cin >> isStudent;
 
     cin.ignore();
 
     if(isStudent == 1)
     {
-        cout << "│ Enter Institution Name : ";
+        cout << " Enter Institution Name : ";
         getline(cin, institutionName);
 
-        cout << "│ Enter Student ID Card Number : ";
+        cout << " Enter Student ID Card Number : ";
         getline(cin, studentIDCard);
     }
 
-    cout << "├──────────────────────────────────────────────────┤\n";
-    cout << "│ Customer setup completed successfully.           │\n";
-    cout << "└──────────────────────────────────────────────────┘\n";
+    printMessage("Customer setup completed successfully.");
 }
 void Customer::reviewDriver()
 {
@@ -45,24 +39,22 @@ void Customer::reviewDriver()
     int rating;
     string review;
 
-    system("cls");
+   
 
-    cout << "┌──────────────────────────────────────────┐\n";
-    cout << "│              DRIVER REVIEW               │\n";
-    cout << "├──────────────────────────────────────────┤\n";
+    printInputHeader("DRIVER REVIEW");
 
-    cout << "│ Enter Booking ID : ";
+    cout << " Enter Booking ID : ";
     cin >> bookingID;
 
-    cout << "│ Enter Driver ID  : ";
+    cout << " Enter Driver ID  : ";
     cin >> driverID;
 
-    cout << "│ Rate Driver(1-5): ";
+    cout << " Rate Driver(1-5): ";
     cin >> rating;
 
     cin.ignore();
 
-    cout << "│ Write Review     : ";
+    cout << " Write Review     : ";
     getline(cin, review);
 
     ofstream fout("reviews.txt", ios::app);
@@ -75,9 +67,7 @@ void Customer::reviewDriver()
 
     fout.close();
 
-    cout << "├──────────────────────────────────────────┤\n";
-    cout << "│ Review submitted successfully!           │\n";
-    cout << "└──────────────────────────────────────────┘\n";
+    printMessage("Review submitted successfully!");
 }
 // Customer menu
 void Customer::customerMenu(BookingQueue& queue)
@@ -175,6 +165,7 @@ void Customer::bookVehicle(BookingQueue& queue)
     queue.enqueue(b);
 
     printMessage("Booking Request Sent Successfully.");
+
 }
 
 
@@ -184,11 +175,105 @@ void Customer::cancelBooking()
 {
     system("cls");
 
-    printMessage(
-        "Cancel Feature Will Be Added Later Using Stack."
-    );
+    ifstream fin("bookings.txt");
+
+    if(!fin)
+    {
+        printMessage("No Booking Records Found.");
+        return;
+    }
+
+    string line;
+
+    bool found = false;
+
+    printMenuHeader("YOUR BOOKINGS");
+
+    // SHOW CUSTOMER BOOKINGS
+    while(getline(fin, line))
+    {
+        if(line.find(getUserID()) != string::npos)
+        {
+            printMenuItem(line);
+
+            found = true;
+        }
+    }
+
+    fin.close();
+
+    if(!found)
+    {
+        printMessage("No Bookings Found.");
+        return;
+    }
+
+    printLine();
+
+    string cancelID;
+
+    cout << "Enter Booking ID To Cancel : ";
+    cin >> cancelID;
+
+    fin.open("bookings.txt");
+
+    ofstream fout("temp.txt");
+
+    bool deleted = false;
+
+    while(getline(fin, line))
+    {
+        // KEEP OTHER BOOKINGS
+        if(line.find(cancelID) == string::npos)
+        {
+            fout << line << endl;
+        }
+
+        else
+        {
+            deleted = true;
+        }
+    }
+
+    fin.close();
+    fout.close();
+
+    remove("bookings.txt");
+
+    rename("temp.txt", "bookings.txt");
+
+    if(deleted)
+    {
+        printMessage("Booking Cancelled Successfully.");
+    }
+
+    else
+    {
+        printMessage("Booking ID Not Found.");
+    }
 }
 
+void Customer::completeRide()
+{
+    string bookingID;
+
+    cout << "Enter Completed Booking ID : ";
+    cin >> bookingID;
+
+    // update booking status to COMPLETED
+
+    printMessage("Ride Completed Successfully.");
+
+    char choice;
+
+    cout << "Do You Want To Review Driver? (Y/N) : ";
+    cin >> choice;
+
+    if(choice == 'Y' || choice == 'y')
+    {
+        reviewDriver();
+    }
+}
 // Getter
 string Customer::getCitizenship()
 {

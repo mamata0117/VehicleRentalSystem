@@ -1,5 +1,3 @@
-// ui.h
-
 #pragma once
 
 #include <iostream>
@@ -21,3 +19,6 @@ void printMessage(string msg);
 
 // LINE
 void printLine();
+
+// USERS
+void showAvailableUsers();

@@ -26,19 +26,25 @@ void customerMenu(Customer& c, BookingQueue& queue)
         cout << "\nEnter Choice : ";
         cin >> ch;
 
-        if (ch == 1)
-        {
-            c.viewVehicles();
-        }
+       if (ch == 1)
+          {
+    system("cls");
+
+    c.viewVehicles();
+
+    system("pause");
+           }
 
         else if (ch == 2)
-        {
+        { system("cls");
             c.bookVehicle(queue);
+            system("pause");
         }
 
         else if (ch == 3)
-        {
+        { system("cls");
             c.cancelBooking();
+            system("pause");
         }
 
         else if (ch == 4)
@@ -77,25 +83,29 @@ void driverMenu(Driver& d)
         cin >> ch;
 
         if (ch == 1)
-        {
+        {  system("cls");
             d.acceptCustomer();
 
             d.rateCustomer();
+            system("pause");
         }
 
         else if (ch == 2)
-        {
+        {   system("cls");
             d.rejectCustomer();
+            system("pause");
         }
 
         else if (ch == 3)
-        {
+        {  system("cls");
             d.viewReviews();
+            system("pause");
         }
 
         else if (ch == 4)
-        {
+        {  system("cls");
             d.viewTotalRidesToday();
+            system("pause");
         }
 
         else if (ch == 5)

@@ -13,9 +13,8 @@ BookingQueue::BookingQueue()
     front = rear = NULL;
 }
 
-// ==========================================
-// DATE VALIDATION
-// ==========================================
+
+
 
 bool validDateFormat(string date)
 {
@@ -28,9 +27,7 @@ bool validDateFormat(string date)
     return true;
 }
 
-// ==========================================
-// SIMPLE DATE TO DAYS CONVERTER
-// ==========================================
+
 
 int convertToDays(string date)
 {
@@ -41,9 +38,6 @@ int convertToDays(string date)
     return year * 365 + month * 30 + day;
 }
 
-// ==========================================
-// DRIVER SELECTION
-// ==========================================
 
 int selectDriver(string &driverName)
 {
@@ -189,7 +183,19 @@ void BookingQueue::createBooking()
     // TOTAL CALCULATION
 
     float total = days * r;
+    char studentChoice;
 
+cout << "\nAre You Student? (y/n) : ";
+cin >> studentChoice;
+
+if(studentChoice == 'y' || studentChoice == 'Y')
+{
+    float discount = total * 0.10;
+
+    total = total - discount;
+
+    printMessage("10% Student Discount Applied.");
+}
     printMenuHeader("BOOKING SUMMARY");
 
     printMenuItem(
