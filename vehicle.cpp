@@ -58,7 +58,7 @@ void Vehicle::addVehicle()
             return;
     }
 
-    cout << "Enter Fuel Type  : ";
+    cout << "Enter Fuel Type (Petrol/Diesel)  : ";
     cin >> fuelType;
 
     // LICENSE PLATE VALIDATION
@@ -180,7 +180,7 @@ void Vehicle::addVehicle()
 
     maintenanceRecord =
         "Last Repaired: " + repairedDate +
-        " | Next Due: " + nextDueDate;
+        " \n \t \t  Next Due: " + nextDueDate;
 
     // PRICING
     cout << "\nEnter Self Drive Price : ";

@@ -1,77 +1,65 @@
-# Vehicle Rental System
+Vehicle Rental System — Function Map
 
-A console-based C++ project for managing a small vehicle rental workflow with role-based menus for admin, driver, and customer users.
+This README maps the main functions and where their core logic lives across the codebase. Use this as a quick reference when navigating or modifying behavior.
 
-## Features
+How to read this document
+- File: link to the implementation file. - Function: `name()` : short description of the logic it contains.
 
-- User registration and login with role support (`ADMIN`, `DRIVER`, `CUSTOMER`)
-- Vehicle management (add, view, delete)
-- Driver management (add, view, delete)
-- Booking management:
-  - Create booking
-  - View bookings
-  - Search booking by ID
-  - Cancel booking
-- Priority booking queue (FIFO)
-- Simple review system (stack-based, available in code)
-- File-based persistence using `.txt` files
+Files & Functions
 
-## Project Structure
+- File: [vehicle.cpp](vehicle.cpp)
+  - `Vehicle::addVehicle()` : Interactive input for new vehicle details, license-plate format validation, maintenance dates, pricing, and sets availability to true.
+  - `insertVehicle()` : Insert a `Vehicle` into the linked-list starting at global `head`.
+  - `Vehicle::displayVehicle()` : Render a vehicle's fields via the UI helpers.
+  - `displayAllVehicles()` / `displayAvailableVehicles()` : Iterate the vehicle linked list and display all/only-available vehicles.
+  - `Vehicle::isAvailable()` / `Vehicle::setAvailability()` : Availability getter/setter.
+  - `findVehicleByID()` : Linear search through the vehicle linked list and return pointer to matching `Vehicle`.
 
-- `main.cpp`: Entry point
-- `menu.cpp`, `menu.h`: Main, admin, driver, and customer menus
-- `user.cpp`, `user.h`: Registration, login, and user search
-- `vehicle.cpp`, `vehicle.h`: Vehicle list using a circular doubly linked list
-- `driver.cpp`, `driver.h`: Driver add/view/delete and license validation
-- `booking.cpp`, `booking.h`: Booking linked list, priority queue, and review stack
-- `users.txt`, `vehicles.txt`, `drivers.txt`, `bookings.txt`: Data storage files
+- File: [user.cpp](user.cpp)
+  - `User::registerUser()` : Collects name/age/phone/email/password/role, validates inputs, generates a role-based ID, writes the record to a role-specific file (admins/customers/drivers).
+  - `User::loginUser()` : Prompts for ID and password, opens the corresponding role file, validates credentials, and sets `userID`/`role`.
+  - `User::inputPhone()`, `inputPassword()`, `inputCitizenship()`, `inputLicense()` : Interactive input helpers with format and character validation.
+  - `User::generateUserID()` : Counts records in role files and returns a new ID string (`A-`, `C-`, `D-`).
+  - `User::isDuplicate()` : Quick scan of `users.txt` for duplicate phone/email.
 
-## Requirements
+- File: [UI.cpp](UI.cpp)
+  - `printMenuHeader()`, `printMenuItem()`, `printMenuFooter()`, `printInputHeader()`, `printMessage()`, `printLine()` : Console UI helpers used across the app.
+  - `showAvailableUsers()` : Reads `admins.txt`, `customers.txt`, and `drivers.txt` and prints available accounts (used on login screen).
 
-- Windows OS (project uses `conio.h` and `system("cls")`)
-- C++ compiler with C++11 or later support
-- Recommended: MinGW g++
+- File: [driver.cpp](driver.cpp)
+  - `Driver::setupDriver()` : Collects driver-specific fields and appends them to `drivers.txt`.
+  - `Driver::viewReviews()` : Parses `reviews.txt` and prints reviews for the logged-in driver.
+  - `Driver::acceptCustomer()` / `rejectCustomer()` : Scan `bookings.txt` for `PENDING` entries, display them, then replace the chosen booking's status to `ACCEPTED` / `REJECTED` by rewriting the file.
+  - `Driver::rateCustomer()` : Append a customer rating to `customer_ratings.txt`.
+  - `Driver::viewTotalRidesToday()` : Parse `bookings.txt`, count bookings assigned to the driver that match a supplied pickup date.
 
-## Build And Run (Windows, g++)
+- File: [admin.cpp](admin.cpp)
+  - `Admin::adminMenu()` : Console menu for admin actions: add vehicle (calls `Vehicle::addVehicle()` + `insertVehicle()`), view all vehicles, view available vehicles, and view bookings (calls `BookingQueue::display()`).
 
-From the project root:
+- File: [booking.cpp](booking.cpp)
+  - `BookingQueue::createBooking()` : Interactive booking flow: vehicle & customer IDs, date inputs (validated with `validDateFormat()`), day-count computed via `convertToDays()`, student discount, optional driver selection (calls `selectDriver()`), save to `rentals.txt`, set `Booking` fields and enqueue.
+  - `validDateFormat()` / `convertToDays()` : Helpers for validating and computing day counts from `DD/MM/YYYY` strings.
+  - `selectDriver()` : Simple driver selection menu returns driver name and daily rate.
+  - `BookingQueue::enqueue()` / `dequeue()` / `display()` / `getFront()` / `isEmpty()` : Basic queue operations implemented with a singly linked list; `enqueue()` also calls `updateVehicleStatus()`.
+  - `BookingQueue::updateVehicleStatus()` : Rewrites `vehicles.txt` marking a vehicle's status as `Booked` when a booking is enqueued.
 
-```powershell
-g++ -std=c++11 main.cpp menu.cpp user.cpp vehicle.cpp driver.cpp booking.cpp -o output/VehicleRentalSystem.exe
-./output/VehicleRentalSystem.exe
-```
+- File: [menu.cpp](menu.cpp)
+  - `customerMenu()`, `driverMenu()`, `adminMenu()` : Top-level loops that present choices and dispatch to the corresponding class methods (e.g., `Customer::bookVehicle()`, `Driver::acceptCustomer()`).
 
-If `output` does not exist, create it first:
+- File: [customer.cpp](customer.cpp)
+  - `Customer::setupCustomer()` : Collect citizenship and student info.
+  - `Customer::viewVehicles()` : Calls `displayAvailableVehicles()`.
+  - `Customer::bookVehicle()` : Reads booking inputs, uses `findVehicleByID()` to validate, checks availability, sets `Vehicle::setAvailability(false)`, enqueues a `Booking` with `status = "PENDING"`.
+  - `Customer::cancelBooking()` : Removes a booking line from `bookings.txt` by rewriting to a temporary file.
+  - `Customer::completeRide()` : Placeholder to mark a booking completed and optionally call `reviewDriver()`.
+  - `Customer::reviewDriver()` : Append a driver review to `reviews.txt`.
 
-```powershell
-mkdir output
-```
+- File: [main.cpp](main.cpp)
+  - `main()` : Program entry and main loop: displays top-level menu (Register / Login / Exit), calls `User::registerUser()` and `User::loginUser()`, constructs `Customer`/`Driver`/`Admin` objects after login, runs their `setup*()` routines and menus.
 
-## Default Flow
+Storage & File Conventions
+- Users are stored in `admins.txt`, `customers.txt`, and `drivers.txt` with each record spanning multiple lines (user fields). Other domain files include `vehicles.txt`, `bookings.txt`, `rentals.txt`, `reviews.txt`, and `customer_ratings.txt`.
 
-1. Start the program.
-2. Register a user with role `ADMIN`, `DRIVER`, or `CUSTOMER`.
-3. Login with name and password.
-4. Role-based menu opens:
-   - Admin: manage vehicles, drivers, and search users
-   - Driver: view drivers
-   - Customer: view vehicles and manage bookings
-
-## Data File Notes
-
-- `users.txt` stores user identity, credentials, role, and citizenship data.
-- `vehicles.txt` stores vehicle inventory and availability.
-- `drivers.txt` stores driver records and daily charges.
-- `bookings.txt` stores booking entries and calculated amounts.
-
-Keep these files in the project root so the application can load/save data correctly.
-
-## Known Limitations
-
-- Data parsing uses space-separated fields in several places, so names with spaces may not reload correctly from some files.
-- No encryption/hashing is used for passwords (plain text storage).
-- Input validation is basic and focused on console usage.
-
-## License
-
-See `LICENSE`.
+If you want, I can:
+- Add per-function line references (links to specific lines).
+- Generate a short developer guide for adding features (e.g., payments, persistence using CSV/DB).
