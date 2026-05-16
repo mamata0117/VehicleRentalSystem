@@ -6,7 +6,12 @@
 #include "ui.h"
 
 using namespace std;
+string generateBookingID()
+{
+    static int id = 1;
 
+    return "B-" + to_string(id++);
+}
 // Constructor
 BookingQueue::BookingQueue()
 {
@@ -248,13 +253,33 @@ if(studentChoice == 'y' || studentChoice == 'Y')
 
     // BOOKING DETAILS
 
-    b.bookingID = "B001";
-    b.status = "Booked";
+   
+b.bookingID = generateBookingID();
 
+b.status = "Booked";
+
+b.pickupDate = startDate;
+b.returnDate = endDate;
+
+b.totalCost = total;
+
+b.assignedDriver = driverName;
+
+if(driverName == "")
+{
+    b.drivingMode = "Self Drive";
+}
+else
+{
+    b.drivingMode = "With Driver";
+}
+
+b.pickupLocation = "N/A";
+b.destination = "N/A";
     // ADD TO QUEUE
 
     enqueue(b);
-
+generateBill(b);
     printMessage("Booking Created Successfully.");
 }
 
@@ -368,4 +393,65 @@ Booking BookingQueue::getFront()
 bool BookingQueue::isEmpty()
 {
     return front == NULL;
+} 
+void BookingQueue::generateBill(Booking b)
+{
+    ofstream fout("bills.txt", ios::app);
+
+    fout << "=========================================\n";
+    fout << "           VEHICLE RENTAL BILL           \n";
+    fout << "=========================================\n";
+
+    fout << "Booking ID      : "
+         << b.bookingID << endl;
+
+    fout << "Customer ID     : "
+         << b.customerID << endl;
+
+    fout << "Vehicle ID      : "
+         << b.vehicleID << endl;
+
+    fout << "Pickup Date     : "
+         << b.pickupDate << endl;
+
+    fout << "Return Date     : "
+         << b.returnDate << endl;
+
+    fout << "Driving Mode    : "
+         << b.drivingMode << endl;
+
+    fout << "Assigned Driver : "
+         << b.assignedDriver << endl;
+
+    fout << "Total Amount    : Rs. "
+         << b.totalCost << endl;
+
+    fout << "Booking Status  : "
+         << b.status << endl;
+
+    fout << "=========================================\n\n";
+
+    fout.close();
+
+    // DISPLAY BILL
+
+    system("cls");
+
+    cout << "┌──────────────────────────────────────────┐\n";
+    cout << "│               FINAL BILL                │\n";
+    cout << "├──────────────────────────────────────────┤\n";
+
+    cout << "│ Booking ID : "
+         << b.bookingID << endl;
+
+    cout << "│ Vehicle ID : "
+         << b.vehicleID << endl;
+
+    cout << "│ Amount     : Rs. "
+         << b.totalCost << endl;
+
+    cout << "│ Status     : "
+         << b.status << endl;
+
+    cout << "└──────────────────────────────────────────┘\n";
 }

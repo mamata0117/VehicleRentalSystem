@@ -13,6 +13,11 @@ struct Booking
 
     string vehicleID;
 
+    // NEW
+    string pickupLocation;
+
+    string destination;
+
     string pickupDate;
 
     string returnDate;
@@ -58,7 +63,7 @@ public:
     Booking getFront();
 
     bool isEmpty();
-
+void generateBill(Booking b);
     void updateVehicleStatus(string vehicleID);
 };
 
