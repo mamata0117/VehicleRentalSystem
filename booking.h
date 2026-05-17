@@ -13,12 +13,16 @@ struct Booking
 
     string vehicleID;
 
-    // NEW
+    string bookingCategory;
+
+    // Passenger/Common fields
     string pickupLocation;
 
     string destination;
 
     string pickupDate;
+
+    string pickupTime;
 
     string returnDate;
 
@@ -33,6 +37,17 @@ struct Booking
     float advancePayment;
 
     string status;
+
+    string deliveryOption;
+
+    string deliveryAddress;
+
+    // Goods transportation fields
+    string goodsType;
+
+    string goodsWeight;
+
+    bool refrigeratedRequired;
 };
 
 struct BookingNode
@@ -54,17 +69,23 @@ public:
 
     BookingQueue();
 
-    void enqueue(Booking b);
+    void enqueue(Booking b, bool updateVehicle = true);
 
     void dequeue();
 
     void display();
-     void createBooking();
     Booking getFront();
 
     bool isEmpty();
 void generateBill(Booking b);
     void updateVehicleStatus(string vehicleID);
 };
+
+string generateBookingID();
+bool validDateFormat(string date);
+int convertToDays(string date);
+void saveBookingToFile(Booking b);
+void loadBookingsFromFile(BookingQueue& queue);
+void enqueueBookingWithoutUpdateVehicle(BookingQueue& queue, Booking b);
 
 #endif

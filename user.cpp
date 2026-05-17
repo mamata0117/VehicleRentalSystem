@@ -5,8 +5,9 @@
 #include <limits>
 #include <cctype>
 #include <conio.h>
+#include <windows.h>
 #include "user.h"
-#include "ui.h"
+#include "UI.h"
 
 using namespace std;
 
@@ -34,11 +35,20 @@ string User::inputPassword() {
 
 string User::inputPhone() {
     while (true) {
-    
-        cin >> phone;
+        getline(cin, phone);
+
+        if (phone.empty()) {
+            cout << "Phone number cannot be empty.\n";
+            continue;
+        }
 
         if (phone.length() != 10) {
-            cout << "Phone number must be exactly 10 digits!\n";
+            cout << "Phone number must be exactly 10 digits.\n";
+            continue;
+        }
+
+        if (phone[0] != '9') {
+            cout << "Phone number must start with 9.\n";
             continue;
         }
 
@@ -51,7 +61,7 @@ string User::inputPhone() {
         }
 
         if (!valid) {
-            cout << "Only numbers are allowed!\n";
+            cout << "Only numbers are allowed.\n";
             continue;
         }
 
@@ -190,16 +200,30 @@ string User::generateUserID(string role)
 
 
 bool User::isDuplicate(string phone, string email) {
-    ifstream fin("users.txt");
+    // Check all role-specific files
+    string files[] = {"customers.txt", "drivers.txt", "admins.txt"};
 
-    string fileID, fileName, filePhone, fileEmail, filePassword, fileRole;
-    int fileAge;
+    for (int f = 0; f < 3; f++)
+    {
+        ifstream fin(files[f]);
 
-    while (fin >> fileID >> fileName >> fileAge >> filePhone >> fileEmail >> filePassword >> fileRole) {
-        if (filePhone == phone || fileEmail == email) {
-            return true;
+        string fileID, fileName, fileAge, filePhone, fileEmail, filePassword, fileRole;
+
+        // Each user spans 7 lines in role files
+        while (getline(fin, fileID) && getline(fin, fileName) && getline(fin, fileAge) &&
+               getline(fin, filePhone) && getline(fin, fileEmail) && getline(fin, filePassword) &&
+               getline(fin, fileRole))
+        {
+            if (filePhone == phone || fileEmail == email)
+            {
+                fin.close();
+                return true;
+            }
         }
+
+        fin.close();
     }
+
     return false;
 }
 
@@ -213,7 +237,7 @@ void User::registerUser()
     
     // NAME
     cout << "Enter Name     : ";
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cin.ignore();
     getline(cin, name);
 
     // Convert Name to Proper Case
@@ -240,10 +264,12 @@ void User::registerUser()
             }
         }
     }
+   
     
     // AGE
     cout << "Enter Age      : ";
     cin >> age;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     
     // PHONE
     cout << "Enter Phone    : ";
@@ -260,28 +286,69 @@ void User::registerUser()
     if(password != confirm)
     {
         printMessage("Passwords do not match. Try again.");
+        system("pause");
         return;
     }
 
     // EMAIL
     cout << "Enter Email    : ";
-    cin >> email;
+    getline(cin, email);
 
-  if(isDuplicate(phone, email))
+    if(isDuplicate(phone, email))
     {
         printMessage("Phone or Email already exists.");
+        system("pause");
         return;
     }
 
     // ROLE
-    cout << "Enter Role(Customer/Driver/Admin)    : ";
-    cin >> role;
-
-    // Convert role to uppercase
-    for(char &c : role)
+    while (true)
     {
-        c = toupper(c);
+        cout << "Enter Role(Customer/Driver/Admin)    : ";
+        getline(cin, role);
+
+        while (!role.empty() && isspace(static_cast<unsigned char>(role.front())))
+        {
+            role.erase(role.begin());
+        }
+
+        while (!role.empty() && isspace(static_cast<unsigned char>(role.back())))
+        {
+            role.pop_back();
+        }
+
+        if(role.empty())
+        {
+            printMessage("Role cannot be empty.");
+            continue;
+        }
+
+        for(char &c : role)
+        {
+            c = toupper(c);
+        }
+
+        if(role == "1" || role == "CUSTOMER")
+        {
+            role = "CUSTOMER";
+            break;
+        }
+
+        if(role == "2" || role == "DRIVER")
+        {
+            role = "DRIVER";
+            break;
+        }
+
+        if(role == "3" || role == "ADMIN")
+        {
+            role = "ADMIN";
+            break;
+        }
+
+        printMessage("Invalid role. Please choose Customer, Driver, or Admin.");
     }
+    
 
     userID = generateUserID(role);
 
@@ -302,12 +369,6 @@ void User::registerUser()
         fout.open("drivers.txt", ios::app);
     }
 
-    else
-    {
-        printMessage("Invalid role. Try again.");
-        return;
-    }
-
     // SAVE DATA
     fout << userID << endl;
     fout << name << endl;
@@ -321,6 +382,9 @@ void User::registerUser()
 
     printMessage("Registration Successfully Done.");
     printMessage("User ID : " + userID);
+    cout << "\nPress Enter to continue...";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cin.get();
 }
 
 
@@ -338,8 +402,6 @@ bool User::loginUser()
     string fileEmail;
     string filePassword;
     string fileRole;
-
-    showAvailableUsers();
 
     printInputHeader("USER LOGIN");
 
@@ -392,6 +454,8 @@ bool User::loginUser()
         if (fileID == inputID && filePassword == inputPass)
         {
             printMessage("Login Successfully Done.");
+            cout << "Loading your dashboard, please wait...\n";
+            Sleep(2000);
 
             userID = fileID;
             role = fileRole;
@@ -414,6 +478,8 @@ string User::getUserID() { return userID; }
 string User::getName() { return name; }
 string User::getRole() { return role; }
 string User::getPhone() { return phone; }
+string User::getEmail() { return email; }
+int User::getAge() { return age; }
 void User::setUserID(string id)
 {
     userID = id;

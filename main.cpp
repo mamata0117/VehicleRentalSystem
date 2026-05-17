@@ -18,9 +18,15 @@ int main()
 
     system("chcp 65001");
 
+    // Load data from files on startup
+    loadVehiclesFromFile();
+
     User user;
 
     BookingQueue queue;
+
+    // Load bookings from file
+    loadBookingsFromFile(queue);
 
     int choice;
 
@@ -36,7 +42,7 @@ int main()
 
         printMenuFooter();
 
-        cout << "\nEnter Choice : ";
+        cout << "\nEnter choice: ";
 
         cin >> choice;
         if(cin.fail())
@@ -62,6 +68,7 @@ int main()
         // LOGIN
         else if(choice == 2)
         {    system("cls");
+            showAvailableUsers();
             if(user.loginUser())
             {
                 // CUSTOMER
@@ -89,7 +96,7 @@ int main()
 
                     d.setupDriver();
                     system("cls");
-                    driverMenu(d);
+                    driverMenu(d, queue);
                 }
 
                 // ADMIN

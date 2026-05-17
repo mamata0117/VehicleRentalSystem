@@ -17,8 +17,8 @@ void printInputHeader(string title);
 // MESSAGE UI
 void printMessage(string msg);
 
+// LOGIN UI
+void showAvailableUsers();
+
 // LINE
 void printLine();
-
-// USERS
-void showAvailableUsers();

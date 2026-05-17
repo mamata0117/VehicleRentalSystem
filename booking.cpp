@@ -1,11 +1,16 @@
 #include <iostream>
 #include <fstream>
 #include <cstdio>
+#include <vector>
+#include <string>
 
 #include "booking.h"
-#include "ui.h"
+#include "UI.h"
 
 using namespace std;
+
+void saveBookingToFile(Booking b);
+
 string generateBookingID()
 {
     static int id = 1;
@@ -40,57 +45,24 @@ int convertToDays(string date)
     int month = stoi(date.substr(3,2));
     int year = stoi(date.substr(6,4));
 
-    return year * 365 + month * 30 + day;
-}
+    // Accurate day counting (approximation acceptable for rental system)
+    int daysInMonth[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
+    // Check for leap year
+    if (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0))
+        daysInMonth[2] = 29;
 
-int selectDriver(string &driverName)
-{
-    int choice;
+    // Calculate days from year 0
+    int totalDays = year * 365 + year/4 - year/100 + year/400;
 
-    system("cls");
+    // Add days from months
+    for (int i = 1; i < month; i++)
+        totalDays += daysInMonth[i];
 
-    cout << "┌──────────────────────────────────────────┐\n";
-    cout << "│            AVAILABLE DRIVERS             │\n";
-    cout << "├──────────────────────────────────────────┤\n";
-    cout << "│ 1. Ram    (Rs.2000/day)                  │\n";
-    cout << "│ 2. Hari   (Rs.2500/day)                  │\n";
-    cout << "│ 3. Shyam  (Rs.3000/day)                  │\n";
-    cout << "└──────────────────────────────────────────┘\n";
+    // Add remaining days
+    totalDays += day;
 
-
-
-    cout << "\nSelect Driver: ";
-    cin >> choice;
-
-    switch(choice)
-    {
-        case 1:
-
-            driverName = "Ram";
-
-            return 2000;
-
-        case 2:
-
-            driverName = "Hari";
-
-            return 2500;
-
-        case 3:
-
-            driverName = "Shyam";
-
-            return 3000;
-
-        default:
-
-            cout<<"\n┌────────────────────────────────────────┐\n";
-            cout << "│ Invalid Driver Selection               │\n";
-            cout << "└────────────────────────────────────────┘\n";
-
-            return 0;
-    }
+    return totalDays;
 }
 
 
@@ -101,28 +73,34 @@ void BookingQueue::updateVehicleStatus(string vehicleID)
     ofstream fout("temp.txt");
 
     if (!fin || !fout)
-{
-    printMessage("Error Opening Vehicle File.");
-    return;
-}
-
-    string id, brand, model, status;
-
-    while (getline(fin, id))
     {
-        getline(fin, brand);
-        getline(fin, model);
-        getline(fin, status);
+        printMessage("Error Opening Vehicle File.");
+        return;
+    }
 
-        if (id == vehicleID)
+    string line;
+
+    while (getline(fin, line))
+    {
+        if (line.empty()) continue;
+
+        size_t pipePos = line.find('|');
+        if (pipePos != string::npos)
         {
-            status = "Booked";
+            string id = line.substr(0, pipePos);
+
+            if (id == vehicleID)
+            {
+                // Replace last status with "Booked"
+                size_t lastPipe = line.rfind('|');
+                if (lastPipe != string::npos)
+                {
+                    line = line.substr(0, lastPipe + 1) + "Booked";
+                }
+            }
         }
 
-        fout << id << endl;
-        fout << brand << endl;
-        fout << model << endl;
-        fout << status << endl;
+        fout << line << endl;
     }
 
     fin.close();
@@ -133,158 +111,7 @@ void BookingQueue::updateVehicleStatus(string vehicleID)
 }
 
 
-
-void BookingQueue::createBooking()
-{
-    system("cls");
-
-    Booking b;
-
-    string plate, t;
-    float r;
-
-    printInputHeader("CREATE BOOKING");
-
-    cout << "Enter Vehicle ID   : ";
-    cin >> plate;
-
-    b.vehicleID = plate;
-
-    cout << "Enter Customer ID  : ";
-    cin >> b.customerID;
-
-    cout << "Enter Vehicle Type : ";
-    cin >> t;
-
-    cout << "Enter Rent Per Day : ";
-    cin >> r;
-
-    // DATE INPUT
-
-    string startDate, endDate;
-
-    cout << "Start Date (DD/MM/YYYY) : ";
-    cin >> startDate;
-
-    cout << "End Date   (DD/MM/YYYY) : ";
-    cin >> endDate;
-
-    if(!validDateFormat(startDate) || !validDateFormat(endDate))
-    {
-        printMessage("Invalid Date Format. Use DD/MM/YYYY");
-        return;
-    }
-
-    int days =
-        convertToDays(endDate) -
-        convertToDays(startDate);
-
-    if(days <= 0)
-    {
-        printMessage("End Date Must Be After Start Date.");
-        return;
-    }
-
-    // TOTAL CALCULATION
-
-    float total = days * r;
-    char studentChoice;
-
-cout << "\nAre You Student? (y/n) : ";
-cin >> studentChoice;
-
-if(studentChoice == 'y' || studentChoice == 'Y')
-{
-    float discount = total * 0.10;
-
-    total = total - discount;
-
-    printMessage("10% Student Discount Applied.");
-}
-    printMenuHeader("BOOKING SUMMARY");
-
-    printMenuItem(
-        "Total Days : " +
-        to_string(days)
-    );
-
-    printMenuItem(
-        "Total Cost : Rs. " +
-        to_string((int)total)
-    );
-
-    printMenuFooter();
-
-    // DRIVER OPTION
-
-    char choice;
-
-    cout << "\nNeed Driver? (y/n) : ";
-    cin >> choice;
-
-    string driverName = "";
-    int driverCharge = 0;
-
-    if(choice == 'y' || choice == 'Y')
-    {
-        driverCharge = selectDriver(driverName);
-
-        if(driverCharge == 0)
-        {
-            printMessage("Driver Selection Failed.");
-            return;
-        }
-
-        total += driverCharge * days;
-    }
-
-    // SAVE RENTAL
-
-    ofstream fout("rentals.txt", ios::app);
-
-    fout << plate << " | "
-         << t << " | "
-         << startDate << " | "
-         << endDate << " | Driver: "
-         << driverName << " | Rs. "
-         << total << endl;
-
-    fout.close();
-
-    // BOOKING DETAILS
-
-   
-b.bookingID = generateBookingID();
-
-b.status = "Booked";
-
-b.pickupDate = startDate;
-b.returnDate = endDate;
-
-b.totalCost = total;
-
-b.assignedDriver = driverName;
-
-if(driverName == "")
-{
-    b.drivingMode = "Self Drive";
-}
-else
-{
-    b.drivingMode = "With Driver";
-}
-
-b.pickupLocation = "N/A";
-b.destination = "N/A";
-    // ADD TO QUEUE
-
-    enqueue(b);
-generateBill(b);
-    printMessage("Booking Created Successfully.");
-}
-
-
-void BookingQueue::enqueue(Booking b)
+void BookingQueue::enqueue(Booking b, bool updateVehicle)
 {
     BookingNode* newNode = new BookingNode;
 
@@ -302,7 +129,11 @@ void BookingQueue::enqueue(Booking b)
         rear = newNode;
     }
 
-    updateVehicleStatus(b.vehicleID);
+    if (updateVehicle)
+    {
+        updateVehicleStatus(b.vehicleID);
+        saveBookingToFile(b);
+    }
 
     printMessage("Booking Added Successfully.");
 }
@@ -454,4 +285,107 @@ void BookingQueue::generateBill(Booking b)
          << b.status << endl;
 
     cout << "└──────────────────────────────────────────┘\n";
+}
+
+// Save booking to file
+void saveBookingToFile(Booking b)
+{
+    ofstream fout("bookings.txt", ios::app);
+
+    if (!fout)
+    {
+        printMessage("Error opening bookings.txt for writing.");
+        return;
+    }
+
+    fout << b.bookingID << "|"
+         << b.customerID << "|"
+         << b.vehicleID << "|"
+         << b.pickupLocation << "|"
+         << b.destination << "|"
+         << b.pickupDate << "|"
+         << b.pickupTime << "|"
+         << b.returnDate << "|"
+         << b.drivingMode << "|"
+         << b.customerLicense << "|"
+         << b.assignedDriver << "|"
+         << b.totalCost << "|"
+         << b.advancePayment << "|"
+         << b.status << "|"
+         << b.deliveryOption << "|"
+         << b.deliveryAddress << "|"
+         << b.bookingCategory << "|"
+         << b.goodsType << "|"
+         << b.goodsWeight << "|"
+         << (b.refrigeratedRequired ? "1" : "0") << endl;
+
+    fout.close();
+}
+
+// Load bookings from file
+void loadBookingsFromFile(BookingQueue& queue)
+{
+    ifstream fin("bookings.txt");
+
+    if (!fin)
+    {
+        return;
+    }
+
+    string line;
+    while (getline(fin, line))
+    {
+        if (line.empty()) continue;
+
+        Booking b;
+        size_t pos = 0;
+        vector<string> fields;
+
+        while (pos < line.length())
+        {
+            size_t pipePos = line.find('|', pos);
+            if (pipePos == string::npos)
+            {
+                fields.push_back(line.substr(pos));
+                break;
+            }
+            fields.push_back(line.substr(pos, pipePos - pos));
+            pos = pipePos + 1;
+        }
+
+        if (fields.size() >= 15)
+        {
+            b.bookingID = fields[0];
+            b.customerID = fields[1];
+            b.vehicleID = fields[2];
+            b.pickupLocation = fields[3];
+            b.destination = fields[4];
+            b.pickupDate = fields[5];
+            b.pickupTime = fields[6];
+            b.returnDate = fields[7];
+            b.drivingMode = fields[8];
+            b.customerLicense = fields[9];
+            b.assignedDriver = fields[10];
+            b.totalCost = stof(fields[11]);
+            b.advancePayment = stof(fields[12]);
+            b.status = fields[13];
+            b.deliveryOption = fields[14];
+            b.deliveryAddress = (fields.size() > 15) ? fields[15] : "";
+            b.bookingCategory = (fields.size() > 16) ? fields[16] : "";
+            b.goodsType = (fields.size() > 17) ? fields[17] : "";
+            b.goodsWeight = (fields.size() > 18) ? fields[18] : "";
+            b.refrigeratedRequired = (fields.size() > 19 && fields[19] == "1") ? true : false;
+
+            // Use special function to avoid vehicle status update during load
+            enqueueBookingWithoutUpdateVehicle(queue, b);
+        }
+    }
+
+    fin.close();
+}
+
+// Enqueue booking without updating vehicle status (used during file loading)
+void enqueueBookingWithoutUpdateVehicle(BookingQueue& queue, Booking b)
+{
+    queue.enqueue(b, false);  // false = don't update vehicle status
 }

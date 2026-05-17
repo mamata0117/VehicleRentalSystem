@@ -28,21 +28,39 @@ public:
 
     void displayVehicle();
 
-    bool isAvailable();
+    bool isAvailable() const;
 
     void setAvailability(bool status);
 
-    string getVehicleID();
+    string getVehicleID() const;
 
-    string getType();
+    string getType() const;
 
-    string getCategory();
+    string getCategory() const;
 
-    float getSelfDrivePrice();
+    string getFuelType() const;
 
-    float getDriverPrice();
+    float getSelfDrivePrice() const;
 
-    string getLicensePlate();
+    float getDriverPrice() const;
+
+    string getLicensePlate() const;
+
+    string getMaintenanceRecord() const;
+
+    void setVehicleID(string id);
+
+    void setCategory(string cat);
+
+    void setFuelType(string fuel);
+
+    void setLicensePlate(string plate);
+
+    void setSelfDrivePrice(float price);
+
+    void setDriverPrice(float price);
+
+    void setMaintenanceRecord(string record);
 };
 
 struct VehicleNode
@@ -60,5 +78,9 @@ void displayAllVehicles();
 void displayAvailableVehicles();
 
 Vehicle* findVehicleByID(string id);
+
+void saveVehicleToFile(Vehicle v);
+
+void loadVehiclesFromFile();
 
 #endif

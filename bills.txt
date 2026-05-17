@@ -1,0 +1,28 @@
+=========================================
+           VEHICLE RENTAL BILL           
+=========================================
+Booking ID      : B-2
+Customer ID     : C-1
+Vehicle ID      : V-1
+Pickup Date     : 01/01/2083
+Return Date     : 02/01/2083
+Driving Mode    : Self Drive
+Assigned Driver : 
+Total Amount    : Rs. 2250
+Booking Status  : PENDING
+=========================================
+
+=========================================
+           VEHICLE RENTAL BILL           
+=========================================
+Booking ID      : B-3
+Customer ID     : C-1
+Vehicle ID      : V-9
+Pickup Date     : 02/01/2083
+Return Date     : 
+Driving Mode    : With Driver
+Assigned Driver : PENDING
+Total Amount    : Rs. 11250
+Booking Status  : PENDING
+=========================================
+

@@ -3,6 +3,7 @@
 
 #include <string>
 #include "user.h"
+#include "booking.h"
 
 class Driver : public User {
 private:
@@ -16,11 +17,11 @@ public:
     void setupDriver();
 
     // Driver actions
-  void viewReviews();
-    void acceptCustomer();
-    void rejectCustomer();
+    void viewTotalRidesToday();
+    void viewReviews();
+    void acceptCustomer(BookingQueue& queue);
+    void rejectCustomer(BookingQueue& queue);
     void rateCustomer();
-void viewTotalRidesToday();
     // Getters (useful later)
     std::string getLicense();
     std::string getCitizenship();

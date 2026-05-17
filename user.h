@@ -21,6 +21,8 @@ public:
     std::string getName();
     std::string getRole();
     std::string getPhone();
+    std::string getEmail();
+    int getAge();
     std::string inputPhone(),inputPassword();
 std::string inputCitizenship();
 std::string inputLicense();

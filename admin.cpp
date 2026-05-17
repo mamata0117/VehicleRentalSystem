@@ -2,7 +2,7 @@
 
 #include "admin.h"
 #include "vehicle.h"
-#include "ui.h"
+#include "UI.h"
 
 using namespace std;
 
@@ -39,6 +39,8 @@ void Admin::adminMenu(BookingQueue& queue)
                 v.addVehicle();
 
                 insertVehicle(v);
+
+                saveVehicleToFile(v);
 
                 break;
             }

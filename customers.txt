@@ -1,14 +1,21 @@
 C-1
-Sim
-21
-9836829178
-hub@gmail.com
-rika
+Alina Lama
+23
+9876565455
+alina@gmail.com
+alina
 CUSTOMER
 C-2
-Mina Thapa
-21
-9878787677
-mina@gmail.com
-mina
+Roshan Adhikari
+25
+9776654435
+roshan@gmail.com
+roshan
+CUSTOMER
+C-3
+Sita Shah
+67
+9876554455
+sita@gmail.com
+sita
 CUSTOMER

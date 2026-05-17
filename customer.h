@@ -8,18 +8,21 @@
 
 class Customer : public User {
 private:
-    std::string citizenship,institutionName,studentIDCard;
+    std::string citizenship;
     bool isStudent;
+    std::string institutionName;
+    std::string studentIDCard;
 
 public:
     void setupCustomer();
+    void reviewDriver();
     void customerMenu(BookingQueue& queue);
-void reviewDriver();
     // actions
     void viewVehicles();
     void bookVehicle(BookingQueue& queue);
-    void cancelBooking(); // we’ll wire stack later
-void completeRide();
+    void bookPassengerVehicle(BookingQueue& queue);
+    void bookGoodsVehicle(BookingQueue& queue);
+    void cancelBooking();
     // optional getters
     std::string getCitizenship();
 };

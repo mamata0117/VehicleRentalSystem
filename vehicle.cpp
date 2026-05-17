@@ -1,13 +1,187 @@
 #include <iostream>
+
 #include <cctype>
+
+#include <fstream>
+
+
+#include <vector>
+#include <string>
 #include "vehicle.h"
-#include "ui.h"
+#include "UI.h"
 
 using namespace std;
 
 // Head pointer of linked list
 VehicleNode* head = NULL;
 
+namespace
+{
+    static string trimCopy(string value)
+    {
+        while (!value.empty() && isspace(static_cast<unsigned char>(value.front())))
+        {
+            value.erase(value.begin());
+        }
+
+        while (!value.empty() && isspace(static_cast<unsigned char>(value.back())))
+        {
+            value.pop_back();
+        }
+
+        return value;
+    }
+
+    static bool isValidMaintenanceDate(const string &date)
+{
+    if (date.length() != 10)
+    {
+        return false;
+    }
+
+    if (date[2] != '/' || date[5] != '/')
+    {
+        return false;
+    }
+
+    for (int i = 0; i < 10; ++i)
+    {
+        if (i == 2 || i == 5)
+        {
+            continue;
+        }
+
+        if (!isdigit(static_cast<unsigned char>(date[i])))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+    static string makeBorder(int width)
+    {
+        return "+" + string(width - 2, '-') + "+";
+    }
+
+    static string padRight(const string &text, int width)
+    {
+        if ((int)text.length() >= width)
+        {
+            return text.substr(0, width);
+        }
+
+        return text + string(width - (int)text.length(), ' ');
+    }
+
+    static string shorten(const string &text, int width)
+    {
+        if (width <= 0)
+        {
+            return "";
+        }
+
+        if ((int)text.length() <= width)
+        {
+            return text;
+        }
+
+        if (width <= 3)
+        {
+            return text.substr(0, width);
+        }
+
+        return text.substr(0, width - 3) + "...";
+    }
+
+   static vector<string> buildVehicleCard(Vehicle v, int width)
+{
+    vector<string> lines;
+
+    string maintenance =
+        v.getMaintenanceRecord();
+
+    size_t pos =
+        maintenance.find('|');
+
+    string maintenanceDate =
+        maintenance.substr(0, pos);
+
+    string nextDate =
+        maintenance.substr(pos + 1);
+
+    lines.push_back(makeBorder(width));
+
+    lines.push_back("| " + padRight(shorten(v.getVehicleID(), width - 4), width - 4) + " |");
+
+    lines.push_back("| " + padRight(shorten(v.getCategory(), width - 4), width - 4) + " |");
+
+    lines.push_back("| " + padRight(shorten(v.getFuelType(), width - 4), width - 4) + " |");
+
+    lines.push_back("| " + padRight(shorten(v.getLicensePlate(), width - 4), width - 4) + " |");
+
+    lines.push_back("| " + padRight(shorten("Maintenance : " + maintenanceDate, width - 4), width - 4) + " |");
+
+    lines.push_back("| " + padRight(shorten("Next Date  : " + nextDate, width - 4), width - 4) + " |");
+
+    lines.push_back("| " + padRight(shorten(string("Self: Rs. ") + to_string((int)v.getSelfDrivePrice()), width - 4), width - 4) + " |");
+
+    lines.push_back("| " + padRight(shorten(string("Driver: Rs. ") + to_string((int)v.getDriverPrice()), width - 4), width - 4) + " |");
+
+    lines.push_back("| " + padRight(shorten(string("Status: ") + (v.isAvailable() ? "Available" : "Booked"), width - 4), width - 4) + " |");
+
+    lines.push_back(makeBorder(width));
+
+    return lines;
+}
+
+    static void printVehicleGrid(const vector<Vehicle> &vehicles)
+    {
+        if (vehicles.empty())
+        {
+            printMessage("No Vehicles Available.");
+            return;
+        }
+
+        const int cardWidth = 37;
+        const size_t cardsPerRow = 3;
+        const string gap = "  ";
+
+        for (size_t index = 0; index < vehicles.size(); index += cardsPerRow)
+        {
+            vector<vector<string>> rowCards;
+            size_t rowEnd = min(index + cardsPerRow, vehicles.size());
+
+            for (size_t i = index; i < rowEnd; ++i)
+            {
+                rowCards.push_back(buildVehicleCard(vehicles[i], cardWidth));
+            }
+
+            for (size_t lineIndex = 0; lineIndex < rowCards[0].size(); ++lineIndex)
+            {
+                for (size_t cardIndex = 0; cardIndex < rowCards.size(); ++cardIndex)
+                {
+                    cout << rowCards[cardIndex][lineIndex];
+
+                    if (cardIndex + 1 < rowCards.size())
+                    {
+                        cout << gap;
+                    }
+                }
+
+                cout << '\n';
+            }
+
+            cout << '\n';
+        }
+    }
+}
+string generateVehicleID()
+{
+    static int counter = 1;
+    return "V-" + to_string(counter++);
+}
 // Add vehicle
 void Vehicle::addVehicle()
 {
@@ -15,20 +189,27 @@ void Vehicle::addVehicle()
 
     printInputHeader("ADD VEHICLE");
 
-    cout << "Enter Vehicle ID : ";
-    cin >> vehicleID;
+    vehicleID = generateVehicleID();
 
+cout << "Generated Vehicle ID : "
+     << vehicleID << endl;
     // VEHICLE CATEGORY
     int option;
 
     cout << "\nSelect Vehicle Category\n";
+    cout << "\nPassenger Transportation:\n";
     cout << "1. Car\n";
     cout << "2. Bike\n";
-    cout << "3. Truck\n";
+    cout << "3. Scooter\n";
     cout << "4. Van\n";
-    cout << "5. Scooter\n";
+    cout << "\nGoods Transportation:\n";
+    cout << "5. Truck\n";
+    cout << "6. Mini Truck\n";
+    cout << "7. Pickup Truck\n";
+    cout << "8. Cargo Van\n";
+    cout << "9. Refrigerated Van\n";
 
-    cout << "\nEnter Choice      : ";
+    cout << "\nEnter choice: ";
     cin >> option;
 
     switch(option)
@@ -42,7 +223,7 @@ void Vehicle::addVehicle()
             break;
 
         case 3:
-            category = "Truck";
+            category = "Scooter";
             break;
 
         case 4:
@@ -50,7 +231,23 @@ void Vehicle::addVehicle()
             break;
 
         case 5:
-            category = "Scooter";
+            category = "Truck";
+            break;
+
+        case 6:
+            category = "Mini Truck";
+            break;
+
+        case 7:
+            category = "Pickup Truck";
+            break;
+
+        case 8:
+            category = "Cargo Van";
+            break;
+
+        case 9:
+            category = "Refrigerated Van";
             break;
 
         default:
@@ -58,140 +255,187 @@ void Vehicle::addVehicle()
             return;
     }
 
-    cout << "Enter Fuel Type (Petrol/Diesel)  : ";
-    cin >> fuelType;
+    // FUEL TYPE SELECTION
+    int fuelChoice;
+    cout << "\nSelect Fuel Type:\n";
+    cout << "1. Petrol\n";
+    cout << "2. Diesel\n";
+    cout << "3. Electric\n";
+    cout << "\nEnter choice: ";
+    cin >> fuelChoice;
+
+    switch(fuelChoice)
+    {
+        case 1:
+            fuelType = "Petrol";
+            break;
+        case 2:
+            fuelType = "Diesel";
+            break;
+        case 3:
+            fuelType = "Electric";
+            break;
+        default:
+            printMessage("Invalid Fuel Type Choice.");
+            return;
+    }
 
     // LICENSE PLATE VALIDATION
     bool validPlate = false;
 
     while (!validPlate)
+{
+
+   cout << "\nSelect Province\n\n";
+
+cout << "1.BA\t\t2.GA\n";
+cout << "3.LU\t\t4.KO\n";
+cout << "5.MA\t\t6.NA\n";
+cout << "7.SU\n";
+
+    int provinceChoice;
+
+    cout << "\nEnter choice : ";
+    cin >> provinceChoice;
+
+    string province;
+
+    switch (provinceChoice)
     {
-        cout << "\nEnter License Plate\n";
-        cout << "Example : BA-PA-1234\n";
-        cout << "Format  : [Province]-[Type]-[4Digits]\n";
+        case 1: province = "BA"; break;
+        case 2: province = "GA"; break;
+        case 3: province = "LU"; break;
+        case 4: province = "KO"; break;
+        case 5: province = "MA"; break;
+        case 6: province = "NA"; break;
+        case 7: province = "SU"; break;
 
-        cout << "\nEnter Plate       : ";
-
-        cin >> licensePlate;
-
-        string UpperlisensePlate = licensePlate;
-
-        for(char &ch : UpperlisensePlate)
-        {
-            ch = toupper(ch);
-        }
-
-        int dashCount = 0;
-
-        for(char ch : UpperlisensePlate)
-        {
-            if(ch == '-')
-            {
-                dashCount++;
-            }
-        }
-
-        // Must contain 2 dashes
-        if(dashCount != 2)
-        {
-            printMessage("Invalid Format.");
+        default:
+            printMessage("Invalid Province Choice.");
             continue;
-        }
+    }
 
-        // Split manually
-        size_t firstDash =
-            UpperlisensePlate.find('-');
 
-        size_t secondDash =
-            UpperlisensePlate.find('-',
-            firstDash + 1);
+   cout << "\nSelect Vehicle Type\n\n";
 
-        string province =
-            UpperlisensePlate.substr(0, firstDash);
+cout << "1.PA  - Bike/Scooter\t2.CHA - Private Vehicle\n";
+cout << "3.JA  - Rental/Taxi\t4.JHA - Government\n";
+cout << "5.GA  - Bus\t\t6.GHA - Minibus\n";
+cout << "7.NA  - Tanker\t\t8.BA  - Commercial\n";
+cout << "9.TA  - Tractor\n";
+    int typeChoice;
 
-        string vehiclePart =
-            UpperlisensePlate.substr(
-                firstDash + 1,
-                secondDash - firstDash - 1
-            );
+    cout << "\nEnter choice : ";
+    cin >> typeChoice;
 
-        string digits =
-            UpperlisensePlate.substr(secondDash + 1);
+    string vehicleType;
 
-        // Province validation
-        bool validProvince =
-        (
-            province == "BA" ||
-            province == "GA" ||
-            province == "LU" ||
-            province == "KO" ||
-            province == "MA" ||
-            province == "NA" ||
-            province == "SU"
-        );
+    switch (typeChoice)
+    {
+        case 1: vehicleType = "PA";  break;
+        case 2: vehicleType = "CHA"; break;
+        case 3: vehicleType = "JA";  break;
+        case 4: vehicleType = "JHA"; break;
+        case 5: vehicleType = "GA";  break;
+        case 6: vehicleType = "GHA"; break;
+        case 7: vehicleType = "NA";  break;
+        case 8: vehicleType = "BA";  break;
+        case 9: vehicleType = "TA";  break;
 
-        // 4 digit validation
-        bool validDigits = true;
+        default:
+            printMessage("Invalid Vehicle Type Choice.");
+            continue;
+    }
 
-        if(digits.length() != 4)
+    string digits;
+
+    cout << "\nEnter 4 Digit Number : ";
+    cin >> digits;
+
+    bool validDigits = true;
+
+    if (digits.length() != 4)
+    {
+        validDigits = false;
+    }
+
+    for (char ch : digits)
+    {
+        if (!isdigit(static_cast<unsigned char>(ch)))
         {
             validDigits = false;
         }
-
-        for(char ch : digits)
-        {
-            if(!isdigit(ch))
-            {
-                validDigits = false;
-            }
-        }
-
-        // Final validation
-        if(validProvince &&
-           vehiclePart.length() >= 2 &&
-           validDigits)
-        {
-            validPlate = true;
-        }
-
-        else
-        {
-            printMessage("Invalid License Plate Format.");
-        }
     }
+
+    if (!validDigits)
+    {
+        printMessage("Enter exactly 4 digits.");
+        continue;
+    }
+
+    licensePlate =
+        province + "-" +
+        vehicleType + "-" +
+        digits;
+
+    cout << "\nGenerated License Plate : "
+         << licensePlate << endl;
+
+    validPlate = true;
+}
 
     cin.ignore();
 
     // MAINTENANCE RECORD
-    string repairedDate;
-    string nextDueDate;
+   string maintenanceDate;
+string nextMaintenanceDate;
 
-    cout << "\nEnter Last Maintenance Date\n";
-    cout << "Format : DD/MM/YYYY\n";
+cout << "\nEnter Maintenance Date\n";
+cout << "Format : DD/MM/YYYY\n";
 
-    cout << "Date              : ";
-    getline(cin, repairedDate);
+cout << "Maintenance Date      : ";
+while (true)
+{
+    getline(cin, maintenanceDate);
+    maintenanceDate = trimCopy(maintenanceDate);
 
-    cout << "\nEnter Next Due Date\n";
-    cout << "Format : DD/MM/YYYY\n";
+    if (isValidMaintenanceDate(maintenanceDate))
+    {
+        break;
+    }
 
-    cout << "Date              : ";
-    getline(cin, nextDueDate);
+    printMessage("Use DD/MM/YYYY.");
+    cout << "Maintenance Date      : ";
+}
 
-    maintenanceRecord =
-        "Last Repaired: " + repairedDate +
-        " \n \t \t  Next Due: " + nextDueDate;
+cout << "Next Maintenance Date : ";
+while (true)
+{
+    getline(cin, nextMaintenanceDate);
+    nextMaintenanceDate = trimCopy(nextMaintenanceDate);
 
-    // PRICING
-    cout << "\nEnter Self Drive Price : ";
-    cin >> selfDrivePrice;
+    if (isValidMaintenanceDate(nextMaintenanceDate))
+    {
+        break;
+    }
 
-    cout << "Enter Driver Price     : ";
-    cin >> driverPrice;
+    printMessage("Use DD/MM/YYYY.");
+    cout << "Next Maintenance Date : ";
+}
 
-    available = true;
+maintenanceRecord =
+    maintenanceDate + "|" + nextMaintenanceDate;
 
-    printMessage("Vehicle Added Successfully.");
+// PRICING
+cout << "\nEnter Self Drive Price : ";
+cin >> selfDrivePrice;
+
+cout << "Enter Driver Price     : ";
+cin >> driverPrice;
+
+available = true;
+
+printMessage("Vehicle Added Successfully.");
 }
 
 // Insert vehicle into linked list
@@ -225,36 +469,9 @@ void insertVehicle(Vehicle v)
 // Display single vehicle
 void Vehicle::displayVehicle()
 {
-    printMenuHeader("VEHICLE DETAILS");
-
-    printMenuItem("Vehicle ID      : " + vehicleID);
-
-    printMenuItem("Fuel Type       : " + fuelType);
-
-    printMenuItem("Category        : " + category);
-
-    printMenuItem("License Plate   : " + licensePlate);
-
-    printMenuItem("Maintenance     : " + maintenanceRecord);
-
-    printMenuItem(
-        "Self Drive Rs.  : " +
-        to_string((int)selfDrivePrice) +
-        " per day"
-    );
-
-    printMenuItem(
-        "Driver Price Rs.: " +
-        to_string((int)driverPrice) +
-        " per day"
-    );
-
-    printMenuItem(
-        "Status          : " +
-        string(available ? "Available" : "Booked")
-    );
-
-    printMenuFooter();
+    vector<Vehicle> vehicleRow;
+    vehicleRow.push_back(*this);
+    printVehicleGrid(vehicleRow);
 }
 
 // Display all vehicles
@@ -268,14 +485,16 @@ void displayAllVehicles()
 
     printMenuHeader("ALL VEHICLES");
 
+    vector<Vehicle> vehicles;
     VehicleNode* temp = head;
 
     while (temp != NULL)
     {
-        temp->data.displayVehicle();
-
+        vehicles.push_back(temp->data);
         temp = temp->next;
     }
+
+    printVehicleGrid(vehicles);
 }
 
 // Display only available vehicles
@@ -287,23 +506,26 @@ void displayAvailableVehicles()
         return;
     }
 
+    system("cls");
     printMenuHeader("AVAILABLE VEHICLES");
-
+    vector<Vehicle> vehicles;
     VehicleNode* temp = head;
 
     while (temp != NULL)
     {
         if (temp->data.isAvailable())
         {
-            temp->data.displayVehicle();
+            vehicles.push_back(temp->data);
         }
 
         temp = temp->next;
     }
+
+    printVehicleGrid(vehicles);
 }
 
 // Check availability
-bool Vehicle::isAvailable()
+bool Vehicle::isAvailable() const
 {
     return available;
 }
@@ -315,39 +537,91 @@ void Vehicle::setAvailability(bool status)
 }
 
 // Get vehicle ID
-string Vehicle::getVehicleID()
+string Vehicle::getVehicleID() const
 {
     return vehicleID;
 }
 
 // Get vehicle type
-string Vehicle::getType()
+string Vehicle::getType() const
 {
     return type;
 }
 
 // Get category
-string Vehicle::getCategory()
+string Vehicle::getCategory() const
 {
     return category;
 }
 
+// Get fuel type
+string Vehicle::getFuelType() const
+{
+    return fuelType;
+}
+
 // Get self drive price
-float Vehicle::getSelfDrivePrice()
+float Vehicle::getSelfDrivePrice() const
 {
     return selfDrivePrice;
 }
 
 // Get driver price
-float Vehicle::getDriverPrice()
+float Vehicle::getDriverPrice() const
 {
     return driverPrice;
 }
 
 // Get license plate
-string Vehicle::getLicensePlate()
+string Vehicle::getLicensePlate() const
 {
     return licensePlate;
+}
+
+string Vehicle::getMaintenanceRecord() const
+{
+    return maintenanceRecord;
+}
+
+// Set vehicle ID
+void Vehicle::setVehicleID(string id)
+{
+    vehicleID = id;
+}
+
+// Set category
+void Vehicle::setCategory(string cat)
+{
+    category = cat;
+}
+
+// Set fuel type
+void Vehicle::setFuelType(string fuel)
+{
+    fuelType = fuel;
+}
+
+// Set license plate
+void Vehicle::setLicensePlate(string plate)
+{
+    licensePlate = plate;
+}
+
+// Set self drive price
+void Vehicle::setSelfDrivePrice(float price)
+{
+    selfDrivePrice = price;
+}
+
+// Set driver price
+void Vehicle::setDriverPrice(float price)
+{
+    driverPrice = price;
+}
+
+void Vehicle::setMaintenanceRecord(string record)
+{
+    maintenanceRecord = record;
 }
 
 // Find vehicle by ID
@@ -366,4 +640,89 @@ Vehicle* findVehicleByID(string id)
     }
 
     return NULL;
+}
+
+// Save vehicle to file
+void saveVehicleToFile(Vehicle v)
+{
+    ofstream fout("vehicles.txt", ios::app);
+
+    if (!fout)
+    {
+        printMessage("Error opening vehicles.txt for writing.");
+        return;
+    }
+
+    fout << v.getVehicleID() << "|"
+         << v.getCategory() << "|"
+         << v.getFuelType() << "|"
+         << v.getLicensePlate() << "|"
+            << v.getMaintenanceRecord() << "|"
+         << v.getSelfDrivePrice() << "|"
+         << v.getDriverPrice() << "|"
+         << (v.isAvailable() ? "Available" : "Booked") << endl;
+
+    fout.close();
+}
+
+// Load vehicles from file
+void loadVehiclesFromFile()
+{
+    ifstream fin("vehicles.txt");
+
+    if (!fin)
+    {
+        return;
+    }
+
+    string line;
+    string vehicleID, category, fuelType, licensePlate, maintenanceRecord, selfPriceStr, driverPriceStr, status;
+
+    while (getline(fin, line))
+    {
+        if (line.empty()) continue;
+
+        size_t pos = 0;
+        vector<string> fields;
+
+        while (pos < line.length())
+        {
+            size_t pipePos = line.find('|', pos);
+            if (pipePos == string::npos)
+            {
+                fields.push_back(line.substr(pos));
+                break;
+            }
+            fields.push_back(line.substr(pos, pipePos - pos));
+            pos = pipePos + 1;
+        } 
+
+
+        if (fields.size() >= 7)
+        {
+            Vehicle v;
+            v.setVehicleID(fields[0]);
+            v.setCategory(fields[1]);
+            v.setFuelType(fields[2]);
+            v.setLicensePlate(fields[3]);
+            if (fields.size() >= 8)
+            {
+                v.setMaintenanceRecord(fields[4]);
+                v.setSelfDrivePrice(stof(fields[5]));
+                v.setDriverPrice(stof(fields[6]));
+                v.setAvailability(fields[7] == "Available");
+            }
+            else
+            {
+                v.setMaintenanceRecord("Not Saved");
+                v.setSelfDrivePrice(stof(fields[4]));
+                v.setDriverPrice(stof(fields[5]));
+                v.setAvailability(fields[6] == "Available");
+            }
+
+            insertVehicle(v);
+        }
+    }
+
+    fin.close();
 }
