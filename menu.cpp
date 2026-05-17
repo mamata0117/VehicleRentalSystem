@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "menu.h"
-#include "ui.h"
+#include "UI.h"
 
 using namespace std;
 
@@ -16,14 +16,16 @@ void customerMenu(Customer& c, BookingQueue& queue)
 
         printMenuHeader("CUSTOMER MENU");
 
-        printMenuItem("1. View Vehicles");
-        printMenuItem("2. Book Vehicle");
-        printMenuItem("3. Cancel Booking");
-        printMenuItem("4. Exit");
+        printMenuItem("    1. View Vehicles");
+        printMenuItem("    2. Book Vehicle");
+        printMenuItem("    3. Cancel Booking");
+        printMenuItem("    4. Review Driver");
+        printMenuItem("    5. View My Profile");
+        printMenuItem("    6. Exit");
 
         printMenuFooter();
 
-        cout << "\nEnter Choice : ";
+        cout << "\nEnter choice: ";
         cin >> ch;
 
        if (ch == 1)
@@ -49,6 +51,29 @@ void customerMenu(Customer& c, BookingQueue& queue)
 
         else if (ch == 4)
         {
+            system("cls");
+            c.reviewDriver();
+            system("pause");
+        }
+
+        else if (ch == 5)
+        {
+            system("cls");
+            printMenuHeader(" CUSTOMER PROFILE");
+            printMenuItem("════════════════════════════════════════");
+            printMenuItem("  User ID      : " + c.getUserID());
+            printMenuItem("  Name         : " + c.getName());
+            printMenuItem("  Age          : " + to_string(c.getAge()) + " years");
+            printMenuItem("  Email        : " + c.getEmail());
+            printMenuItem("  Phone        : " + c.getPhone());
+            printMenuItem("  Citizenship  : " + c.getCitizenship());
+            printMenuItem("═══════════════════════════════════════");
+            printMenuFooter();
+            system("pause");
+        }
+
+        else if (ch == 6)
+        {
             printMessage("Exiting...");
             break;
         }
@@ -61,7 +86,7 @@ void customerMenu(Customer& c, BookingQueue& queue)
 }
 
 // DRIVER MENU
-void driverMenu(Driver& d)
+void driverMenu(Driver& d, BookingQueue& queue)
 {
     int ch;
 
@@ -71,20 +96,21 @@ void driverMenu(Driver& d)
 
         printMenuHeader("DRIVER MENU");
 
-        printMenuItem("1. Accept Customer");
-        printMenuItem("2. Reject Customer");
-        printMenuItem("3. View Own Reviews");
-        printMenuItem("4. View Total Rides Today");
-        printMenuItem("5. Exit");
+        printMenuItem("  1. Accept Customer");
+        printMenuItem("  2. Reject Customer");
+        printMenuItem("  3. View Own Reviews");
+        printMenuItem("  4. View Total Rides Today");
+        printMenuItem("  5. View My Profile");
+        printMenuItem("  6. Exit");
 
         printMenuFooter();
 
-        cout << "\nEnter Choice : ";
+        cout << "\nEnter choice: ";
         cin >> ch;
 
         if (ch == 1)
         {  system("cls");
-            d.acceptCustomer();
+            d.acceptCustomer(queue);
 
             d.rateCustomer();
             system("pause");
@@ -92,7 +118,7 @@ void driverMenu(Driver& d)
 
         else if (ch == 2)
         {   system("cls");
-            d.rejectCustomer();
+            d.rejectCustomer(queue);
             system("pause");
         }
 
@@ -110,7 +136,20 @@ void driverMenu(Driver& d)
 
         else if (ch == 5)
         {
-            printMessage("Exiting...");
+            system("cls");
+            printMenuHeader("DRIVER PROFILE");
+            printMenuItem("════════════════════════════════════════");
+            printMenuItem("  Driver ID    : " + d.getUserID());
+            printMenuItem("  Name         : " + d.getName());
+            printMenuItem("  Experience   : " + to_string(d.getExperience()) + " years");
+            printMenuItem("════════════════════════════════════════");
+            printMenuFooter();
+            system("pause");
+        }
+
+        else if (ch == 6)
+        {
+            printMessage(" Exiting...");
             break;
         }
 
