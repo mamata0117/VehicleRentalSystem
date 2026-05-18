@@ -9,6 +9,7 @@
 #include "admin.h"
 #include "booking.h"
 #include "menu.h"
+#include "idgenerator.h"
 
 using namespace std;
 
@@ -17,6 +18,9 @@ int main()
     SetConsoleOutputCP(CP_UTF8);
 
     system("chcp 65001");
+
+    // Initialize ID generator with persistent counters
+    IDGenerator::initCounters();
 
     // Load data from files on startup
     loadVehiclesFromFile();
@@ -81,7 +85,8 @@ int main()
                     c.setRole(user.getRole());
 
                     c.setupCustomer();
-                 system("cls");
+                    system("pause");
+                    system("cls");
                     customerMenu(c, queue);
                 }
 
@@ -95,6 +100,7 @@ int main()
                     d.setRole(user.getRole());
 
                     d.setupDriver();
+                    system("pause");
                     system("cls");
                     driverMenu(d, queue);
                 }

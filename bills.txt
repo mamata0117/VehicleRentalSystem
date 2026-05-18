@@ -1,14 +1,56 @@
 =========================================
            VEHICLE RENTAL BILL           
 =========================================
+Booking ID      : B-1
+Customer ID     : C-2
+Vehicle ID      : V-6
+Pickup Date     : 01/02/2083
+Return Date     : 
+Driving Mode    : With Driver
+Assigned Driver : PENDING
+Total Amount    : Rs. 16000
+Booking Status  : PENDING
+=========================================
+
+=========================================
+           VEHICLE RENTAL BILL           
+=========================================
 Booking ID      : B-2
-Customer ID     : C-1
-Vehicle ID      : V-1
-Pickup Date     : 01/01/2083
-Return Date     : 02/01/2083
+Customer ID     : C-2
+Vehicle ID      : V-2
+Pickup Date     : 01/03/2083
+Return Date     : 01/03/2083
 Driving Mode    : Self Drive
 Assigned Driver : 
-Total Amount    : Rs. 2250
+Total Amount    : Rs. 0
+Booking Status  : PENDING
+=========================================
+
+=========================================
+           VEHICLE RENTAL BILL           
+=========================================
+Booking ID      : B-1
+Customer ID     : C-2
+Vehicle ID      : V-3
+Pickup Date     : 18/05/2026
+Return Date     : 
+Driving Mode    : With Driver
+Assigned Driver : PENDING
+Total Amount    : Rs. 9000
+Booking Status  : PENDING
+=========================================
+
+=========================================
+           VEHICLE RENTAL BILL           
+=========================================
+Booking ID      : B-2
+Customer ID     : C-2
+Vehicle ID      : V-1
+Pickup Date     : 18/05/2026
+Return Date     : 20/05/2026
+Driving Mode    : Self Drive
+Assigned Driver : 
+Total Amount    : Rs. 5000
 Booking Status  : PENDING
 =========================================
 
@@ -16,13 +58,13 @@ Booking Status  : PENDING
            VEHICLE RENTAL BILL           
 =========================================
 Booking ID      : B-3
-Customer ID     : C-1
-Vehicle ID      : V-9
-Pickup Date     : 02/01/2083
+Customer ID     : C-4
+Vehicle ID      : V-4
+Pickup Date     : 19/05/2026
 Return Date     : 
 Driving Mode    : With Driver
 Assigned Driver : PENDING
-Total Amount    : Rs. 11250
+Total Amount    : Rs. 10000
 Booking Status  : PENDING
 =========================================
 

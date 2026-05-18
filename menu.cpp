@@ -21,6 +21,7 @@ void customerMenu(Customer& c, BookingQueue& queue)
         printMenuItem("    3. Cancel Booking");
         printMenuItem("    4. Review Driver");
         printMenuItem("    5. View My Profile");
+
         printMenuItem("    6. Exit");
 
         printMenuFooter();
@@ -60,17 +61,16 @@ void customerMenu(Customer& c, BookingQueue& queue)
         {
             system("cls");
             printMenuHeader(" CUSTOMER PROFILE");
-            printMenuItem("════════════════════════════════════════");
+            printMenuItem("________________________________________________");
+            
             printMenuItem("  User ID      : " + c.getUserID());
-            printMenuItem("  Name         : " + c.getName());
-            printMenuItem("  Age          : " + to_string(c.getAge()) + " years");
-            printMenuItem("  Email        : " + c.getEmail());
-            printMenuItem("  Phone        : " + c.getPhone());
             printMenuItem("  Citizenship  : " + c.getCitizenship());
-            printMenuItem("═══════════════════════════════════════");
-            printMenuFooter();
+            printMenuItem("________________________________________________");
+          
             system("pause");
         }
+
+       
 
         else if (ch == 6)
         {
@@ -138,20 +138,22 @@ void driverMenu(Driver& d, BookingQueue& queue)
         {
             system("cls");
             printMenuHeader("DRIVER PROFILE");
-            printMenuItem("════════════════════════════════════════");
+            printMenuItem("_________________________________________________");
             printMenuItem("  Driver ID    : " + d.getUserID());
-            printMenuItem("  Name         : " + d.getName());
-            printMenuItem("  Experience   : " + to_string(d.getExperience()) + " years");
-            printMenuItem("════════════════════════════════════════");
+            printMenuItem("  Citizenship  : " + d.getCitizenship());
+            printMenuItem("  License      : " + d.getLicense());
+            printMenuItem("_________________________________________________");
             printMenuFooter();
             system("pause");
         }
 
         else if (ch == 6)
         {
-            printMessage(" Exiting...");
+            printMessage("Exiting...");
             break;
         }
+
+      
 
         else
         {

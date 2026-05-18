@@ -22,6 +22,7 @@ public:
     void acceptCustomer(BookingQueue& queue);
     void rejectCustomer(BookingQueue& queue);
     void rateCustomer();
+  
     // Getters (useful later)
     std::string getLicense();
     std::string getCitizenship();

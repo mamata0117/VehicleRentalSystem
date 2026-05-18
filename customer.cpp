@@ -14,7 +14,8 @@ using namespace std;
 // Customer setup
 void Customer::setupCustomer()
 {
-   
+    system("cls");
+    printInputHeader("CUSTOMER SETUP");
 
     cout << "Are you a student? 1 for Yes, 0 for No: ";
     cin >> isStudent;
@@ -28,17 +29,19 @@ void Customer::setupCustomer()
         cout << " Enter Institution Name : ";
         getline(cin, institutionName);
         cin.ignore();
-
-        cout << " Enter Student ID Card Number : ";
-        getline(cin, studentIDCard);
     }
+
+    // Save customer to customers.txt with verification status
+    ofstream fout("customers.txt", ios::app);
+    fout << userID << "|CITIZENSHIP|PENDING" << endl;  // Track citizenship upload status
+    fout.close();
 
     printMessage("Customer setup completed successfully.");
 
     // Save customer citizenship to file
-    ofstream fout("customer_citizenship.txt", ios::app);
-    fout << userID << "|" << citizenship << endl;
-    fout.close();
+    ofstream fout2("customer_citizenship.txt", ios::app);
+    fout2 << userID << "|" << citizenship << endl;
+    fout2.close();
 }
 void Customer::reviewDriver()
 {
@@ -360,9 +363,9 @@ if (selectedNumber < 1 ||
         int pickupDays = convertToDays(b.pickupDate);
         int returnDays = convertToDays(b.returnDate);
         
-        if (returnDays <= pickupDays)
+        if (returnDays < pickupDays)
         {
-            printMessage("Return Date Must Be After Pickup Date.");
+            printMessage("Return Date Must Be Same Or After Pickup Date.");
             return;
         }
 
@@ -453,7 +456,6 @@ if (selectedNumber < 1 ||
 
     v->setAvailability(false);
     queue.enqueue(b);
-    saveBookingToFile(b);
     queue.generateBill(b);
 
     printMessage("Passenger Booking Created Successfully.");
@@ -625,7 +627,6 @@ if (selectedNumber < 1 ||
 
     v->setAvailability(false);
     queue.enqueue(b);
-    saveBookingToFile(b);
     queue.generateBill(b);
 
     printMessage("Goods Booking Created Successfully.");
@@ -748,6 +749,7 @@ void Customer::cancelBooking()
         printMessage("Booking ID Not Found.");
     }
 }
+
 // Getter
 string Customer::getCitizenship()
 {

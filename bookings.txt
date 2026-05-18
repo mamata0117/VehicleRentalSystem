@@ -1,2 +1,1 @@
-B-3|C-1|V-9|Gatthaghar|Thimi|02/01/2083|18||With Driver|D-3|PENDING|11250|ACCEPTED|PENDING|||Goods Transportation|Fruits|5|0
-B-3|C-1|V-9|Gatthaghar|Thimi|02/01/2083|18||With Driver|D-3|PENDING|11250|ACCEPTED|PENDING|||Goods Transportation|Fruits|5|0
+B-3|C-4|V-4|bkt|ktm|19/05/2026|16||With Driver|D-1|PENDING|10000|2000|ACCEPTED|||Passenger Transportation|||0
