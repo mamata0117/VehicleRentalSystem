@@ -60,6 +60,3 @@ Files & Functions
 Storage & File Conventions
 - Users are stored in `admins.txt`, `customers.txt`, and `drivers.txt` with each record spanning multiple lines (user fields). Other domain files include `vehicles.txt`, `bookings.txt`, `rentals.txt`, `reviews.txt`, and `customer_ratings.txt`.
 
-If you want, I can:
-- Add per-function line references (links to specific lines).
-- Generate a short developer guide for adding features (e.g., payments, persistence using CSV/DB).
