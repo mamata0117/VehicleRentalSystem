@@ -7,6 +7,7 @@
 #include <conio.h>
 #include <windows.h>
 #include "user.h"
+#include "idgenerator.h"
 #include "UI.h"
 
 using namespace std;
@@ -141,61 +142,7 @@ string User::inputLicense() {
 
 string User::generateUserID(string role)
 {
-    ifstream fin;
-
-    string line;
-
-    int count = 0;
-
-    // ADMIN
-    if(role == "ADMIN")
-    {
-        fin.open("admins.txt");
-    }
-
-    // CUSTOMER
-    else if(role == "CUSTOMER")
-    {
-        fin.open("customers.txt");
-    }
-
-    // DRIVER
-    else if(role == "DRIVER")
-    {
-        fin.open("drivers.txt");
-    }
-
-    // Count records
-    while(getline(fin, line))
-    {
-        if(line != "")
-        {
-            count++;
-        }
-    }
-
-    fin.close();
-
-    // Each user has 7 lines
-    count = count / 7;
-
-    // Generate ID
-    if(role == "ADMIN")
-    {
-        return "A-" + to_string(count + 1);
-    }
-
-    else if(role == "CUSTOMER")
-    {
-        return "C-" + to_string(count + 1);
-    }
-
-    else if(role == "DRIVER")
-    {
-        return "D-" + to_string(count + 1);
-    }
-
-    return "";
+    return IDGenerator::generateID(role);
 }
 
 

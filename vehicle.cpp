@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include "vehicle.h"
+#include "idgenerator.h"
 #include "UI.h"
 
 using namespace std;
@@ -179,8 +180,7 @@ namespace
 }
 string generateVehicleID()
 {
-    static int counter = 1;
-    return "V-" + to_string(counter++);
+    return IDGenerator::generateID("VEHICLE");
 }
 // Add vehicle
 void Vehicle::addVehicle()
