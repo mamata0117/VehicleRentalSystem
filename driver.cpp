@@ -6,6 +6,7 @@
 #include "UI.h"
 
 using namespace std;
+
 void Driver::setupDriver()
 {
     system("cls");
@@ -13,8 +14,6 @@ void Driver::setupDriver()
     printInputHeader("DRIVER SETUP");
 
     citizenship = inputCitizenship();
-
-  
     license = inputLicense();
 
     cout << "Enter Experience  : ";
@@ -183,14 +182,37 @@ void Driver::acceptCustomer(BookingQueue& queue)
     string line;
     bool found = false;
 
-    printMenuHeader("PENDING BOOKINGS");
+    printMenuHeader("PENDING BOOKINGS (FOR APPROVAL)");
 
-    // Show pending bookings
+    vector<string> pendingLines;
+    
+    // Show pending bookings - only display if status field (index 13) is PENDING
     while(getline(fin, line))
     {
-        if(line.find("PENDING") != string::npos)
+        if(line.empty()) continue;
+        
+        vector<string> fields;
+        size_t pos = 0;
+        while (pos < line.length())
         {
-            printMenuItem(line);
+            size_t pipePos = line.find('|', pos);
+            if (pipePos == string::npos)
+            {
+                fields.push_back(line.substr(pos));
+                break;
+            }
+            fields.push_back(line.substr(pos, pipePos - pos));
+            pos = pipePos + 1;
+        }
+        
+        if (fields.size() >= 14 && fields[13] == "PENDING" && fields[9].empty())
+        {
+            pendingLines.push_back(line);
+            printf(" %-12s | %-12s | %-12s | %-15s\n", 
+                   fields[0].c_str(), 
+                   fields[1].c_str(), 
+                   fields[2].c_str(), 
+                   fields[5].c_str());
             found = true;
         }
     }
@@ -199,7 +221,7 @@ void Driver::acceptCustomer(BookingQueue& queue)
 
     if(!found)
     {
-        printMessage("No Pending Bookings.");
+        printMessage("No Pending Bookings Without Driver Assignment.");
         return;
     }
 
@@ -232,7 +254,7 @@ void Driver::acceptCustomer(BookingQueue& queue)
 
             if (id == bookingID)
             {
-                // Check if booking is PENDING
+                // Check if booking is PENDING and has no driver assigned
                 if (line.find("PENDING") != string::npos)
                 {
                     // Parse all fields
@@ -250,12 +272,12 @@ void Driver::acceptCustomer(BookingQueue& queue)
                         pos = pipePos + 1;
                     }
 
-                    if (fields.size() >= 13)
+                    if (fields.size() >= 13 && fields[9].empty())
                     {
                         customerID = fields[1];  // Get customer ID
-                        // Update driver ID (field 9) and status (field 12)
+                        // Update driver ID (field 9) and status (field 13)
                         fields[9] = getUserID();  // Assign driver
-                        fields[12] = "ACCEPTED"; // Update status
+                        fields[13] = "ACCEPTED"; // Update status
 
                         // Reconstruct line
                         line = "";
@@ -288,33 +310,12 @@ void Driver::acceptCustomer(BookingQueue& queue)
         printMenuItem("Booking ID      : " + bookingID);
         printMenuItem("Customer ID     : " + customerID);
         
-        // Load customer details from file
-        ifstream custFile("customers.txt");
-        if (custFile)
-        {
-            string fileID, fileName, fileAge, filePhone, fileEmail, filePassword, fileRole;
-            while (getline(custFile, fileID) && getline(custFile, fileName) && 
-                   getline(custFile, fileAge) && getline(custFile, filePhone) && 
-                   getline(custFile, fileEmail) && getline(custFile, filePassword) &&
-                   getline(custFile, fileRole))
-            {
-                if (fileID == customerID)
-                {
-                    printMenuItem("Customer Name   : " + fileName);
-                    printMenuItem("Customer Phone  : " + filePhone);
-                    printMenuItem("Customer Email  : " + fileEmail);
-                    printLine();
-                    printMessage("Booking Accepted Successfully!");
-                    break;
-                }
-            }
-            custFile.close();
-        }
+        printMessage("Booking Accepted and Approved Successfully!");
         printMenuFooter();
     }
     else
     {
-        printMessage("Invalid Booking ID or not PENDING.");
+        printMessage("Invalid Booking ID or not PENDING (or already assigned).");
     }
 }
 void Driver::rejectCustomer(BookingQueue& queue)
@@ -332,13 +333,36 @@ void Driver::rejectCustomer(BookingQueue& queue)
     string line;
     bool found = false;
 
-    printMenuHeader("PENDING BOOKINGS");
+    printMenuHeader("PENDING BOOKINGS (FOR APPROVAL)");
+
+    vector<string> pendingLines;
 
     while(getline(fin, line))
     {
-        if(line.find("PENDING") != string::npos)
+        if(line.empty()) continue;
+        
+        vector<string> fields;
+        size_t pos = 0;
+        while (pos < line.length())
         {
-            printMenuItem(line);
+            size_t pipePos = line.find('|', pos);
+            if (pipePos == string::npos)
+            {
+                fields.push_back(line.substr(pos));
+                break;
+            }
+            fields.push_back(line.substr(pos, pipePos - pos));
+            pos = pipePos + 1;
+        }
+        
+        if (fields.size() >= 14 && fields[13] == "PENDING" && fields[9].empty())
+        {
+            pendingLines.push_back(line);
+            printf(" %-12s | %-12s | %-12s | %-15s\n", 
+                   fields[0].c_str(), 
+                   fields[1].c_str(), 
+                   fields[2].c_str(), 
+                   fields[5].c_str());
             found = true;
         }
     }
@@ -347,7 +371,7 @@ void Driver::rejectCustomer(BookingQueue& queue)
 
     if(!found)
     {
-        printMessage("No Pending Bookings.");
+        printMessage("No Pending Bookings Without Driver Assignment.");
         return;
     }
 
@@ -384,7 +408,7 @@ void Driver::rejectCustomer(BookingQueue& queue)
 
             if (id == bookingID)
             {
-                // Check if booking is PENDING
+                // Check if booking is PENDING and has no driver assigned
                 if (line.find("PENDING") != string::npos)
                 {
                     // Parse fields to get details
@@ -402,20 +426,26 @@ void Driver::rejectCustomer(BookingQueue& queue)
                         pos = pipePos + 1;
                     }
 
-                    if (fields.size() >= 13)
+                    if (fields.size() >= 13 && fields[9].empty())
                     {
                         customerID = fields[1];
                         vehicleID = fields[2];
                         pickupLocation = fields[3];
                         destination = fields[4];
                         pickupDate = fields[5];
-                    }
-
-                    // Replace last field (status) from PENDING to REJECTED
-                    size_t lastPipe = line.rfind('|');
-                    if (lastPipe != string::npos)
-                    {
-                        line = line.substr(0, lastPipe + 1) + "REJECTED";
+                        
+                        // Update driver ID and status
+                        fields[9] = getUserID();
+                        fields[13] = "REJECTED";
+                        
+                        line = "";
+                        for (size_t i = 0; i < fields.size(); i++)
+                        {
+                            line += fields[i];
+                            if (i < fields.size() - 1)
+                                line += "|";
+                        }
+                        
                         rejected = true;
                     }
                 }
@@ -434,7 +464,7 @@ void Driver::rejectCustomer(BookingQueue& queue)
     if(rejected)
     {
         system("cls");
-        printMenuHeader("BOOKING CANCELLED");
+        printMenuHeader("BOOKING REJECTED");
         printMenuItem("Booking ID      : " + bookingID);
         printMenuItem("Customer ID     : " + customerID);
         printMenuItem("Vehicle ID      : " + vehicleID);
@@ -447,7 +477,7 @@ void Driver::rejectCustomer(BookingQueue& queue)
     }
     else
     {
-        printMessage("Invalid Booking ID or not PENDING.");
+        printMessage("Invalid Booking ID or not PENDING (or already assigned).");
     }
 }
 
@@ -539,6 +569,9 @@ string Driver::getCitizenship() {
 
     return "Not Found";
 }
+
+// View document status
+
 
 int Driver::getExperience() {
     return experience;

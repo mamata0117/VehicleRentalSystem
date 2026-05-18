@@ -6,6 +6,7 @@
 
 #include "booking.h"
 #include "UI.h"
+#include "idgenerator.h"
 
 using namespace std;
 
@@ -13,9 +14,7 @@ void saveBookingToFile(Booking b);
 
 string generateBookingID()
 {
-    static int id = 1;
-
-    return "B-" + to_string(id++);
+    return IDGenerator::generateID("BOOKING");
 }
 // Constructor
 BookingQueue::BookingQueue()
@@ -366,8 +365,25 @@ void loadBookingsFromFile(BookingQueue& queue)
             b.drivingMode = fields[8];
             b.customerLicense = fields[9];
             b.assignedDriver = fields[10];
-            b.totalCost = stof(fields[11]);
-            b.advancePayment = stof(fields[12]);
+           try {
+    if (!fields[11].empty())
+        b.totalCost = stof(fields[11]);
+    else
+        b.totalCost = 0;
+
+    if (!fields[12].empty())
+        b.advancePayment = stof(fields[12]);
+    else
+        b.advancePayment = 0;
+}
+catch (const invalid_argument& e) {
+    cout << "Invalid numeric value in bookings.txt" << endl;
+    cout << "fields[11]: " << fields[11] << endl;
+    cout << "fields[12]: " << fields[12] << endl;
+
+    b.totalCost = 0;
+    b.advancePayment = 0;
+}
             b.status = fields[13];
             b.deliveryOption = fields[14];
             b.deliveryAddress = (fields.size() > 15) ? fields[15] : "";

@@ -676,7 +676,6 @@ void loadVehiclesFromFile()
     }
 
     string line;
-    string vehicleID, category, fuelType, licensePlate, maintenanceRecord, selfPriceStr, driverPriceStr, status;
 
     while (getline(fin, line))
     {
@@ -697,28 +696,22 @@ void loadVehiclesFromFile()
             pos = pipePos + 1;
         } 
 
-
-        if (fields.size() >= 7)
+        // Expected format: vehicleID|category|fuelType|licensePlate|maintenanceDate|nextMaintenanceDate|selfPrice|driverPrice|status
+        if (fields.size() >= 9)
         {
             Vehicle v;
             v.setVehicleID(fields[0]);
             v.setCategory(fields[1]);
             v.setFuelType(fields[2]);
             v.setLicensePlate(fields[3]);
-            if (fields.size() >= 8)
-            {
-                v.setMaintenanceRecord(fields[4]);
-                v.setSelfDrivePrice(stof(fields[5]));
-                v.setDriverPrice(stof(fields[6]));
-                v.setAvailability(fields[7] == "Available");
-            }
-            else
-            {
-                v.setMaintenanceRecord("Not Saved");
-                v.setSelfDrivePrice(stof(fields[4]));
-                v.setDriverPrice(stof(fields[5]));
-                v.setAvailability(fields[6] == "Available");
-            }
+            
+            // Combine maintenance dates into one record (format: date1|date2)
+            string maintenanceRecord = fields[4] + "|" + fields[5];
+            v.setMaintenanceRecord(maintenanceRecord);
+            
+            v.setSelfDrivePrice(stof(fields[6]));
+            v.setDriverPrice(stof(fields[7]));
+            v.setAvailability(fields[8] == "Available");
 
             insertVehicle(v);
         }

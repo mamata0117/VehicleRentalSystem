@@ -1,21 +1,29 @@
 C-1
-Alina Lama
+Nina Thapa
 23
-9876565455
-alina@gmail.com
-alina
+9887776656
+nina@gmail.com
+nina
 CUSTOMER
 C-2
-Roshan Adhikari
-25
-9776654435
-roshan@gmail.com
-roshan
+Hari Sharma
+34
+9777776668
+hari@gmail.com
+hari
 CUSTOMER
 C-3
-Sita Shah
-67
-9876554455
+Sita Thapa
+34
+9778885465
 sita@gmail.com
 sita
 CUSTOMER
+C-4
+Samita
+34
+9845733853
+samita@gmail.com
+samita
+CUSTOMER
+C-4|CITIZENSHIP|PENDING

@@ -15,6 +15,7 @@ void IDGenerator::loadCounters()
         counters["CUSTOMER"] = 0;
         counters["ADMIN"] = 0;
         counters["DRIVER"] = 0;
+        counters["BOOKING"] = 0;
         return;
     }
 
@@ -42,6 +43,8 @@ void IDGenerator::loadCounters()
         counters["ADMIN"] = 0;
     if (counters.find("DRIVER") == counters.end())
         counters["DRIVER"] = 0;
+    if (counters.find("BOOKING") == counters.end())
+        counters["BOOKING"] = 0;
 }
 
 void IDGenerator::saveCounters()
@@ -98,6 +101,10 @@ string IDGenerator::generateID(const string& entityType)
     else if (entityType == "DRIVER")
     {
         return "D-" + to_string(counter);
+    }
+    else if (entityType == "BOOKING")
+    {
+        return "B-" + to_string(counter);
     }
 
     return "";

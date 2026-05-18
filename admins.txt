@@ -1,21 +1,14 @@
 A-1
-Mina Kc
-21
-9778856545
-mina@gmail.com
-mina
-ADMIN
-A-2
-Rina Shrestha
-21
-9887766545
+Rina Sharma
+23
+9876765544
 rina@gmail.com
 rina
 ADMIN
-A-3
-Rim Thapa
-21
-9887766343
-rim@gmail.com
-rim
+A-2
+Binit Kc
+34
+9876765656
+binit@gmail.com
+binit
 ADMIN
