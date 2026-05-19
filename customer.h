@@ -10,13 +10,13 @@ class Customer : public User {
 private:
     std::string citizenship;
     bool isStudent;
-    std::string institutionName;
-    std::string studentIDCard;
 
 public:
     void setupCustomer();
+    void loadCustomerData();
     void reviewDriver();
     void customerMenu(BookingQueue& queue);
+    void viewRatings();
     // actions
     void viewVehicles();
     void bookVehicle(BookingQueue& queue);

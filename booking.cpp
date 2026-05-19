@@ -7,6 +7,7 @@
 #include "booking.h"
 #include "UI.h"
 #include "idgenerator.h"
+#include "vehicle.h"
 
 using namespace std;
 
@@ -404,4 +405,233 @@ catch (const invalid_argument& e) {
 void enqueueBookingWithoutUpdateVehicle(BookingQueue& queue, Booking b)
 {
     queue.enqueue(b, false);  // false = don't update vehicle status
+}
+
+// Validate Customer ID format (C-1, C-15, etc.)
+bool isValidCustomerID(string customerID)
+{
+    if (customerID.length() < 2)
+        return false;
+    
+    if (customerID[0] != 'C' || customerID[1] != '-')
+        return false;
+    
+    for (size_t i = 2; i < customerID.length(); i++)
+    {
+        if (!isdigit(customerID[i]))
+            return false;
+    }
+    
+    return true;
+}
+
+// Check if customer has a pending booking without driver assignment
+bool customerIDHasPendingBooking(string customerID)
+{
+    ifstream fin("bookings.txt");
+    
+    if (!fin)
+        return false;
+    
+    string line;
+    while (getline(fin, line))
+    {
+        if (line.empty()) continue;
+        
+        vector<string> fields;
+        size_t pos = 0;
+        while (pos < line.length())
+        {
+            size_t pipePos = line.find('|', pos);
+            if (pipePos == string::npos)
+            {
+                fields.push_back(line.substr(pos));
+                break;
+            }
+            fields.push_back(line.substr(pos, pipePos - pos));
+            pos = pipePos + 1;
+        }
+        
+        if (fields.size() >= 14 && fields[1] == customerID && 
+            fields[13] == "PENDING" && fields[9].empty())
+        {
+            fin.close();
+            return true;
+        }
+    }
+    
+    fin.close();
+    return false;
+}
+
+// Set vehicle status to AVAILABLE
+void setVehicleAvailable(string vehicleID)
+{
+    // Update in-memory vehicle object
+    Vehicle* v = findVehicleByID(vehicleID);
+    if (v != NULL)
+    {
+        v->setAvailability(true);
+    }
+    
+    // Update file
+    ifstream fin("vehicles.txt");
+    ofstream fout("temp.txt");
+    
+    if (!fin || !fout)
+    {
+        printMessage("Error Opening Vehicle File.");
+        return;
+    }
+    
+    string line;
+    
+    while (getline(fin, line))
+    {
+        if (line.empty()) continue;
+        
+        size_t pipePos = line.find('|');
+        if (pipePos != string::npos)
+        {
+            string id = line.substr(0, pipePos);
+            
+            if (id == vehicleID)
+            {
+                size_t lastPipe = line.rfind('|');
+                if (lastPipe != string::npos)
+                {
+                    line = line.substr(0, lastPipe + 1) + "Available";
+                }
+            }
+        }
+        
+        fout << line << endl;
+    }
+    
+    fin.close();
+    fout.close();
+    
+    remove("vehicles.txt");
+    rename("temp.txt", "vehicles.txt");
+}
+
+// Update booking status
+void updateBookingStatus(string bookingID, string newStatus)
+{
+    ifstream fin("bookings.txt");
+    ofstream fout("temp.txt");
+    
+    if (!fin || !fout)
+    {
+        printMessage("Error opening bookings file.");
+        return;
+    }
+    
+    string line;
+    
+    while (getline(fin, line))
+    {
+        if (line.empty())
+        {
+            fout << line << endl;
+            continue;
+        }
+        
+        size_t firstPipe = line.find('|');
+        if (firstPipe != string::npos)
+        {
+            string id = line.substr(0, firstPipe);
+            
+            if (id == bookingID)
+            {
+                vector<string> fields;
+                size_t pos = 0;
+                while (pos < line.length())
+                {
+                    size_t pipePos = line.find('|', pos);
+                    if (pipePos == string::npos)
+                    {
+                        fields.push_back(line.substr(pos));
+                        break;
+                    }
+                    fields.push_back(line.substr(pos, pipePos - pos));
+                    pos = pipePos + 1;
+                }
+                
+                if (fields.size() >= 14)
+                {
+                    fields[13] = newStatus;
+                    
+                    line = "";
+                    for (size_t i = 0; i < fields.size(); i++)
+                    {
+                        line += fields[i];
+                        if (i < fields.size() - 1)
+                            line += "|";
+                    }
+                }
+            }
+        }
+        
+        fout << line << endl;
+    }
+    
+    fin.close();
+    fout.close();
+    
+    remove("bookings.txt");
+    rename("temp.txt", "bookings.txt");
+}
+
+// Find active booking (PENDING or APPROVED) for a given vehicle
+Booking findActiveBookingForVehicle(string vehicleID)
+{
+    Booking emptyBooking;
+    emptyBooking.vehicleID = "";
+    
+    ifstream fin("bookings.txt");
+    
+    if (!fin)
+    {
+        return emptyBooking;
+    }
+    
+    string line;
+    while (getline(fin, line))
+    {
+        if (line.empty()) continue;
+        
+        vector<string> fields;
+        size_t pos = 0;
+        while (pos < line.length())
+        {
+            size_t pipePos = line.find('|', pos);
+            if (pipePos == string::npos)
+            {
+                fields.push_back(line.substr(pos));
+                break;
+            }
+            fields.push_back(line.substr(pos, pipePos - pos));
+            pos = pipePos + 1;
+        }
+        
+        // Check if this is the vehicle we're looking for (field 2 is vehicleID)
+        // and the booking is active (PENDING or APPROVED - field 13 is status)
+        if (fields.size() >= 14 && fields[2] == vehicleID && 
+            (fields[13] == "PENDING" || fields[13] == "APPROVED"))
+        {
+            Booking b;
+            b.bookingID = fields[0];
+            b.customerID = fields[1];
+            b.vehicleID = fields[2];
+            b.assignedDriver = fields[10];
+            b.status = fields[13];
+            
+            fin.close();
+            return b;
+        }
+    }
+    
+    fin.close();
+    return emptyBooking;
 }

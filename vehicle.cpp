@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include "vehicle.h"
+#include "booking.h"
 #include "idgenerator.h"
 #include "UI.h"
 
@@ -96,7 +97,7 @@ namespace
         return text.substr(0, width - 3) + "...";
     }
 
-   static vector<string> buildVehicleCard(Vehicle v, int width)
+    static vector<string> buildVehicleCard(Vehicle v, int width)
 {
     vector<string> lines;
 
@@ -111,6 +112,10 @@ namespace
 
     string nextDate =
         maintenance.substr(pos + 1);
+
+    // Get booking information if vehicle is booked
+    Booking booking = findActiveBookingForVehicle(v.getVehicleID());
+    bool isBooked = !booking.vehicleID.empty();
 
     lines.push_back(makeBorder(width));
 
@@ -131,6 +136,21 @@ namespace
     lines.push_back("| " + padRight(shorten(string("Driver: Rs. ") + to_string((int)v.getDriverPrice()), width - 4), width - 4) + " |");
 
     lines.push_back("| " + padRight(shorten(string("Status: ") + (v.isAvailable() ? "Available" : "Booked"), width - 4), width - 4) + " |");
+
+    // Add booking details if booked
+    if (isBooked)
+    {
+        lines.push_back("| " + padRight(shorten("Customer: " + booking.customerID, width - 4), width - 4) + " |");
+        
+        if (!booking.assignedDriver.empty() && booking.assignedDriver != "")
+        {
+            lines.push_back("| " + padRight(shorten("Driver: " + booking.assignedDriver, width - 4), width - 4) + " |");
+        }
+        else
+        {
+            lines.push_back("| " + padRight(shorten("Driver: Not Assigned", width - 4), width - 4) + " |");
+        }
+    }
 
     lines.push_back(makeBorder(width));
 
@@ -495,6 +515,7 @@ void displayAllVehicles()
     }
 
     printVehicleGrid(vehicles);
+    printMenuFooter();
 }
 
 // Display only available vehicles

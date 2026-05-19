@@ -24,25 +24,53 @@ void Customer::setupCustomer()
 
     citizenship = inputCitizenship();
 
-    if(isStudent == 1)
-    {
-        cout << " Enter Institution Name : ";
-        getline(cin, institutionName);
-        cin.ignore();
-    }
-
-    // Save customer to customers.txt with verification status
-    ofstream fout("customers.txt", ios::app);
-    fout << userID << "|CITIZENSHIP|PENDING" << endl;  // Track citizenship upload status
+    // Save customer citizenship to file
+    ofstream fout("customer_citizenship.txt", ios::app);
+    fout << userID << "|" << citizenship << endl;
     fout.close();
 
     printMessage("Customer setup completed successfully.");
-
-    // Save customer citizenship to file
-    ofstream fout2("customer_citizenship.txt", ios::app);
-    fout2 << userID << "|" << citizenship << endl;
-    fout2.close();
 }
+
+void Customer::loadCustomerData()
+{
+    // Load customer data from citizenship file
+    ifstream fin("customer_citizenship.txt");
+    if (fin)
+    {
+        string line;
+        while (getline(fin, line))
+        {
+            if (line.empty()) continue;
+            
+            size_t pos1 = line.find('|');
+            if (pos1 != string::npos)
+            {
+                string id = line.substr(0, pos1);
+                if (id == userID)
+                {
+                    size_t pos2 = line.find('|', pos1 + 1);
+                    if (pos2 != string::npos)
+                    {
+                        citizenship = line.substr(pos1 + 1, pos2 - pos1 - 1);
+                        string studentStr = line.substr(pos2 + 1);
+                        isStudent = (stoi(studentStr) == 1);
+                    }
+                    else
+                    {
+                        citizenship = line.substr(pos1 + 1);
+                        isStudent = false;
+                    }
+                    fin.close();
+                    return;
+                }
+            }
+        }
+        fin.close();
+    }
+    isStudent = false;
+}
+
 void Customer::reviewDriver()
 {
     string driverID;
@@ -73,7 +101,7 @@ void Customer::reviewDriver()
             if (fileID == driverID)
             {
                 driverExists = true;
-                // Try to get driver name from drivers.txt (in case it's stored after ID)
+               
                 break;
             }
         }
@@ -108,7 +136,7 @@ void Customer::reviewDriver()
     cout << "Write Review: ";
     getline(cin, review);
 
-    // Save review to file
+    // Saving the review to file
     ofstream fout("reviews.txt", ios::app);
 
     fout << driverID << "|"
@@ -143,7 +171,8 @@ void Customer::customerMenu(BookingQueue& queue)
     printMenuItem("1. View Available Vehicles");
     printMenuItem("2. Book Vehicle");
     printMenuItem("3. Cancel Booking");
-    printMenuItem("4. Exit");
+    printMenuItem("4. View My Ratings");
+    printMenuItem("5. Exit");
     printMenuFooter();
 
     cout << "\nEnter choice: ";
@@ -164,6 +193,10 @@ void Customer::customerMenu(BookingQueue& queue)
             break;
 
         case 4:
+            viewRatings();
+            break;
+
+        case 5:
             exit(0);
             break;
 
@@ -171,7 +204,7 @@ void Customer::customerMenu(BookingQueue& queue)
             cout << "Invalid choice.\n";
     }
 
-} while(choice != 4);
+} while(choice != 5);
 }
 
 // View vehicles
@@ -180,14 +213,14 @@ void Customer::viewVehicles()
     displayAvailableVehicles();
 }
 
-// Helper function: Check if vehicle is passenger type
+// Checks if vehicle is passenger type
 bool isPassengerVehicle(string category)
 {
     return (category == "Car" || category == "Bike" || 
             category == "Scooter" || category == "Van");
 }
 
-// Helper function: Check if vehicle is goods type
+// Checks if vehicle is goods type
 bool isGoodsVehicle(string category)
 {
     return (category == "Truck" || category == "Mini Truck" || 
@@ -428,19 +461,32 @@ if (selectedNumber < 1 ||
         cout << "Enter Pickup Time (24 hr format): ";
         cin >> b.pickupTime;
 
-        if (!validDateFormat(b.pickupDate))
+        cout << "Enter Return Date (DD/MM/YYYY): ";
+        cin >> b.returnDate;
+
+        if (!validDateFormat(b.pickupDate) || !validDateFormat(b.returnDate))
         {
             printMessage("Invalid Date Format. Use DD/MM/YYYY");
             return;
         }
 
-        b.returnDate = "";
+        int pickupDays2 = convertToDays(b.pickupDate);
+        int returnDays2 = convertToDays(b.returnDate);
+        
+        if (returnDays2 < pickupDays2)
+        {
+            printMessage("Return Date Must Be Same Or After Pickup Date.");
+            return;
+        }
+
         b.customerLicense = "";
         b.deliveryOption = "";
         b.deliveryAddress = "";
         b.assignedDriver = "PENDING";
 
-        b.totalCost = v->getSelfDrivePrice() + v->getDriverPrice();
+        int days = returnDays2 - pickupDays2;
+        if (days < 1) days = 1;  // Minimum 1 day charge
+        b.totalCost = days * (v->getSelfDrivePrice() + v->getDriverPrice());
 
         if (isStudent)
             b.totalCost = b.totalCost * 0.9;
@@ -452,7 +498,16 @@ if (selectedNumber < 1 ||
     }
 
     b.advancePayment = b.totalCost * 0.2;
-    b.status = "PENDING";
+    
+    // For Self Drive: status is directly BOOKED. For With Driver: status is PENDING
+    if (b.drivingMode == "Self Drive")
+    {
+        b.status = "BOOKED";
+    }
+    else
+    {
+        b.status = "PENDING";
+    }
 
     v->setAvailability(false);
     queue.enqueue(b);
@@ -596,28 +651,36 @@ if (selectedNumber < 1 ||
     cout << "Enter Pickup Time (24 hr format): ";
     cin >> b.pickupTime;
 
-    if (!validDateFormat(b.pickupDate))
+    cout << "Enter Return Date (DD/MM/YYYY): ";
+    cin >> b.returnDate;
+
+    if (!validDateFormat(b.pickupDate) || !validDateFormat(b.returnDate))
     {
         printMessage("Invalid Date Format. Use DD/MM/YYYY");
         return;
     }
 
-    cout << "Fragile goods? (1: Yes, 0: No): ";
-    int fragile;
-    cin >> fragile;
+    int pickupDays2 = convertToDays(b.pickupDate);
+    int returnDays2 = convertToDays(b.returnDate);
+    
+    if (returnDays2 < pickupDays2)
+    {
+        printMessage("Return Date Must Be Same Or After Pickup Date.");
+        return;
+    }
 
     cout << "Refrigerated transport needed? (1: Yes, 0: No): ";
     int refrigerated;
     cin >> refrigerated;
     b.refrigeratedRequired = (refrigerated == 1);
 
-    b.returnDate = "";
     b.customerLicense = "";
     b.deliveryOption = "";
     b.deliveryAddress = "";
 
-    // Goods pricing: base price for driver + vehicle
-    b.totalCost = v->getSelfDrivePrice() + v->getDriverPrice();
+    int days = returnDays2 - pickupDays2;
+    if (days < 1) days = 1;  // Minimum 1 day charge
+    b.totalCost = days * (v->getSelfDrivePrice() + v->getDriverPrice());
 
     if (isStudent)
         b.totalCost = b.totalCost * 0.9;
@@ -632,7 +695,7 @@ if (selectedNumber < 1 ||
     printMessage("Goods Booking Created Successfully.");
 }
 
-// Book vehicle - Main entry point
+// Book vehicle 
 void Customer::bookVehicle(BookingQueue& queue)
 {
     system("cls");
@@ -681,18 +744,44 @@ void Customer::cancelBooking()
     }
 
     string line;
-
     bool found = false;
+    
+    printMenuHeader("YOUR ACTIVE BOOKINGS");
+    printf("\n %-12s | %-12s | %-12s | %-12s | %-15s | %-10s\n", 
+           "Booking ID", "Vehicle ID", "Pickup Date", "Return Date", "Total Cost", "Status");
+    printLine();
 
-    printMenuHeader("YOUR BOOKINGS");
-
-    // SHOW CUSTOMER BOOKINGS
+    vector<string> bookingLines;
+    
     while(getline(fin, line))
     {
-        if(line.find(getUserID()) != string::npos)
+        if(line.empty()) continue;
+        
+        vector<string> fields;
+        size_t pos = 0;
+        while (pos < line.length())
         {
-            printMenuItem(line);
-
+            size_t pipePos = line.find('|', pos);
+            if (pipePos == string::npos)
+            {
+                fields.push_back(line.substr(pos));
+                break;
+            }
+            fields.push_back(line.substr(pos, pipePos - pos));
+            pos = pipePos + 1;
+        }
+        
+        if (fields.size() >= 14 && fields[1] == getUserID() && 
+            (fields[13] == "PENDING" || fields[13] == "ACCEPTED" || fields[13] == "APPROVED"))
+        {
+            printf(" %-12s | %-12s | %-12s | %-12s | %-15s | %-10s\n", 
+                   fields[0].c_str(),           // Booking ID
+                   fields[2].c_str(),           // Vehicle ID
+                   fields[5].c_str(),           // Pickup Date
+                   fields[7].c_str(),           // Return Date
+                   fields[11].c_str(),          // Total Cost
+                   fields[13].c_str());         // Status
+            bookingLines.push_back(line);
             found = true;
         }
     }
@@ -701,52 +790,116 @@ void Customer::cancelBooking()
 
     if(!found)
     {
-        printMessage("No Bookings Found.");
+        printMessage("No Active Bookings Found.");
         return;
     }
 
     printLine();
 
     string cancelID;
-
     cout << "Enter Booking ID To Cancel : ";
     cin >> cancelID;
 
     fin.open("bookings.txt");
-
+    
+    if (!fin)
+    {
+        printMessage("Error opening bookings file.");
+        return;
+    }
+    
     ofstream fout("temp.txt");
+    
+    if (!fout)
+    {
+        printMessage("Error creating temp file.");
+        fin.close();
+        return;
+    }
 
-    bool deleted = false;
+    bool cancelled = false;
+    string vehicleID = "";
+    string bookingStatus = "";
 
     while(getline(fin, line))
     {
-        // KEEP OTHER BOOKINGS
-        if(line.find(cancelID) == string::npos)
+        if (line.empty())
         {
             fout << line << endl;
+            continue;
         }
 
-        else
+        size_t firstPipe = line.find('|');
+        if (firstPipe != string::npos)
         {
-            deleted = true;
+            string id = line.substr(0, firstPipe);
+
+            if (id == cancelID)
+            {
+                vector<string> fields;
+                size_t pos = 0;
+                while (pos < line.length())
+                {
+                    size_t pipePos = line.find('|', pos);
+                    if (pipePos == string::npos)
+                    {
+                        fields.push_back(line.substr(pos));
+                        break;
+                    }
+                    fields.push_back(line.substr(pos, pipePos - pos));
+                    pos = pipePos + 1;
+                }
+                
+                if (fields.size() >= 14 && fields[1] == getUserID() && 
+                    (fields[13] == "PENDING" || fields[13] == "ACCEPTED" || fields[13] == "APPROVED"))
+                {
+                    vehicleID = fields[2];
+                    bookingStatus = fields[13];
+                    
+                    // Update status to CANCELLED
+                    fields[13] = "CANCELLED";
+                    
+                    line = "";
+                    for (size_t i = 0; i < fields.size(); i++)
+                    {
+                        line += fields[i];
+                        if (i < fields.size() - 1)
+                            line += "|";
+                    }
+                    
+                    cancelled = true;
+                }
+            }
         }
+
+        fout << line << endl;
     }
 
     fin.close();
     fout.close();
 
     remove("bookings.txt");
-
     rename("temp.txt", "bookings.txt");
 
-    if(deleted)
+    if(cancelled)
     {
-        printMessage("Booking Cancelled Successfully.");
+        system("cls");
+        printMenuHeader("BOOKING CANCELLED");
+        printMenuItem("Booking ID       : " + cancelID);
+        printMenuItem("Vehicle ID       : " + vehicleID);
+        printMenuItem("Previous Status  : " + bookingStatus);
+        printMenuItem("New Status       : CANCELLED");
+        printLine();
+        
+        // Make vehicle available
+        setVehicleAvailable(vehicleID);
+        
+        printMessage("Booking Cancelled Successfully. Vehicle is now Available.");
+        printMenuFooter();
     }
-
     else
     {
-        printMessage("Booking ID Not Found.");
+        printMessage("Booking ID Not Found or Not Eligible For Cancellation.");
     }
 }
 
@@ -780,4 +933,56 @@ string Customer::getCitizenship()
     }
 
     return "Not Found";
+}
+
+void Customer::viewRatings()
+{
+    system("cls");
+
+    ifstream fin("customer_ratings.txt");
+
+    if(!fin)
+    {
+        printMessage("No Ratings Found.");
+        return;
+    }
+
+    string line;
+    vector<string> ratings;
+
+    while(getline(fin, line))
+    {
+        if(line.empty()) continue;
+        stringstream ss(line);
+        string id;
+        int rating;
+        ss >> id >> rating;
+
+        if(id == getUserID())
+        {
+            stringstream out;
+            out << "Rating : " << rating << "/5";
+            ratings.push_back(out.str());
+        }
+    }
+
+    fin.close();
+
+    printMenuHeader("MY RATINGS (MOST RECENT FIRST)");
+
+    if(ratings.empty())
+    {
+        printMenuItem("No Ratings Yet.");
+    }
+    else
+    {
+        // Display in reverse order (most recent first)
+        for(int i = ratings.size() - 1; i >= 0; i--)
+        {
+            printMenuItem(ratings[i]);
+            printLine();
+        }
+    }
+
+    printMenuFooter();
 }

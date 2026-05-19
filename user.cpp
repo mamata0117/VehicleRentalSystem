@@ -23,7 +23,7 @@ string User::inputPassword() {
         else if (ch == 8 && password.length() > 0) {
             password.pop_back();
             cout << "\b \b";
-        }
+        } 
         else {
             password += ch;
             cout << "*";
@@ -58,8 +58,8 @@ string User::inputPhone() {
             if (!isdigit(c)) {
                 valid = false;
                 break;
-            }
-        }
+                   }
+               }
 
         if (!valid) {
             cout << "Only numbers are allowed.\n";
@@ -147,7 +147,7 @@ string User::generateUserID(string role)
 
 
 bool User::isDuplicate(string phone, string email) {
-    // Check all role-specific files
+  
     string files[] = {"customers.txt", "drivers.txt", "admins.txt"};
 
     for (int f = 0; f < 3; f++)
@@ -181,7 +181,6 @@ void User::registerUser()
 
     printInputHeader("USER REGISTRATION");
 
-    
     // NAME
     cout << "Enter Name     : ";
     cin.ignore();
@@ -254,15 +253,15 @@ void User::registerUser()
         cout << "Enter Role(Customer/Driver/Admin)    : ";
         getline(cin, role);
 
-        while (!role.empty() && isspace(static_cast<unsigned char>(role.front())))
-        {
-            role.erase(role.begin());
-        }
+       while(!role.empty() && role[0] == ' ')
+ {
+    role.erase(0, 1);
+ }
 
-        while (!role.empty() && isspace(static_cast<unsigned char>(role.back())))
-        {
-            role.pop_back();
-        }
+while(!role.empty() && role[role.length() - 1] == ' ')
+{
+    role.pop_back();
+}
 
         if(role.empty())
         {
@@ -339,9 +338,7 @@ void User::registerUser()
 bool User::loginUser()
 {
     ifstream fin;
-
     string inputPass, inputID;
-
     string fileID;
     string fileName;
     string ageStr;

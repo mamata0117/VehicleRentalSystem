@@ -1,29 +1,35 @@
 C-1
-Nina Thapa
-23
-9887776656
-nina@gmail.com
-nina
+Rina Shrestha
+34
+9778800011
+rina@gmail.com
+rina
 CUSTOMER
 C-2
-Hari Sharma
-34
-9777776668
-hari@gmail.com
-hari
+Simon Aryal
+27
+9887771234
+simon@gmail.com
+simon
 CUSTOMER
 C-3
-Sita Thapa
-34
-9778885465
+Sita Shah
+21
+9887770000
 sita@gmail.com
 sita
 CUSTOMER
 C-4
-Samita
-34
-9845733853
-samita@gmail.com
-samita
+Astina
+25
+9836472826
+tina@gmail.com
+astina
 CUSTOMER
-C-4|CITIZENSHIP|PENDING
+C-5
+Simrika Chaulagain
+19
+9878787878
+simrika@gmail.com
+simrika
+CUSTOMER

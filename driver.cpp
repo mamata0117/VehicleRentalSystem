@@ -15,26 +15,79 @@ void Driver::setupDriver()
 
     citizenship = inputCitizenship();
     license = inputLicense();
+    experience = getExperience();
 
-    cout << "Enter Experience  : ";
-    cin >> experience;
+    // Save citizenship and license to driver_citizenship.txt
+    ifstream fin("driver_citizenship.txt");
+    bool exists = false;
+    string line;
+    
+    if (fin)
+    {
+        while (getline(fin, line))
+        {
+            if (!line.empty())
+            {
+                size_t pipePos = line.find('|');
+                if (pipePos != string::npos)
+                {
+                    string fileID = line.substr(0, pipePos);
+                    if (fileID == userID)
+                    {
+                        exists = true;
+                        break;
+                    }
+                }
+            }
+        }
+        fin.close();
+    }
 
-    ofstream fout("drivers.txt", ios::app);
-
-    fout << userID << " "
-         << citizenship << " "
-         << license << " "
-         << experience << endl;
-
-    fout.close();
+    if (!exists)
+    {
+        // Append new record to driver_citizenship.txt
+        ofstream fout("driver_citizenship.txt", ios::app);
+        fout << userID << "|" << citizenship << "|" << license << endl;
+        fout.close();
+    }
+    else
+    {
+        // Update existing record
+        ifstream fin("driver_citizenship.txt");
+        ofstream fout("driver_citizenship_temp.txt");
+        
+        while (getline(fin, line))
+        {
+            if (!line.empty())
+            {
+                size_t pipePos = line.find('|');
+                if (pipePos != string::npos)
+                {
+                    string fileID = line.substr(0, pipePos);
+                    if (fileID == userID)
+                    {
+                        fout << userID << "|" << citizenship << "|" << license << endl;
+                    }
+                    else
+                    {
+                        fout << line << endl;
+                    }
+                }
+            }
+        }
+        
+        fin.close();
+        fout.close();
+        
+        remove("driver_citizenship.txt");
+        rename("driver_citizenship_temp.txt", "driver_citizenship.txt");
+    }
 
     printMessage("Driver Setup Completed Successfully.");
 }
 
 void Driver::viewTotalRidesToday()
 {
-   
-
     ifstream fin("bookings.txt");
 
     if(!fin)
@@ -51,11 +104,12 @@ void Driver::viewTotalRidesToday()
     cin >> todayDate;
 
     string line;
-
     int totalRides = 0;
 
     while(getline(fin, line))
     {
+        if(line.empty()) continue;
+        
         stringstream ss(line);
 
         string bookingID;
@@ -66,9 +120,6 @@ void Driver::viewTotalRidesToday()
         string drivingMode;
         string customerLicense;
         string assignedDriver;
-        string totalCost;
-        string advancePayment;
-        string status;
 
         getline(ss, bookingID, '|');
         getline(ss, customerID, '|');
@@ -78,16 +129,10 @@ void Driver::viewTotalRidesToday()
         getline(ss, drivingMode, '|');
         getline(ss, customerLicense, '|');
         getline(ss, assignedDriver, '|');
-        getline(ss, totalCost, '|');
-        getline(ss, advancePayment, '|');
-        getline(ss, status);
 
-        if(assignedDriver == getUserID())
+        if(assignedDriver == getUserID() && pickupDate == todayDate && drivingMode == "With Driver")
         {
-            if(pickupDate == todayDate)
-            {
-                totalRides++;
-            }
+            totalRides++;
         }
     }
 
@@ -112,10 +157,7 @@ void Driver::viewReviews()
     }
 
     string line;
-
-    bool found = false;
-
-    printMenuHeader("MY REVIEWS");
+    Stack<string> reviewStack;
 
     while(getline(fin, line))
     {
@@ -135,36 +177,40 @@ void Driver::viewReviews()
 
         if(driverID == getUserID())
         {
-            found = true;
-
-            printMenuItem(
-                "Booking ID  : " + bookingID
-            );
-
-            printMenuItem(
-                "Customer ID : " + customerID
-            );
-
-            printMenuItem(
-                "Rating      : " + rating + "/5"
-            );
-
-            printMenuItem(
-                "Review      : " + review
-            );
-
-            printLine();
+            stringstream out;
+            out << "Booking ID  : " << bookingID << '\n';
+            out << "Customer ID : " << customerID << '\n';
+            out << "Rating      : " << rating << "/5" << '\n';
+            out << "Review      : " << review << '\n';
+            reviewStack.push(out.str());
         }
     }
 
-    if(!found)
+    fin.close();
+
+    printMenuHeader("MY REVIEWS (MOST RECENT FIRST)");
+
+    if(reviewStack.isEmpty())
     {
         printMenuItem("No Reviews Yet.");
     }
+    else
+    {
+        // Pop from stack displays most recent first (LIFO)
+        while(!reviewStack.isEmpty())
+        {
+            stringstream ss(reviewStack.peek());
+            string l;
+            while (getline(ss, l))
+            {
+                printMenuItem(l);
+            }
+            printLine();
+            reviewStack.pop();
+        }
+    }
 
     printMenuFooter();
-
-    fin.close();
 }
 
 void Driver::acceptCustomer(BookingQueue& queue)
@@ -183,10 +229,10 @@ void Driver::acceptCustomer(BookingQueue& queue)
     bool found = false;
 
     printMenuHeader("PENDING BOOKINGS (FOR APPROVAL)");
+    printf("\n %-12s | %-12s | %-12s | %-12s | %-15s\n", 
+           "Booking ID", "Customer ID", "Vehicle ID", "Pickup Date", "Driving Mode");
+    printLine();
 
-    vector<string> pendingLines;
-    
-    // Show pending bookings - only display if status field (index 13) is PENDING
     while(getline(fin, line))
     {
         if(line.empty()) continue;
@@ -207,12 +253,12 @@ void Driver::acceptCustomer(BookingQueue& queue)
         
         if (fields.size() >= 14 && fields[13] == "PENDING" && fields[9].empty())
         {
-            pendingLines.push_back(line);
-            printf(" %-12s | %-12s | %-12s | %-15s\n", 
-                   fields[0].c_str(), 
-                   fields[1].c_str(), 
-                   fields[2].c_str(), 
-                   fields[5].c_str());
+            printf(" %-12s | %-12s | %-12s | %-12s | %-15s\n", 
+                   fields[0].c_str(),           // Booking ID
+                   fields[1].c_str(),           // Customer ID
+                   fields[2].c_str(),           // Vehicle ID
+                   fields[5].c_str(),           // Pickup Date
+                   fields[8].c_str());          // Driving Mode
             found = true;
         }
     }
@@ -227,16 +273,110 @@ void Driver::acceptCustomer(BookingQueue& queue)
 
     printLine();
 
-    string bookingID;
+    string customerID;
 
-    cout << "Enter Booking ID To Accept : ";
-    cin >> bookingID;
+    cout << "\nEnter Customer ID To Accept : ";
+    cin >> customerID;
+
+    if (!isValidCustomerID(customerID))
+    {
+        printMessage("Invalid Customer ID Format. Must be C-# (e.g., C-1, C-15).");
+        return;
+    }
+
+    fin.open("bookings.txt");
+
+    if (!fin)
+    {
+        printMessage("Error opening bookings file.");
+        return;
+    }
+
+    found = false;
+    string bookingID = "";
+    string vehicleID = "";
+    string pickupLocation = "";
+    string destination = "";
+    string pickupDate = "";
+    string returnDate = "";
+    string drivingMode = "";
+    string totalCost = "";
+
+    while(getline(fin, line))
+    {
+        if (line.empty()) continue;
+        
+        vector<string> fields;
+        size_t pos = 0;
+        while (pos < line.length())
+        {
+            size_t pipePos = line.find('|', pos);
+            if (pipePos == string::npos)
+            {
+                fields.push_back(line.substr(pos));
+                break;
+            }
+            fields.push_back(line.substr(pos, pipePos - pos));
+            pos = pipePos + 1;
+        }
+
+        if (fields.size() >= 14 && fields[1] == customerID && 
+            fields[13] == "PENDING" && fields[9].empty())
+        {
+            bookingID = fields[0];
+            vehicleID = fields[2];
+            pickupLocation = fields[3];
+            destination = fields[4];
+            pickupDate = fields[5];
+            returnDate = fields[7];
+            drivingMode = fields[8];
+            totalCost = fields[11];
+            found = true;
+            break;
+        }
+    }
+
+    fin.close();
+
+    if (!found)
+    {
+        printMessage("Invalid Customer ID or no pending booking found.");
+        return;
+    }
+
+    system("cls");
+    printMenuHeader("REVIEW BOOKING DETAILS");
+    printMenuItem("Booking ID          : " + bookingID);
+    printMenuItem("Customer ID         : " + customerID);
+    printMenuItem("Vehicle ID          : " + vehicleID);
+    printMenuItem("Pickup Location     : " + pickupLocation);
+    printMenuItem("Destination         : " + destination);
+    printMenuItem("Pickup Date         : " + pickupDate);
+    printMenuItem("Return Date         : " + returnDate);
+    printMenuItem("Driving Mode        : " + drivingMode);
+    printMenuItem("Total Cost          : Rs. " + totalCost);
+    printLine();
+
+    string confirm;
+    cout << "Do you want to ACCEPT this booking? (yes/no) : ";
+    cin >> confirm;
+
+    if (confirm != "yes" && confirm != "YES" && confirm != "Yes")
+    {
+        printMessage("Booking Acceptance Cancelled!");
+        return;
+    }
 
     fin.open("bookings.txt");
     ofstream fout("temp.txt");
 
+    if (!fin || !fout)
+    {
+        printMessage("Error opening files.");
+        return;
+    }
+
     bool accepted = false;
-    string customerID = "";
 
     while(getline(fin, line))
     {
@@ -246,52 +386,35 @@ void Driver::acceptCustomer(BookingQueue& queue)
             continue;
         }
 
-        // Parse first field (BookingID)
-        size_t firstPipe = line.find('|');
-        if (firstPipe != string::npos)
+        vector<string> fields;
+        size_t pos = 0;
+        while (pos < line.length())
         {
-            string id = line.substr(0, firstPipe);
-
-            if (id == bookingID)
+            size_t pipePos = line.find('|', pos);
+            if (pipePos == string::npos)
             {
-                // Check if booking is PENDING and has no driver assigned
-                if (line.find("PENDING") != string::npos)
-                {
-                    // Parse all fields
-                    vector<string> fields;
-                    size_t pos = 0;
-                    while (pos < line.length())
-                    {
-                        size_t pipePos = line.find('|', pos);
-                        if (pipePos == string::npos)
-                        {
-                            fields.push_back(line.substr(pos));
-                            break;
-                        }
-                        fields.push_back(line.substr(pos, pipePos - pos));
-                        pos = pipePos + 1;
-                    }
-
-                    if (fields.size() >= 13 && fields[9].empty())
-                    {
-                        customerID = fields[1];  // Get customer ID
-                        // Update driver ID (field 9) and status (field 13)
-                        fields[9] = getUserID();  // Assign driver
-                        fields[13] = "ACCEPTED"; // Update status
-
-                        // Reconstruct line
-                        line = "";
-                        for (size_t i = 0; i < fields.size(); i++)
-                        {
-                            line += fields[i];
-                            if (i < fields.size() - 1)
-                                line += "|";
-                        }
-
-                        accepted = true;
-                    }
-                }
+                fields.push_back(line.substr(pos));
+                break;
             }
+            fields.push_back(line.substr(pos, pipePos - pos));
+            pos = pipePos + 1;
+        }
+
+        if (fields.size() >= 14 && fields[1] == customerID && 
+            fields[13] == "PENDING" && fields[9].empty())
+        {
+            fields[9] = getUserID();  // Assign driver
+            fields[13] = "APPROVED"; // Update status
+
+            line = "";
+            for (size_t i = 0; i < fields.size(); i++)
+            {
+                line += fields[i];
+                if (i < fields.size() - 1)
+                    line += "|";
+            }
+
+            accepted = true;
         }
 
         fout << line << endl;
@@ -306,16 +429,29 @@ void Driver::acceptCustomer(BookingQueue& queue)
     if(accepted)
     {
         system("cls");
-        printMenuHeader("BOOKING ACCEPTED");
-        printMenuItem("Booking ID      : " + bookingID);
-        printMenuItem("Customer ID     : " + customerID);
+        printMenuHeader("BOOKING APPROVED");
+        printMenuItem("Booking ID          : " + bookingID);
+        printMenuItem("Customer ID         : " + customerID);
+        printMenuItem("Vehicle ID          : " + vehicleID);
+        printMenuItem("Pickup Location     : " + pickupLocation);
+        printMenuItem("Destination         : " + destination);
+        printMenuItem("Pickup Date         : " + pickupDate);
+        printMenuItem("Return Date         : " + returnDate);
+        printMenuItem("Driving Mode        : " + drivingMode);
+        printMenuItem("Total Cost          : Rs. " + totalCost);
+        printMenuItem("Driver ID           : " + getUserID());
+        printLine();
         
-        printMessage("Booking Accepted and Approved Successfully!");
+        printMessage("Booking Approved Successfully!");
         printMenuFooter();
+        
+        system("pause");
+        
+        rateCustomer();
     }
     else
     {
-        printMessage("Invalid Booking ID or not PENDING (or already assigned).");
+        printMessage("Error: Could not update booking status.");
     }
 }
 void Driver::rejectCustomer(BookingQueue& queue)
@@ -333,9 +469,10 @@ void Driver::rejectCustomer(BookingQueue& queue)
     string line;
     bool found = false;
 
-    printMenuHeader("PENDING BOOKINGS (FOR APPROVAL)");
-
-    vector<string> pendingLines;
+    printMenuHeader("PENDING BOOKINGS (FOR REJECTION)");
+    printf("\n %-12s | %-12s | %-12s | %-12s | %-15s\n", 
+           "Booking ID", "Customer ID", "Vehicle ID", "Pickup Date", "Driving Mode");
+    printLine();
 
     while(getline(fin, line))
     {
@@ -357,12 +494,12 @@ void Driver::rejectCustomer(BookingQueue& queue)
         
         if (fields.size() >= 14 && fields[13] == "PENDING" && fields[9].empty())
         {
-            pendingLines.push_back(line);
-            printf(" %-12s | %-12s | %-12s | %-15s\n", 
-                   fields[0].c_str(), 
-                   fields[1].c_str(), 
-                   fields[2].c_str(), 
-                   fields[5].c_str());
+            printf(" %-12s | %-12s | %-12s | %-12s | %-15s\n", 
+                   fields[0].c_str(),           // Booking ID
+                   fields[1].c_str(),           // Customer ID
+                   fields[2].c_str(),           // Vehicle ID
+                   fields[5].c_str(),           // Pickup Date
+                   fields[8].c_str());          // Driving Mode
             found = true;
         }
     }
@@ -377,20 +514,41 @@ void Driver::rejectCustomer(BookingQueue& queue)
 
     printLine();
 
-    string bookingID;
+    string customerID;
 
-    cout << "Enter Booking ID To Reject : ";
-    cin >> bookingID;
+    cout << "\nEnter Customer ID To Reject : ";
+    cin >> customerID;
+
+    if (!isValidCustomerID(customerID))
+    {
+        printMessage("Invalid Customer ID Format. Must be C-# (e.g., C-1, C-15).");
+        return;
+    }
 
     fin.open("bookings.txt");
+
+    if (!fin)
+    {
+        printMessage("Error opening bookings file.");
+        return;
+    }
+
     ofstream fout("temp.txt");
 
+    if (!fout)
+    {
+        printMessage("Error creating temp file.");
+        fin.close();
+        return;
+    }
+
     bool rejected = false;
-    string customerID = "";
+    string bookingID = "";
     string vehicleID = "";
     string pickupLocation = "";
     string destination = "";
     string pickupDate = "";
+    string drivingMode = "";
 
     while(getline(fin, line))
     {
@@ -400,56 +558,41 @@ void Driver::rejectCustomer(BookingQueue& queue)
             continue;
         }
 
-        // Parse first field (BookingID)
-        size_t firstPipe = line.find('|');
-        if (firstPipe != string::npos)
+        vector<string> fields;
+        size_t pos = 0;
+        while (pos < line.length())
         {
-            string id = line.substr(0, firstPipe);
-
-            if (id == bookingID)
+            size_t pipePos = line.find('|', pos);
+            if (pipePos == string::npos)
             {
-                // Check if booking is PENDING and has no driver assigned
-                if (line.find("PENDING") != string::npos)
-                {
-                    // Parse fields to get details
-                    vector<string> fields;
-                    size_t pos = 0;
-                    while (pos < line.length())
-                    {
-                        size_t pipePos = line.find('|', pos);
-                        if (pipePos == string::npos)
-                        {
-                            fields.push_back(line.substr(pos));
-                            break;
-                        }
-                        fields.push_back(line.substr(pos, pipePos - pos));
-                        pos = pipePos + 1;
-                    }
-
-                    if (fields.size() >= 13 && fields[9].empty())
-                    {
-                        customerID = fields[1];
-                        vehicleID = fields[2];
-                        pickupLocation = fields[3];
-                        destination = fields[4];
-                        pickupDate = fields[5];
-                        
-                        // Update driver ID and status
-                        fields[9] = getUserID();
-                        fields[13] = "REJECTED";
-                        
-                        line = "";
-                        for (size_t i = 0; i < fields.size(); i++)
-                        {
-                            line += fields[i];
-                            if (i < fields.size() - 1)
-                                line += "|";
-                        }
-                        
-                        rejected = true;
-                    }
-                }
+                fields.push_back(line.substr(pos));
+                break;
             }
+            fields.push_back(line.substr(pos, pipePos - pos));
+            pos = pipePos + 1;
+        }
+
+        if (fields.size() >= 14 && fields[1] == customerID && 
+            fields[13] == "PENDING" && fields[9].empty())
+        {
+            bookingID = fields[0];
+            vehicleID = fields[2];
+            pickupLocation = fields[3];
+            destination = fields[4];
+            pickupDate = fields[5];
+            drivingMode = fields[8];
+            
+            fields[13] = "REJECTED";
+            
+            line = "";
+            for (size_t i = 0; i < fields.size(); i++)
+            {
+                line += fields[i];
+                if (i < fields.size() - 1)
+                    line += "|";
+            }
+            
+            rejected = true;
         }
 
         fout << line << endl;
@@ -465,19 +608,24 @@ void Driver::rejectCustomer(BookingQueue& queue)
     {
         system("cls");
         printMenuHeader("BOOKING REJECTED");
-        printMenuItem("Booking ID      : " + bookingID);
-        printMenuItem("Customer ID     : " + customerID);
-        printMenuItem("Vehicle ID      : " + vehicleID);
-        printMenuItem("Pickup Location : " + pickupLocation);
-        printMenuItem("Destination     : " + destination);
-        printMenuItem("Pickup Date     : " + pickupDate);
+        printMenuItem("Booking ID       : " + bookingID);
+        printMenuItem("Customer ID      : " + customerID);
+        printMenuItem("Vehicle ID       : " + vehicleID);
+        printMenuItem("Pickup Location  : " + pickupLocation);
+        printMenuItem("Destination      : " + destination);
+        printMenuItem("Pickup Date      : " + pickupDate);
+        printMenuItem("Driving Mode     : " + drivingMode);
         printLine();
-        printMessage("Booking Rejected Successfully!");
+        
+        // Make vehicle available
+        setVehicleAvailable(vehicleID);
+        
+        printMessage("Booking Rejected Successfully. Vehicle is now Available.");
         printMenuFooter();
     }
     else
     {
-        printMessage("Invalid Booking ID or not PENDING (or already assigned).");
+        printMessage("Invalid Customer ID or no pending booking found.");
     }
 }
 
@@ -511,22 +659,25 @@ string Driver::getLicense() {
     if (!license.empty())
         return license;
 
-    // Load from file
-    ifstream fin("drivers.txt");
+    // Load from driver_citizenship.txt file
+    ifstream fin("driver_citizenship.txt");
     if (fin)
     {
         string line;
         while (getline(fin, line))
         {
             if (line.empty()) continue;
-            stringstream ss(line);
-            string fileID, fileCitizenship, fileLicense;
-            int exp;
-            if (ss >> fileID >> fileCitizenship >> fileLicense >> exp)
+            size_t pipePos = line.find('|');
+            if (pipePos != string::npos)
             {
+                string fileID = line.substr(0, pipePos);
                 if (fileID == userID)
                 {
-                    license = fileLicense;
+                    size_t secondPipe = line.find('|', pipePos + 1);
+                    if (secondPipe != string::npos)
+                    {
+                        license = line.substr(secondPipe + 1);
+                    }
                     fin.close();
                     return license;
                 }
@@ -543,22 +694,25 @@ string Driver::getCitizenship() {
     if (!citizenship.empty())
         return citizenship;
 
-    // Load from file
-    ifstream fin("drivers.txt");
+    // Load from driver_citizenship.txt file
+    ifstream fin("driver_citizenship.txt");
     if (fin)
     {
         string line;
         while (getline(fin, line))
         {
             if (line.empty()) continue;
-            stringstream ss(line);
-            string fileID, fileCitizenship, fileLicense;
-            int exp;
-            if (ss >> fileID >> fileCitizenship >> fileLicense >> exp)
+            size_t pipePos = line.find('|');
+            if (pipePos != string::npos)
             {
+                string fileID = line.substr(0, pipePos);
                 if (fileID == userID)
                 {
-                    citizenship = fileCitizenship;
+                    size_t secondPipe = line.find('|', pipePos + 1);
+                    if (secondPipe != string::npos)
+                    {
+                        citizenship = line.substr(pipePos + 1, secondPipe - pipePos - 1);
+                    }
                     fin.close();
                     return citizenship;
                 }

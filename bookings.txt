@@ -1,1 +1,3 @@
-B-3|C-4|V-4|bkt|ktm|19/05/2026|16||With Driver|D-1|PENDING|10000|2000|ACCEPTED|||Passenger Transportation|||0
+B-1|C-2|V-2|bkt|patan|19/05/2026|14|19/05/2026|With Driver|D-2|PENDING|9000|1800|CANCELLED|||Goods Transportation|fruits|3|0
+B-2|C-1|V-2|bkt|ilam|20/05/2026|11|23/05/2026|With Driver|D-1|PENDING|27000|5400|CANCELLED|||Goods Transportation|juice|10|0
+B-3|C-5|V-5|Kamalbinayak|Kausaltar|18/04/2026|155|20/04/2026|With Driver||PENDING|8400|1680|CANCELLED|||Passenger Transportation|||0

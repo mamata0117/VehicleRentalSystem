@@ -136,7 +136,7 @@ namespace
 
     static pair<string, string> lookupDriverDetails(const string &userID)
     {
-        ifstream fin("drivers.txt");
+        ifstream fin("driver_citizenship.txt");
 
         if (!fin)
         {
@@ -146,19 +146,29 @@ namespace
         string line;
         while (getline(fin, line))
         {
-            stringstream ss(line);
-            string fileID;
-            string citizenship;
-            string license;
-            string experience;
-
-            if (ss >> fileID >> citizenship >> license >> experience)
+            if (line.empty()) continue;
+            size_t pipePos = line.find('|');
+            if (pipePos == string::npos)
             {
-                if (fileID == userID)
+                continue;
+            }
+
+            string fileID = trimText(line.substr(0, pipePos));
+            if (fileID == userID)
+            {
+                size_t secondPipe = line.find('|', pipePos + 1);
+                if (secondPipe == string::npos)
                 {
-                    return {citizenship.empty() ? "Not Saved" : citizenship,
-                            license.empty() ? "Not Saved" : license};
+                    return {"Not Saved", "Not Saved"};
                 }
+
+                string citizenship = trimText(line.substr(pipePos + 1, secondPipe - pipePos - 1));
+                string license = trimText(line.substr(secondPipe + 1));
+
+                return {
+                    citizenship.empty() ? "Not Saved" : citizenship,
+                    license.empty() ? "Not Saved" : license
+                };
             }
         }
 
@@ -170,13 +180,18 @@ namespace
         vector<AccountCard> cards;
         vector<string> lines = readNonEmptyLines(filePath);
 
+        // For drivers, file may have extra setup lines. Process only 7-line profiles.
         for (size_t i = 0; i + 6 < lines.size(); )
         {
             const string &id = lines[i];
             const string &name = lines[i + 1];
             const string &fileRole = lines[i + 6];
 
-            if (fileRole == role)
+            // Verify this is a valid profile line (check if ID matches expected format)
+            char expectedPrefix = (role == "CUSTOMER") ? 'C' : (role == "DRIVER") ? 'D' : 'A';
+            bool isValidProfile = (!id.empty() && id[0] == expectedPrefix && id.length() > 1 && id[1] == '-');
+
+            if (fileRole == role && isValidProfile)
             {
                 AccountCard card;
                 card.id = id;
@@ -207,9 +222,13 @@ namespace
                 }
 
                 cards.push_back(card);
+                i += 7;
             }
-
-            i += 7;
+            else
+            {
+                // Skip this line and try the next one (handles driver setup lines)
+                i++;
+            }
         }
 
         return cards;
@@ -260,7 +279,7 @@ namespace
             return;
         }
 
-        const int cardWidth = 33;
+        const int cardWidth = 35;
         const size_t cardsPerRow = 3;
         const string gap = "  ";
 
@@ -295,7 +314,7 @@ namespace
 }
 
 // Dynamic UI - adapts to content width
-static int currentMaxWidth = 40; // Minimum width
+static int currentMaxWidth = 41; // Minimum width
 
 static string centerText(const string &s, int width)
 {

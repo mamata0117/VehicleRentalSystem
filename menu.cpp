@@ -111,8 +111,6 @@ void driverMenu(Driver& d, BookingQueue& queue)
         if (ch == 1)
         {  system("cls");
             d.acceptCustomer(queue);
-
-            d.rateCustomer();
             system("pause");
         }
 

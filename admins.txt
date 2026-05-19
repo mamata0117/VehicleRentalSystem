@@ -1,14 +1,14 @@
 A-1
-Rina Sharma
-23
-9876765544
-rina@gmail.com
-rina
-ADMIN
-A-2
-Binit Kc
+Binit Thapa
 34
-9876765656
+9887778788
 binit@gmail.com
 binit
+ADMIN
+A-2
+Mina Thapa
+32
+9877665566
+mina@gmail.com
+mina
 ADMIN

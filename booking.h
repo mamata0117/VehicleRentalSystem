@@ -88,4 +88,11 @@ void saveBookingToFile(Booking b);
 void loadBookingsFromFile(BookingQueue& queue);
 void enqueueBookingWithoutUpdateVehicle(BookingQueue& queue, Booking b);
 
+// Validation and helper functions
+bool isValidCustomerID(string customerID);
+bool customerIDHasPendingBooking(string customerID);
+void setVehicleAvailable(string vehicleID);
+void updateBookingStatus(string bookingID, string newStatus);
+Booking findActiveBookingForVehicle(string vehicleID);
+
 #endif

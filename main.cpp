@@ -19,9 +19,6 @@ int main()
 
     system("chcp 65001");
 
-    // Initialize ID generator with persistent counters
-    IDGenerator::initCounters();
-
     // Load data from files on startup
     loadVehiclesFromFile();
 
@@ -65,8 +62,23 @@ int main()
         if(choice == 1)
         { system("cls");
             user.registerUser();
-
             
+            if(user.getRole() == "CUSTOMER")
+            {
+                Customer c;
+                c.setUserID(user.getUserID());
+                c.setRole(user.getRole());
+                c.setupCustomer();
+                system("pause");
+            }
+            else if(user.getRole() == "DRIVER")
+            {
+                Driver d;
+                d.setUserID(user.getUserID());
+                d.setRole(user.getRole());
+                d.setupDriver();
+                system("pause");
+            }
         }
 
         // LOGIN
@@ -84,7 +96,7 @@ int main()
 
                     c.setRole(user.getRole());
 
-                    c.setupCustomer();
+                    c.loadCustomerData();
                     system("pause");
                     system("cls");
                     customerMenu(c, queue);
@@ -99,7 +111,6 @@ int main()
 
                     d.setRole(user.getRole());
 
-                    d.setupDriver();
                     system("pause");
                     system("cls");
                     driverMenu(d, queue);
